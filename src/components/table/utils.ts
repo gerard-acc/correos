@@ -1,9 +1,5 @@
 import type { DataStructure, RowStructure } from "./interfaces";
 
-export const getDayNumberFrom = (date: string) => {
-  return date.split("/")[0];
-};
-
 export const buildRows = (data: DataStructure) => {
   // Las filas se complican porque tienen subfilas
   const rowStructure: RowStructure[] = [];
@@ -51,9 +47,29 @@ export const buildRows = (data: DataStructure) => {
     });
   });
 
-  console.log({ rowStructure });
-
   return rowStructure;
+};
+
+export const getNewExpandedParents = (
+  toggledParent: string,
+  currentParents: Set<string>,
+) => {
+  const expandedParents = new Set(currentParents);
+  // Si el padre ya estaba abierto, lo cerramos y cerramos todos sus hijos
+  if (expandedParents.has(toggledParent)) {
+    expandedParents.delete(toggledParent);
+    Array.from(expandedParents).forEach((expandedKey) => {
+      if (expandedKey.startsWith(toggledParent + "|")) {
+        expandedParents.delete(expandedKey);
+      }
+    });
+  } else {
+    // Si no estaba abierto, lo abrimos
+    expandedParents.add(toggledParent);
+  }
+
+  console.log({ expandedParents });
+  return expandedParents;
 };
 
 export const getValueFor = (
@@ -62,4 +78,8 @@ export const getValueFor = (
 ) => {
   if (!rowData || !rowData[day]) return "";
   return rowData[day].toLocaleString();
+};
+
+export const getDayNumberFrom = (date: string) => {
+  return date.split("/")[0];
 };

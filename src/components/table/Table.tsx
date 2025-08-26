@@ -1,61 +1,55 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import "./table.css";
 import type { RowStructure, TableProps } from "./interfaces";
-import { buildRows, getDayNumberFrom, getValueFor } from "./utils";
+import {
+  buildRows,
+  getDayNumberFrom,
+  getValueFor,
+  getNewExpandedParents,
+} from "./utils";
 
 export default function Table({ data }: TableProps) {
-  const [columns, setColumns] = useState<string[]>([]);
   const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
   );
 
+  const columns = useMemo(() => Object.keys(data), [data]);
+  
   useEffect(() => {
-    // Seteamos las columnas y las filas
-    setColumns(Object.keys(data));
+    // Seteamos las filas
     setNestedRows(buildRows(data));
   }, [data]);
 
-  const toggleParent = (parentKey: string) => {
-    setExpandedParents((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(parentKey)) {
-        newSet.delete(parentKey);
-        Array.from(newSet).forEach((expandedKey) => {
-          if (expandedKey.startsWith(parentKey + "|")) {
-            newSet.delete(expandedKey);
-          }
-        });
-      } else {
-        newSet.add(parentKey);
-      }
-      return newSet;
-    });
+  const toggleParent = (toggledParent: string) => {
+    setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
   };
 
-  const visibleRows = nestedRows.filter((row: RowStructure): boolean => {
-    if (row.type === "parent" && row.key) {
-      const parentParts = row.key.split("|");
-      for (let i = 1; i < parentParts.length; i++) {
-        const ancestorKey = parentParts.slice(0, i).join("|");
-        if (!expandedParents.has(ancestorKey)) {
+  const visibleRows = useMemo(() => {
+    return nestedRows.filter((row: RowStructure): boolean => {
+      if (row.type === "parent" && row.key) {
+        const parentParts = row.key.split("|");
+        for (let i = 1; i < parentParts.length; i++) {
+          const ancestorKey = parentParts.slice(0, i).join("|");
+          if (!expandedParents.has(ancestorKey)) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      if (!row.parentKey) return true;
+
+      const parentParts = row.parentKey.split("|");
+      for (let i = 1; i <= parentParts.length; i++) {
+        const parentKey = parentParts.slice(0, i).join("|");
+        if (!expandedParents.has(parentKey)) {
           return false;
         }
       }
       return true;
-    }
-
-    if (!row.parentKey) return true;
-
-    const parentParts = row.parentKey.split("|");
-    for (let i = 1; i <= parentParts.length; i++) {
-      const parentKey = parentParts.slice(0, i).join("|");
-      if (!expandedParents.has(parentKey)) {
-        return false;
-      }
-    }
-    return true;
-  });
+    });
+  }, [nestedRows, expandedParents]);
 
   return (
     <div className="tableContainer">
