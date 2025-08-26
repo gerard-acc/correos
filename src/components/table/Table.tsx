@@ -1,29 +1,20 @@
-import { useEffect, useState, useMemo } from "react";
 import "./table.css";
+import { useEffect, useState, useMemo } from "react";
 import type { RowStructure, TableProps } from "./interfaces";
 import {
   buildRows,
   getDayNumberFrom,
   getValueFor,
   getNewExpandedParents,
+  getCalculatedValue,
 } from "./utils";
 
 export default function Table({ data }: TableProps) {
+  const [columns, setColumns] = useState<string[]>([]);
   const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
   );
-
-  const columns = useMemo(() => Object.keys(data), [data]);
-  
-  useEffect(() => {
-    // Seteamos las filas
-    setNestedRows(buildRows(data));
-  }, [data]);
-
-  const toggleParent = (toggledParent: string) => {
-    setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
-  };
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -50,6 +41,15 @@ export default function Table({ data }: TableProps) {
       return true;
     });
   }, [nestedRows, expandedParents]);
+
+  useEffect(() => {
+    setColumns(Object.keys(data));
+    setNestedRows(buildRows(data));
+  }, [data]);
+
+  const toggleParent = (toggledParent: string) => {
+    setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
+  };
 
   return (
     <div className="tableContainer">
@@ -88,7 +88,9 @@ export default function Table({ data }: TableProps) {
               </td>
               {columns.map((day) => (
                 <td key={day}>
-                  {row.type === "child" ? getValueFor(day, row.rowData) : ""}
+                  {row.type === "child"
+                    ? getValueFor(day, row.rowData)
+                    : getCalculatedValue(day, row, nestedRows)}
                 </td>
               ))}
             </tr>

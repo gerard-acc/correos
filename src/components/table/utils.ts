@@ -83,3 +83,22 @@ export const getValueFor = (
 export const getDayNumberFrom = (date: string) => {
   return date.split("/")[0];
 };
+
+export const getCalculatedValue = (
+  day: string,
+  row: RowStructure,
+  allRows: RowStructure[],
+) => {
+  if (row.type === "child") return "";
+  // Necesitamos sumar todas las filas hijas que cuelgan de este padre
+  const childRows = allRows.filter(
+    (r) => r.parentKey && r.parentKey.startsWith(row.key + "|"),
+  );
+  const total = childRows.reduce((acc, current) => {
+    if (current.rowData && current.rowData[day]) {
+      return acc + current.rowData[day];
+    }
+    return acc;
+  }, 0);
+  return total.toLocaleString();
+};
