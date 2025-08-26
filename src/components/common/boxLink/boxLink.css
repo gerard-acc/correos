@@ -1,0 +1,17 @@
+.boxLink {
+  width: 324px;
+  height: 268px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px 0px #00000033;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  & img {
+    width: 37px;
+    height: 37px;
+    justify-self: center;
+  }
+  & p {
+    font-size: 32px;
+  }
+}

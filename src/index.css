@@ -1,0 +1,83 @@
+:root {
+  --accent-color: #ffcd00;
+  --blue-correos: #002e6d;
+  --global-border-color: #cfcfcf;
+  --gray: #f0f3f6;
+  --gray-text: #6e6e6e;
+
+  --status-success: #34d399;
+  --status-warning: #fbbf24;
+
+  --toggle-background: var(--status-success);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+span,
+input,
+textarea,
+button,
+label,
+a {
+  margin: 0;
+  font-family: "OpenSans";
+  text-decoration: none;
+  color: black;
+  font-size: 1rem;
+}
+
+@font-face {
+  font-family: "OpenSans";
+  src: url("/fonts/OpenSans-VariableFont.ttf");
+}
+p {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 30px;
+}
+h1 {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 24px;
+  color: var(--blue-correos);
+}
+h2 {
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 44px;
+}
+h3 {
+  font-size: 32px;
+  line-height: 130%;
+  font-weight: 500;
+}
+.smallTitle {
+  font-size: 12px;
+  line-height: 24px;
+  font-weight: 700;
+}
+.smallText {
+  font-size: 12px;
+  line-height: 24px;
+  font-weight: 400;
+}

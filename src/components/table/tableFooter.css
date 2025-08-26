@@ -1,0 +1,19 @@
+.tableActions {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 0;
+  align-items: flex-end;
+}
+.tableActions__status {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.tableActions__status__legend {
+  display: flex;
+  gap: 24px;
+}
+.tableActions__buttons {
+  display: flex;
+  gap: 24px;
+}

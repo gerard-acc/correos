@@ -1,0 +1,29 @@
+.multiButtons {
+  display: flex;
+}
+.multiButton {
+  border-radius: 0;
+  background: none;
+  border: 1px solid var(--global-border-color);
+  padding: 12px;
+  cursor: pointer;
+}
+.multiButton:first-child {
+  border-radius: 25px 0 0 25px;
+  padding-left: 20px;
+  border-right: none;
+}
+.multiButtons:not(:has(.active)) .multiButton:first-child {
+  border: 1px solid var(--global-border-color);
+}
+.multiButton:last-child {
+  border-radius: 0 25px 25px 0;
+  padding-right: 20px;
+  border-left: none;
+}
+.multiButton.active {
+  background-color: var(--blue-correos);
+  border-color: var(--blue-correos);
+  color: white;
+  pointer-events: none;
+}

@@ -1,0 +1,39 @@
+.selector {
+  position: relative;
+}
+.selector__button {
+  background-color: white;
+  border: 1px solid var(--global-border-color);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  max-width: 200px;
+  cursor: pointer;
+  width: fit-content;
+}
+.selector__button--rounded {
+  border-radius: 30px;
+  padding: 16px 24px;
+}
+.selector__options {
+  position: absolute;
+  top: calc(100% + 5px);
+  width: 200px;
+  background-color: white;
+  z-index: 1;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  border-radius: 15px;
+  border: 1px solid var(--global-border-color);
+  overflow: hidden;
+}
+.selector__options__option {
+  padding: 10px 16px;
+}
+.selector__options__option:hover {
+  background-color: var(--accent-color);
+  cursor: pointer;
+}

@@ -1,0 +1,12 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 0;
+}
+.breacrumb__text {
+  font-size: 12px;
+}
+.breacrumb__text:last-child {
+  font-weight: 700;
+}

@@ -1,0 +1,178 @@
+{
+  "simple": {
+    "15/08/25": {
+      "Ord": {
+        "rowParents": ["Admisión"],
+        "volumen": 2100000
+      },
+      "Cert Resto": {
+        "rowParents": ["Admisión"],
+        "volumen": 1100000
+      },
+      "Notificaciones": {
+        "rowParents": ["Admisión"],
+        "volumen": 1900
+      }
+    },
+    "16/08/25": {
+      "Ord": {
+        "rowParents": ["Admisión"],
+        "volumen": 2200000
+      },
+      "Cert Resto": {
+        "rowParents": ["Admisión"],
+        "volumen": 1200000
+      },
+      "Notificaciones": {
+        "rowParents": ["Admisión"],
+        "volumen": 2100
+      }
+    },
+    "17/08/25": {
+      "Ord": {
+        "rowParents": ["Admisión"],
+        "volumen": 2300000
+      },
+      "Cert Resto": {
+        "rowParents": ["Admisión"],
+        "volumen": 1300000
+      },
+      "Notificaciones": {
+        "rowParents": ["Admisión"],
+        "volumen": 2020
+      }
+    }
+  },
+  "regular": {
+    "15/08/25": {
+      "Santiago": {
+        "rowParents": ["Noroeste"],
+        "volumen": 10
+      },
+      "Valladolid": {
+        "rowParents": ["Noroeste"],
+        "volumen": 20
+      },
+      "Oviedo": {
+        "rowParents": ["Noroeste"],
+        "volumen": 30
+      },
+      "Álaba": {
+        "rowParents": ["Norte", "Vitoria"],
+        "volumen": 1
+      }
+    },
+    "16/08/25": {
+      "Santiago": {
+        "rowParents": ["Noroeste"],
+        "volumen": 12
+      },
+      "Valladolid": {
+        "rowParents": ["Noroeste"],
+        "volumen": 22
+      },
+      "Oviedo": {
+        "rowParents": ["Noroeste"],
+        "volumen": 32
+      },
+      "Álaba": {
+        "rowParents": ["Norte", "Vitoria"],
+        "volumen": 2
+      },
+      "Hola": {
+        "rowParents": ["Norte"],
+        "volumen": 200
+      }
+    },
+    "17/08/25": {
+      "Santiago": {
+        "rowParents": ["Noroeste"],
+        "volumen": 15
+      },
+      "Valladolid": {
+        "rowParents": ["Noroeste"],
+        "volumen": 25
+      },
+      "Oviedo": {
+        "rowParents": ["Noroeste"],
+        "volumen": 35
+      },
+      "Álaba": {
+        "rowParents": ["Norte", "Vitoria"],
+        "volumen": 3
+      },
+      "Hola": {
+        "rowParents": ["Norte"],
+        "volumen": 100
+      }
+    }
+  },
+  "complex": {
+    "15/08/25": {
+      "Santiago": {
+        "rowParents": ["Noroeste"],
+        "subColumns": {
+          "Resto": 20,
+          "Premium": 20,
+          "Total": 0
+        }
+      },
+      "Valladolid": {
+        "rowParents": ["Noroeste"],
+        "volumen": 20
+      },
+      "Oviedo": {
+        "rowParents": ["Noroeste"],
+        "volumen": 30
+      },
+      "Álaba": {
+        "rowParents": ["Norte", "Vitoria"],
+        "volumen": 1
+      }
+    },
+    "16/08/25": {
+      "Santiago": {
+        "rowParents": ["Noroeste"],
+        "volumen": 12
+      },
+      "Valladolid": {
+        "rowParents": ["Noroeste"],
+        "volumen": 22
+      },
+      "Oviedo": {
+        "rowParents": ["Noroeste"],
+        "volumen": 32
+      },
+      "Álaba": {
+        "rowParents": ["Norte", "Vitoria"],
+        "volumen": 2
+      },
+      "Hola": {
+        "rowParents": ["Norte"],
+        "volumen": 200
+      }
+    },
+    "17/08/25": {
+      "Santiago": {
+        "rowParents": ["Noroeste"],
+        "volumen": 15
+      },
+      "Valladolid": {
+        "rowParents": ["Noroeste"],
+        "volumen": 25
+      },
+      "Oviedo": {
+        "rowParents": ["Noroeste"],
+        "volumen": 35
+      },
+      "Álaba": {
+        "rowParents": ["Norte", "Vitoria"],
+        "volumen": 3
+      },
+      "Hola": {
+        "rowParents": ["Norte"],
+        "volumen": 100
+      }
+    }
+  }
+}

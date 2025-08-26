@@ -1,0 +1,9 @@
+.legendPoint {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.legendPoint__dot {
+  width: 10px;
+  height: 10px;
+}

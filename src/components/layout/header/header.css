@@ -1,0 +1,20 @@
+.header {
+  display: flex;
+  height: 83px;
+  padding: 0 70px;
+  background-color: var(--accent-color);
+}
+.logo {
+  height: 46px;
+}
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.header__buttons {
+  align-items: center;
+  margin-left: auto;
+  display: flex;
+  gap: 24px;
+}

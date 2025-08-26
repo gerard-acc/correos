@@ -1,0 +1,21 @@
+.tabs {
+  display: flex;
+  height: 38px;
+  gap: 10px;
+
+  & .tabs__tab {
+    font-weight: 600;
+    flex: 1;
+    background: none;
+    border: none;
+    border-bottom: 2px solid var(--global-border-color);
+    cursor: pointer;
+  }
+  & .tabs__tab.active {
+    border-bottom: 2px solid var(--blue-correos);
+    color: var(--blue-correos);
+  }
+}
+.tabContent {
+  padding: 40px 0;
+}

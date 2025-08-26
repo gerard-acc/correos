@@ -1,0 +1,27 @@
+.dateRange {
+  display: flex;
+  gap: 20px;
+}
+
+.dateRange__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateRange__label {
+  color: var(--gray-text);
+}
+
+.dateRange__input {
+  padding: 12px;
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  color: #333;
+}
+
+.dateRange__input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
