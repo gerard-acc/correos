@@ -19,4 +19,5 @@ export interface RowStructure {
   key?: string;
   rowData?: { [date: string]: number };
   parentKey?: string;
+  customValues?: { [date: string]: number };
 }

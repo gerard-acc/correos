@@ -15,6 +15,7 @@ export default function Table({ data }: TableProps) {
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
   );
+  const [editingCell, setEditingCell] = useState<string | null>(null);
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -49,6 +50,18 @@ export default function Table({ data }: TableProps) {
 
   const toggleParent = (toggledParent: string) => {
     setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
+  };
+
+  const updateCellValue = (rowIndex: number, column: string, value: string) => {
+    const row = visibleRows[rowIndex];
+    if (row.type === "child" && row.rowData) {
+      row.rowData[column] = parseFloat(value) || 0;
+    } else if (row.type === "parent") {
+      if (!row.customValues) row.customValues = {};
+      row.customValues[column] = parseFloat(value) || 0;
+    }
+    setNestedRows([...nestedRows]);
+    setEditingCell(null);
   };
 
   return (
@@ -86,13 +99,37 @@ export default function Table({ data }: TableProps) {
                 )}
                 {row.name}
               </td>
-              {columns.map((day) => (
-                <td key={day}>
-                  {row.type === "child"
-                    ? getValueFor(day, row.rowData)
-                    : getCalculatedValue(day, row, nestedRows)}
-                </td>
-              ))}
+              {columns.map((day) => {
+                const cellKey = `${index}-${day}`;
+                const isEditing = editingCell === cellKey;
+                const currentValue = row.type === "child" 
+                  ? getValueFor(day, row.rowData)
+                  : getCalculatedValue(day, row, nestedRows);
+                
+                return (
+                  <td 
+                    key={day}
+                    onClick={() => setEditingCell(cellKey)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        defaultValue={currentValue.replace(/,/g, "")}
+                        onBlur={(e) => updateCellValue(index, day, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") updateCellValue(index, day, e.currentTarget.value);
+                          if (e.key === "Escape") setEditingCell(null);
+                        }}
+                        autoFocus
+                        style={{ width: "100%", border: "1px solid #ccc", padding: "2px" }}
+                      />
+                    ) : (
+                      currentValue
+                    )}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

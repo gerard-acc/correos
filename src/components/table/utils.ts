@@ -90,6 +90,12 @@ export const getCalculatedValue = (
   allRows: RowStructure[],
 ) => {
   if (row.type === "child") return "";
+  
+  // If parent has custom value, use it instead of calculated
+  if (row.customValues && row.customValues[day] !== undefined) {
+    return row.customValues[day].toLocaleString();
+  }
+  
   // Necesitamos sumar todas las filas hijas que cuelgan de este padre
   const childRows = allRows.filter(
     (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
