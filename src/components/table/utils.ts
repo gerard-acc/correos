@@ -92,7 +92,7 @@ export const getCalculatedValue = (
   if (row.type === "child") return "";
   // Necesitamos sumar todas las filas hijas que cuelgan de este padre
   const childRows = allRows.filter(
-    (r) => r.parentKey && r.parentKey.startsWith(row.key + "|"),
+    (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
   );
   const total = childRows.reduce((acc, current) => {
     if (current.rowData && current.rowData[day]) {
