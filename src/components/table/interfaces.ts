@@ -1,8 +1,11 @@
 export interface DataStructure {
   [date: string]: {
-    [rowName: string]: {
-      rowParents: string[];
-      volumen: number;
+    isFestivity: boolean;
+    rows: {
+      [rowName: string]: {
+        rowParents: string[];
+        volumen: number;
+      };
     };
   };
 }
@@ -12,6 +15,10 @@ export interface TableProps {
   periods: "weekly" | "daily";
 }
 
+export interface ColumnStructure {
+  day: string;
+  isFestivity: boolean;
+}
 export interface RowStructure {
   type: "parent" | "child";
   name: string;

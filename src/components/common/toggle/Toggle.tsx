@@ -9,7 +9,7 @@ interface ToggleProps {
 
 export default function Toggle({
   label,
-  defaultChecked = true,
+  defaultChecked = false,
   onChange,
 }: ToggleProps) {
   const [isOn, setIsOn] = useState(defaultChecked);

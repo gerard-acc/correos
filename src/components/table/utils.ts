@@ -1,5 +1,12 @@
 import type { DataStructure, RowStructure } from "./interfaces";
 
+export const buildColumns = (data: DataStructure) => {
+  const columns = Object.keys(data).map((day) => {
+    return { day: day, isFestivity: data[day].isFestivity };
+  });
+  return columns;
+};
+
 export const buildRows = (data: DataStructure) => {
   // Las filas se complican porque tienen subfilas
   const rowStructure: RowStructure[] = [];
@@ -10,17 +17,20 @@ export const buildRows = (data: DataStructure) => {
   >();
 
   // Primero guardamos todas las filas finales, las que no son desplegables, con su valor, en allRows
-  Object.entries(data).forEach(([date, rows]) => {
-    Object.entries(rows).forEach(([rowName, rowInfo]) => {
+  for (const day in data) {
+    const dayRows = data[day].rows;
+    for (const rowName in dayRows) {
       if (!allRows.has(rowName)) {
         allRows.set(rowName, {
-          rowParents: rowInfo.rowParents,
+          rowParents: dayRows[rowName].rowParents,
           data: {},
         });
       }
-      allRows.get(rowName)!.data[date] = rowInfo.volumen;
-    });
-  });
+      allRows.get(rowName)!.data[day] = dayRows[rowName].volumen;
+    }
+  }
+
+  console.log({ allRows });
 
   // Después metemos todas las filas que hemos sacado en una estructura en base a las rowParents
   allRows.forEach((rowInfo, rowName) => {
@@ -46,6 +56,8 @@ export const buildRows = (data: DataStructure) => {
       parentKey: rowInfo.rowParents.join("|"),
     });
   });
+
+  console.log({ rowStructure });
 
   return rowStructure;
 };
@@ -90,15 +102,16 @@ export const getCalculatedValue = (
   allRows: RowStructure[],
 ) => {
   if (row.type === "child") return "";
-  
+
   // If parent has custom value, use it instead of calculated
   if (row.customValues && row.customValues[day] !== undefined) {
     return row.customValues[day].toLocaleString();
   }
-  
+
   // Necesitamos sumar todas las filas hijas que cuelgan de este padre
   const childRows = allRows.filter(
-    (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+    (r) =>
+      r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
   );
   const total = childRows.reduce((acc, current) => {
     if (current.rowData && current.rowData[day]) {

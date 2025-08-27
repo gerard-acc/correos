@@ -1,16 +1,19 @@
 import "./table.css";
 import { useEffect, useState, useMemo } from "react";
-import type { RowStructure, TableProps } from "./interfaces";
+import type { ColumnStructure, RowStructure, TableProps } from "./interfaces";
 import {
   buildRows,
   getDayNumberFrom,
   getValueFor,
   getNewExpandedParents,
   getCalculatedValue,
+  buildColumns,
 } from "./utils";
+import Toggle from "../common/toggle/Toggle";
 
 export default function Table({ data }: TableProps) {
-  const [columns, setColumns] = useState<string[]>([]);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [columns, setColumns] = useState<ColumnStructure[]>([]);
   const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
@@ -44,7 +47,7 @@ export default function Table({ data }: TableProps) {
   }, [nestedRows, expandedParents]);
 
   useEffect(() => {
-    setColumns(Object.keys(data));
+    setColumns(buildColumns(data));
     setNestedRows(buildRows(data));
   }, [data]);
 
@@ -65,75 +68,106 @@ export default function Table({ data }: TableProps) {
   };
 
   return (
-    <div className="tableContainer">
-      <table>
-        <thead>
-          <tr>
-            <td></td>
-            {columns.map((day) => (
-              <td key={day}>Día {getDayNumberFrom(day)}</td>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {visibleRows.map((row, index) => (
-            <tr
-              key={`${row.type}-${index}`}
-              className={`level-${row.level} ${row.type}`}
-            >
-              <td
-                style={{
-                  paddingLeft: `${row.level * 20}px`,
-                  cursor: row.type === "parent" ? "pointer" : "default",
-                }}
-                onClick={
-                  row.type === "parent" && row.key
-                    ? () => toggleParent(row.key!)
-                    : undefined
-                }
-              >
-                {row.type === "parent" && (
-                  <span style={{ marginRight: "8px" }}>
-                    {row.key && expandedParents.has(row.key) ? "▼" : "▶"}
-                  </span>
-                )}
-                {row.name}
-              </td>
-              {columns.map((day) => {
-                const cellKey = `${index}-${day}`;
-                const isEditing = editingCell === cellKey;
-                const currentValue = row.type === "child" 
-                  ? getValueFor(day, row.rowData)
-                  : getCalculatedValue(day, row, nestedRows);
-                
-                return (
-                  <td 
-                    key={day}
-                    onClick={() => setEditingCell(cellKey)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        defaultValue={currentValue.replace(/,/g, "")}
-                        onBlur={(e) => updateCellValue(index, day, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") updateCellValue(index, day, e.currentTarget.value);
-                          if (e.key === "Escape") setEditingCell(null);
-                        }}
-                        autoFocus
-                        style={{ width: "100%", border: "1px solid #ccc", padding: "2px" }}
-                      />
-                    ) : (
-                      currentValue
-                    )}
-                  </td>
-                );
-              })}
+    <>
+      <div className="tableOptions">
+        <Toggle
+          onChange={(status) => setIsVerifying(status)}
+          label="Verificar"
+        ></Toggle>
+        <button>Descargar</button>
+      </div>
+      <div className="tableContainer">
+        {isVerifying ? "Is being verifyied" : ""}
+        <table>
+          <thead>
+            <tr>
+              <td></td>
+              {columns.map((column) => (
+                <td
+                  style={{
+                    backgroundColor: column.isFestivity
+                      ? "var(--festivity-color)"
+                      : "var(--header-color)",
+                  }}
+                  key={column.day}
+                >
+                  Día {getDayNumberFrom(column.day)}
+                </td>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {visibleRows.map((row, index) => (
+              <tr
+                key={`${row.type}-${index}`}
+                className={`level-${row.level} ${row.type}`}
+              >
+                <td
+                  style={{
+                    paddingLeft: `${row.level * 20}px`,
+                    cursor: row.type === "parent" ? "pointer" : "default",
+                  }}
+                  onClick={
+                    row.type === "parent" && row.key
+                      ? () => toggleParent(row.key!)
+                      : undefined
+                  }
+                >
+                  {row.type === "parent" && (
+                    <span style={{ marginRight: "8px" }}>
+                      {row.key && expandedParents.has(row.key) ? "▼" : "▶"}
+                    </span>
+                  )}
+                  {row.name}
+                </td>
+                {columns.map((column) => {
+                  const cellKey = `${index}-${column.day}`;
+                  const isEditing = editingCell === cellKey;
+                  const currentValue =
+                    row.type === "child"
+                      ? getValueFor(column.day, row.rowData)
+                      : getCalculatedValue(column.day, row, nestedRows);
+
+                  return (
+                    <td
+                      key={column.day}
+                      onClick={() => setEditingCell(cellKey)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          defaultValue={currentValue.replace(/,/g, "")}
+                          onBlur={(e) =>
+                            updateCellValue(index, column.day, e.target.value)
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter")
+                              updateCellValue(
+                                index,
+                                column.day,
+                                e.currentTarget.value,
+                              );
+                            if (e.key === "Escape") setEditingCell(null);
+                          }}
+                          autoFocus
+                          style={{
+                            width: "100%",
+                            border: "1px solid #ccc",
+                            padding: "2px",
+                          }}
+                        />
+                      ) : (
+                        currentValue
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }

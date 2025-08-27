@@ -1,9 +1,17 @@
+.tableOptions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  padding: 40px 0;
+}
+
 .tableContainer {
   overflow-x: scroll;
 }
 
 table {
   --header-color: #423d47;
+  --festivity-color: #726f73;
   font-family: "OpenSans";
 }
 

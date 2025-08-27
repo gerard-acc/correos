@@ -4,7 +4,6 @@ import { createFileRoute } from "@tanstack/react-router";
 // import type { DataRow } from "../interfaces";
 import test_data from "../../public/test_data_2.json";
 import Section from "../components/layout/Section";
-import TableOptions from "../components/table/TableOptions";
 import TableFooter from "../components/table/TableFooter";
 import Tabs from "../components/layout/tabs/Tabs";
 import { useState } from "react";
@@ -130,7 +129,6 @@ function Index() {
 
         <Section>
           <h1>Forecast</h1>
-          <TableOptions></TableOptions>
           <Table periods="daily" data={test_data.regular} />
           <TableFooter></TableFooter>
         </Section>

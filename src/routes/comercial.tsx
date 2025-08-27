@@ -1,10 +1,8 @@
 import CenteredContent from "../components/layout/CenteredContent";
 import Table from "../components/table/Table";
 import { createFileRoute } from "@tanstack/react-router";
-import type { DataRow } from "../interfaces";
-import test_data from "../../public/test_data.json";
+import test_data from "../../public/test_data_2.json";
 import Section from "../components/layout/Section";
-import TableOptions from "../components/table/TableOptions";
 import TableFooter from "../components/table/TableFooter";
 import Chart from "../components/chart/Chart";
 import Selector from "../components/common/selector/Selector";
@@ -75,8 +73,7 @@ function Index() {
         </section>
         <Section>
           <h1>Forecast</h1>
-          <TableOptions></TableOptions>
-          <Table periods="daily" data={test_data as DataRow[]} />
+          <Table periods="daily" data={test_data.regular} />
           <TableFooter></TableFooter>
         </Section>
         <Section>
