@@ -183,10 +183,10 @@ export default function Table({ data }: TableProps) {
                       }
                       style={{
                         cursor: "pointer",
-                        backgroundColor: row.verifiedCells?.[column.day]
-                          ? "var(--verified-cell)"
-                          : row.modifiedCells?.[column.day]
-                            ? "var(--modified-cell)"
+                        backgroundColor: row.modifiedCells?.[column.day]
+                          ? "var(--modified-cell)"
+                          : row.verifiedCells?.[column.day]
+                            ? "var(--verified-cell)"
                             : "unset",
                       }}
                     >
