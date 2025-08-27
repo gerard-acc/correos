@@ -8,6 +8,7 @@ import {
   getNewExpandedParents,
   getCalculatedValue,
   buildColumns,
+  isObjectEmpty,
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
@@ -58,13 +59,56 @@ export default function Table({ data }: TableProps) {
   const updateCellValue = (rowIndex: number, column: string, value: string) => {
     const row = visibleRows[rowIndex];
     if (row.type === "child" && row.rowData) {
+      if (!row.customValues) row.customValues = {};
+      row.customValues[column] = parseFloat(value) || 0;
       row.rowData[column] = parseFloat(value) || 0;
+
+      if (!row.modifiedCells) row.modifiedCells = {};
+      row.modifiedCells[column] = true;
     } else if (row.type === "parent") {
       if (!row.customValues) row.customValues = {};
       row.customValues[column] = parseFloat(value) || 0;
+
+      if (!row.modifiedCells) row.modifiedCells = {};
+      row.modifiedCells[column] = true;
     }
+    row.status = calculateRowStatus(row);
+
     setNestedRows([...nestedRows]);
     setEditingCell(null);
+  };
+
+  const verifyCell = (rowIndex: number, column: string) => {
+    const row = visibleRows[rowIndex];
+
+    if (!row.modifiedCells?.[column]) {
+      console.log("Only modified cells can be verified");
+      return;
+    }
+    // TODO -> Ver qué quieren en back para validar la celda
+    console.log("Validate cell: ", rowIndex, column);
+
+    setTimeout(() => {
+      delete row.modifiedCells![column];
+
+      if (!row.verifiedCells) row.verifiedCells = {};
+      row.verifiedCells[column] = true;
+
+      row.status = calculateRowStatus(row);
+      setNestedRows([...nestedRows]);
+
+      console.log({ modified: row.modifiedCells, verified: row.verifiedCells });
+    }, 1000);
+  };
+
+  const calculateRowStatus = (row: RowStructure) => {
+    if (row.modifiedCells && !isObjectEmpty(row.modifiedCells)) {
+      return "presentModifications";
+    }
+    if (row.verifiedCells && !isObjectEmpty(row.verifiedCells)) {
+      return "allVerified";
+    }
+    return "noActivity";
   };
 
   return (
@@ -106,6 +150,7 @@ export default function Table({ data }: TableProps) {
                   style={{
                     paddingLeft: `${row.level * 20}px`,
                     cursor: row.type === "parent" ? "pointer" : "default",
+                    borderLeft: `4px solid ${row.status === "allVerified" ? "var(--verified-cell)" : row.status === "presentModifications" ? "var(--modified-cell)" : "unset"}`,
                   }}
                   onClick={
                     row.type === "parent" && row.key
@@ -131,8 +176,19 @@ export default function Table({ data }: TableProps) {
                   return (
                     <td
                       key={column.day}
-                      onClick={() => setEditingCell(cellKey)}
-                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        isVerifying
+                          ? verifyCell(index, column.day)
+                          : setEditingCell(cellKey)
+                      }
+                      style={{
+                        cursor: "pointer",
+                        backgroundColor: row.verifiedCells?.[column.day]
+                          ? "var(--verified-cell)"
+                          : row.modifiedCells?.[column.day]
+                            ? "var(--modified-cell)"
+                            : "unset",
+                      }}
                     >
                       {isEditing ? (
                         <input

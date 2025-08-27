@@ -96,6 +96,10 @@ export const getDayNumberFrom = (date: string) => {
   return date.split("/")[0];
 };
 
+export const isObjectEmpty = (object: any) => {
+  return Object.keys(object).length === 0;
+};
+
 export const getCalculatedValue = (
   day: string,
   row: RowStructure,

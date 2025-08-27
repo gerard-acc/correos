@@ -27,4 +27,7 @@ export interface RowStructure {
   rowData?: { [date: string]: number };
   parentKey?: string;
   customValues?: { [date: string]: number };
+  modifiedCells?: { [date: string]: boolean };
+  verifiedCells?: { [date: string]: boolean };
+  status?: "presentModifications" | "allVerified" | "noActivity";
 }

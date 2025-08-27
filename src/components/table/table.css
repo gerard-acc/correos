@@ -12,6 +12,8 @@
 table {
   --header-color: #423d47;
   --festivity-color: #726f73;
+  --modified-cell: #faedc8;
+  --verified-cell: #e5faf1;
   font-family: "OpenSans";
 }
 
