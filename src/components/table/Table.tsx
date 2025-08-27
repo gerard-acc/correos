@@ -1,6 +1,11 @@
 import "./table.css";
 import { useEffect, useState, useMemo } from "react";
-import type { ColumnStructure, RowStructure, TableProps } from "./interfaces";
+import type {
+  ColumnStructure,
+  MonthStructure,
+  RowStructure,
+  TableProps,
+} from "./interfaces";
 import {
   buildRows,
   getDayNumberFrom,
@@ -20,6 +25,17 @@ export default function Table({ data }: TableProps) {
     new Set(),
   );
   const [editingCell, setEditingCell] = useState<string | null>(null);
+
+  /** TODO - Construir esto en base al data recibido
+   * I refrescarlo cuando cambiamos un volumen en la tabla
+   *
+   * Fer algo semblant per les setmanes, hauré de fer algo per
+   * saber el número de la setmana a partir del dia, i ia
+   */
+  const monthsRow = [
+    { monthName: "Julio", monthNum: 9, days: 2, year: 2025, total: 3000 },
+    { monthName: "Agosto", monthNum: 10, days: 1, year: 2025, total: 200 },
+  ];
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -124,6 +140,14 @@ export default function Table({ data }: TableProps) {
         {isVerifying ? "Is being verifyied" : ""}
         <table>
           <thead>
+            <tr>
+              <td></td>
+              {monthsRow.map((month: MonthStructure) => (
+                <td colSpan={month.days}>
+                  {month.monthName} {month.year} Total: {month.total}
+                </td>
+              ))}
+            </tr>
             <tr>
               <td></td>
               {columns.map((column) => (

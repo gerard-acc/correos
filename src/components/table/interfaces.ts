@@ -31,3 +31,11 @@ export interface RowStructure {
   verifiedCells?: { [date: string]: boolean };
   status?: "presentModifications" | "allVerified" | "noActivity";
 }
+
+export interface MonthStructure {
+  monthName: string;
+  monthNum: number;
+  days: number;
+  year: number;
+  total?: number;
+}
