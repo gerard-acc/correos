@@ -102,6 +102,7 @@ export const isObjectEmpty = (object: any) => {
   return Object.keys(object).length === 0;
 };
 
+// TODO - Repasar esto, que me parece medio raro
 export const getCalculatedValue = (
   day: string,
   row: RowStructure,
@@ -125,6 +126,13 @@ export const getCalculatedValue = (
     }
     return acc;
   }, 0);
+
+  // Set the calculated value in the row's rowData property
+  if (!row.rowData) {
+    row.rowData = {};
+  }
+  row.rowData[day] = total;
+
   return total.toLocaleString();
 };
 
@@ -155,16 +163,64 @@ export const buildMonths = (data: DataStructure) => {
 
     const date = new Date(year, monthNumber - 1);
 
-    if (!months[monthNumber]) {
-      months[monthNumber] = {
+    const key = `${monthNumber}/${year}`;
+    if (!months[key]) {
+      months[key] = {
         monthNumber,
         monthName: format(date, "MMMM", { locale: es }),
         year,
         days: 0,
       };
     }
-    months[monthNumber].days = months[monthNumber].days + 1;
+    months[key].days = months[key].days + 1;
   }
 
   return months;
+};
+
+export const getMonthTotal = (month: string, allRows: RowStructure[]) => {
+  const monthNum = parseInt(month.split("/")[0]);
+  const year = parseInt(month.split("/")[1]);
+
+  let totalSum = 0;
+  for (const row of allRows) {
+    if (!row.rowData || row.level !== 0) continue;
+
+    let rowSum = 0;
+    for (const key in row.rowData) {
+      const keyMonth = parseInt(key.split("/")[1]);
+      const keyYear = parseInt(key.split("/")[2]);
+
+      const modifiedValue = row.customValues?.[key];
+      if (keyMonth === monthNum && keyYear === year) {
+        rowSum += modifiedValue || row.rowData[key];
+      }
+    }
+    totalSum += rowSum;
+  }
+
+  return totalSum;
+};
+
+export const getWeekTotal = (week: string, allRows: RowStructure[]) => {
+  const weekNum = parseInt(week);
+
+  let totalSum = 0;
+  for (const row of allRows) {
+    if (!row.rowData || row.level !== 0) continue;
+
+    let rowSum = 0;
+    for (const key in row.rowData) {
+      const date = parse(key, "dd/MM/yyyy", new Date());
+      const keyWeek = getISOWeek(date);
+
+      const modifiedValue = row.customValues?.[key];
+      if (keyWeek === weekNum) {
+        rowSum += modifiedValue || row.rowData[key];
+      }
+    }
+    totalSum += rowSum;
+  }
+
+  return totalSum;
 };

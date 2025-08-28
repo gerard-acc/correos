@@ -17,6 +17,8 @@ import {
   isObjectEmpty,
   buildWeeks,
   buildMonths,
+  getMonthTotal,
+  getWeekTotal,
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
@@ -151,7 +153,8 @@ export default function Table({ data }: TableProps) {
                 const current = monthsRow[month];
                 return (
                   <td colSpan={current.days}>
-                    {current.monthName} {current.year} Total: {current.total}
+                    {current.monthName} {current.year} Total:{" "}
+                    {getMonthTotal(month, nestedRows)}
                   </td>
                 );
               })}
@@ -162,7 +165,7 @@ export default function Table({ data }: TableProps) {
                 const current = weeksRow[parseInt(week)];
                 return (
                   <td colSpan={current.days}>
-                    Semana {week} Total: {current.total}
+                    Semana {week} Total: {getWeekTotal(week, nestedRows)}
                   </td>
                 );
               })}
