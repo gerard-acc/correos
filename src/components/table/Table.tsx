@@ -19,6 +19,7 @@ import {
   buildMonths,
   getMonthTotal,
   getWeekTotal,
+  getWeekWordays,
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
@@ -155,6 +156,17 @@ export default function Table({ data }: TableProps) {
                   <td colSpan={current.days}>
                     {current.monthName} {current.year} Total:{" "}
                     {getMonthTotal(month, nestedRows)}
+                  </td>
+                );
+              })}
+            </tr>
+            <tr className="workdaysRow">
+              <td></td>
+              {Object.keys(weeksRow).map((week) => {
+                const current = weeksRow[parseInt(week)];
+                return (
+                  <td colSpan={current.days}>
+                    Días laborables: {getWeekWordays(week, columns)}
                   </td>
                 );
               })}

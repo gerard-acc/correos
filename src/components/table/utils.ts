@@ -1,5 +1,9 @@
 import { es } from "date-fns/locale";
-import type { DataStructure, RowStructure } from "./interfaces";
+import type {
+  ColumnStructure,
+  DataStructure,
+  RowStructure,
+} from "./interfaces";
 import { format, getISOWeek, parse } from "date-fns";
 
 export const buildColumns = (data: DataStructure) => {
@@ -223,4 +227,21 @@ export const getWeekTotal = (week: string, allRows: RowStructure[]) => {
   }
 
   return totalSum;
+};
+
+export const getWeekWordays = (week: string, columns: ColumnStructure[]) => {
+  const weekNum = parseInt(week);
+
+  let totalWorkdays = 0;
+  
+  for (const column of columns) {
+    const date = parse(column.day, "dd/MM/yyyy", new Date());
+    const keyWeek = getISOWeek(date);
+    
+    if (keyWeek === weekNum && !column.isFestivity) {
+      totalWorkdays++;
+    }
+  }
+
+  return totalWorkdays;
 };

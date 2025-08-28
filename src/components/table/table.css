@@ -16,6 +16,7 @@ table {
   --verified-cell: #e5faf1;
   --month-color: #c9e1ff;
   --week-color: #ffe7c9;
+  --workday-color: #dbd9d7;
   font-family: "OpenSans";
 }
 
@@ -34,11 +35,24 @@ thead {
       background-color: white;
     }
   }
+
   & .monthRow {
     color: black;
     text-transform: capitalize;
     & td {
       background-color: var(--month-color);
+      padding: 8px;
+    }
+    & td:first-child {
+      background-color: white;
+    }
+  }
+
+  & .workdaysRow {
+    color: black;
+    text-transform: capitalize;
+    & td {
+      background-color: var(--workday-color);
       padding: 8px;
     }
     & td:first-child {
