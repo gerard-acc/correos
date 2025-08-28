@@ -1,6 +1,6 @@
 {
   "regular": {
-    "15/08/25": {
+    "15/08/2025": {
       "isFestivity": false,
       "rows": {
         "Santiago": {
@@ -21,7 +21,7 @@
         }
       }
     },
-    "16/08/25": {
+    "16/08/2025": {
       "isFestivity": false,
       "rows": {
         "Santiago": {
@@ -46,7 +46,7 @@
         }
       }
     },
-    "17/08/25": {
+    "17/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -71,7 +71,7 @@
         }
       }
     },
-    "18/08/25": {
+    "18/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -96,7 +96,7 @@
         }
       }
     },
-    "19/08/25": {
+    "19/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -121,7 +121,7 @@
         }
       }
     },
-    "20/08/25": {
+    "20/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -146,7 +146,7 @@
         }
       }
     },
-    "21/08/25": {
+    "21/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -171,7 +171,7 @@
         }
       }
     },
-    "22/08/25": {
+    "22/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -196,31 +196,7 @@
         }
       }
     },
-    "23/08/25": {
-      "isFestivity": true,
-      "rows": {
-        "Santiago": {
-          "rowParents": ["Noroeste"],
-          "volumen": 15
-        },
-        "Valladolid": {
-          "rowParents": ["Noroeste"],
-          "volumen": 25
-        },
-        "Oviedo": {
-          "rowParents": ["Noroeste"],
-          "volumen": 35
-        },
-        "Álaba": {
-          "rowParents": ["Norte", "Vitoria"],
-          "volumen": 3
-        },
-        "Hola": {
-          "rowParents": ["Norte"],
-          "volumen": 100
-        }
-      }
-    },"24/08/25": {
+    "23/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -245,7 +221,7 @@
         }
       }
     },
-    "25/08/25": {
+    "24/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -270,7 +246,7 @@
         }
       }
     },
-    "26/08/25": {
+    "25/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -295,7 +271,7 @@
         }
       }
     },
-    "27/08/25": {
+    "26/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -320,7 +296,7 @@
         }
       }
     },
-    "28/08/25": {
+    "27/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -345,7 +321,7 @@
         }
       }
     },
-    "29/08/25": {
+    "28/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -370,7 +346,7 @@
         }
       }
     },
-    "30/08/25": {
+    "29/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -395,7 +371,7 @@
         }
       }
     },
-    "31/08/25": {
+    "30/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -420,7 +396,7 @@
         }
       }
     },
-    "01/09/25": {
+    "31/08/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -444,7 +420,33 @@
           "volumen": 100
         }
       }
-    },"02/09/25": {
+    },
+    "01/09/2025": {
+      "isFestivity": true,
+      "rows": {
+        "Santiago": {
+          "rowParents": ["Noroeste"],
+          "volumen": 15
+        },
+        "Valladolid": {
+          "rowParents": ["Noroeste"],
+          "volumen": 25
+        },
+        "Oviedo": {
+          "rowParents": ["Noroeste"],
+          "volumen": 35
+        },
+        "Álaba": {
+          "rowParents": ["Norte", "Vitoria"],
+          "volumen": 3
+        },
+        "Hola": {
+          "rowParents": ["Norte"],
+          "volumen": 100
+        }
+      }
+    },
+    "02/09/2025": {
       "isFestivity": true,
       "rows": {
         "Santiago": {
@@ -471,7 +473,7 @@
     }
   },
   "complex": {
-    "15/08/25": {
+    "15/08/2025": {
       "Santiago": {
         "rowParents": ["Noroeste"],
         "subColumns": {
@@ -493,7 +495,7 @@
         "volumen": 1
       }
     },
-    "16/08/25": {
+    "16/08/2025": {
       "Santiago": {
         "rowParents": ["Noroeste"],
         "volumen": 12
@@ -515,7 +517,7 @@
         "volumen": 200
       }
     },
-    "17/08/25": {
+    "17/08/2025": {
       "Santiago": {
         "rowParents": ["Noroeste"],
         "volumen": 15

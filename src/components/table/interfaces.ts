@@ -33,15 +33,18 @@ export interface RowStructure {
 }
 
 export interface MonthStructure {
-  monthName: string;
-  monthNum: number;
-  days: number;
-  year: number;
-  total?: number;
+  [key: string]: {
+    monthNum: number;
+    monthName: string;
+    year: number;
+    days: number;
+    total?: number;
+  };
 }
 
 export interface WeekStructure {
-  weekNum: number;
-  days: number;
-  total?: number;
+  [key: number]: {
+    days: number;
+    total?: number;
+  };
 }

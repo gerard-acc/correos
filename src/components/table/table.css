@@ -14,12 +14,12 @@ table {
   --festivity-color: #726f73;
   --modified-cell: #faedc8;
   --verified-cell: #e5faf1;
-  --month-color: #C9E1FF;
-  --week-color: #FFE7C9;
+  --month-color: #c9e1ff;
+  --week-color: #ffe7c9;
   font-family: "OpenSans";
 }
 
-thead{
+thead {
   & tr {
     background-color: var(--header-color);
     color: white;
@@ -34,24 +34,25 @@ thead{
       background-color: white;
     }
   }
-  & .monthRow{
+  & .monthRow {
     color: black;
-    & td{
+    text-transform: capitalize;
+    & td {
       background-color: var(--month-color);
       padding: 8px;
     }
-    & td:first-child{
+    & td:first-child {
       background-color: white;
     }
   }
-  
-  & .weekRow{
+
+  & .weekRow {
     color: black;
-    & td{
+    & td {
       background-color: var(--week-color);
       padding: 8px;
     }
-    & td:first-child{
+    & td:first-child {
       background-color: white;
     }
   }

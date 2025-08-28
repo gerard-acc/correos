@@ -1,4 +1,6 @@
+import { es } from "date-fns/locale";
 import type { DataStructure, RowStructure } from "./interfaces";
+import { format, getISOWeek, parse } from "date-fns";
 
 export const buildColumns = (data: DataStructure) => {
   const columns = Object.keys(data).map((day) => {
@@ -124,4 +126,45 @@ export const getCalculatedValue = (
     return acc;
   }, 0);
   return total.toLocaleString();
+};
+
+export const buildWeeks = (data: DataStructure) => {
+  const weeks = {};
+
+  for (const day in data) {
+    const date = parse(day, "dd/MM/yyyy", new Date());
+    const weekNumber = getISOWeek(date);
+
+    if (!weeks[weekNumber]) {
+      weeks[weekNumber] = { days: 0 };
+    }
+    weeks[weekNumber].days = weeks[weekNumber].days + 1;
+  }
+
+  console.log(weeks);
+
+  return weeks;
+};
+
+export const buildMonths = (data: DataStructure) => {
+  const months = {};
+
+  for (const day in data) {
+    const monthNumber = parseInt(day.split("/")[1]);
+    const year = parseInt(day.split("/")[2]);
+
+    const date = new Date(year, monthNumber - 1);
+
+    if (!months[monthNumber]) {
+      months[monthNumber] = {
+        monthNumber,
+        monthName: format(date, "MMMM", { locale: es }),
+        year,
+        days: 0,
+      };
+    }
+    months[monthNumber].days = months[monthNumber].days + 1;
+  }
+
+  return months;
 };

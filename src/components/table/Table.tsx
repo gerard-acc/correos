@@ -15,11 +15,15 @@ import {
   getCalculatedValue,
   buildColumns,
   isObjectEmpty,
+  buildWeeks,
+  buildMonths,
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
 export default function Table({ data }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
+  const [weeksRow, setWeeksRow] = useState<WeekStructure>({});
+  const [monthsRow, setMonthsRow] = useState<MonthStructure>({});
   const [columns, setColumns] = useState<ColumnStructure[]>([]);
   const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
@@ -35,16 +39,6 @@ export default function Table({ data }: TableProps) {
    * Hi haurà el problema de les setmanes partides en dos mesos
    * Potser si ho faig a partir de l'objecte aquet no serà tant difícil
    */
-
-  const weeksRow = [
-    {weekNum: 31, days: 7, total: 200},
-    {weekNum: 32, days: 7, total: 300},
-    {weekNum: 33, days: 7, total: 400},
-  ]
-  const monthsRow = [
-    { monthName: "Julio", monthNum: 9, days: 17, year: 2025, total: 3000 },
-    { monthName: "Agosto", monthNum: 10, days: 30, year: 2025, total: 200 },
-  ];
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -75,6 +69,8 @@ export default function Table({ data }: TableProps) {
   useEffect(() => {
     setColumns(buildColumns(data));
     setNestedRows(buildRows(data));
+    setWeeksRow(buildWeeks(data));
+    setMonthsRow(buildMonths(data));
   }, [data]);
 
   const toggleParent = (toggledParent: string) => {
@@ -151,19 +147,25 @@ export default function Table({ data }: TableProps) {
           <thead>
             <tr className="monthRow">
               <td></td>
-              {monthsRow.map((month: MonthStructure) => (
-                <td colSpan={month.days}>
-                  {month.monthName} {month.year} Total: {month.total}
-                </td>
-              ))}
+              {Object.keys(monthsRow).map((month) => {
+                const current = monthsRow[month];
+                return (
+                  <td colSpan={current.days}>
+                    {current.monthName} {current.year} Total: {current.total}
+                  </td>
+                );
+              })}
             </tr>
             <tr className="weekRow">
               <td></td>
-              {weeksRow.map((week: WeekStructure) => (
-                <td colSpan={week.days}>
-                  Semana {week.weekNum} Total: {week.total}
-                </td>
-              ))}
+              {Object.keys(weeksRow).map((week) => {
+                const current = weeksRow[parseInt(week)];
+                return (
+                  <td colSpan={current.days}>
+                    Semana {week} Total: {current.total}
+                  </td>
+                );
+              })}
             </tr>
             <tr>
               <td></td>
