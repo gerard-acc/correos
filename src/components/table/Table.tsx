@@ -5,6 +5,7 @@ import type {
   MonthStructure,
   RowStructure,
   TableProps,
+  WeekStructure,
 } from "./interfaces";
 import {
   buildRows,
@@ -26,15 +27,23 @@ export default function Table({ data }: TableProps) {
   );
   const [editingCell, setEditingCell] = useState<string | null>(null);
 
-  /** TODO - Construir esto en base al data recibido
+  /** TODO - Construir weeksRow i monthsRow en base al data recibido
    * I refrescarlo cuando cambiamos un volumen en la tabla
    *
    * Fer algo semblant per les setmanes, hauré de fer algo per
    * saber el número de la setmana a partir del dia, i ia
+   * Hi haurà el problema de les setmanes partides en dos mesos
+   * Potser si ho faig a partir de l'objecte aquet no serà tant difícil
    */
+
+  const weeksRow = [
+    {weekNum: 31, days: 7, total: 200},
+    {weekNum: 32, days: 7, total: 300},
+    {weekNum: 33, days: 7, total: 400},
+  ]
   const monthsRow = [
-    { monthName: "Julio", monthNum: 9, days: 2, year: 2025, total: 3000 },
-    { monthName: "Agosto", monthNum: 10, days: 1, year: 2025, total: 200 },
+    { monthName: "Julio", monthNum: 9, days: 17, year: 2025, total: 3000 },
+    { monthName: "Agosto", monthNum: 10, days: 30, year: 2025, total: 200 },
   ];
 
   const visibleRows = useMemo(() => {
@@ -140,11 +149,19 @@ export default function Table({ data }: TableProps) {
         {isVerifying ? "Is being verifyied" : ""}
         <table>
           <thead>
-            <tr>
+            <tr className="monthRow">
               <td></td>
               {monthsRow.map((month: MonthStructure) => (
                 <td colSpan={month.days}>
                   {month.monthName} {month.year} Total: {month.total}
+                </td>
+              ))}
+            </tr>
+            <tr className="weekRow">
+              <td></td>
+              {weeksRow.map((week: WeekStructure) => (
+                <td colSpan={week.days}>
+                  Semana {week.weekNum} Total: {week.total}
                 </td>
               ))}
             </tr>

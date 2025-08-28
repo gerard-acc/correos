@@ -14,20 +14,46 @@ table {
   --festivity-color: #726f73;
   --modified-cell: #faedc8;
   --verified-cell: #e5faf1;
+  --month-color: #C9E1FF;
+  --week-color: #FFE7C9;
   font-family: "OpenSans";
 }
 
-thead tr {
-  background-color: var(--header-color);
-  color: white;
-  font-weight: 500;
-  text-align: left;
-  & td {
-    padding: 15px 8px;
-    min-width: 100px;
+thead{
+  & tr {
+    background-color: var(--header-color);
+    color: white;
+    font-weight: 500;
+    text-align: left;
+    & td {
+      padding: 15px 8px;
+      min-width: 100px;
+    }
+    & td:first-child {
+      min-width: 150px;
+      background-color: white;
+    }
   }
-  & td:first-child {
-    min-width: 150px;
+  & .monthRow{
+    color: black;
+    & td{
+      background-color: var(--month-color);
+      padding: 8px;
+    }
+    & td:first-child{
+      background-color: white;
+    }
+  }
+  
+  & .weekRow{
+    color: black;
+    & td{
+      background-color: var(--week-color);
+      padding: 8px;
+    }
+    & td:first-child{
+      background-color: white;
+    }
   }
 }
 

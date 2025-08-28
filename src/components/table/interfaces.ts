@@ -39,3 +39,9 @@ export interface MonthStructure {
   year: number;
   total?: number;
 }
+
+export interface WeekStructure {
+  weekNum: number;
+  days: number;
+  total?: number;
+}
