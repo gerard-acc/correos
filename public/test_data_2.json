@@ -5,19 +5,35 @@
       "rows": {
         "Santiago": {
           "rowParents": ["Noroeste"],
-          "volumen": 10
+          "volumen": {
+            "UAM": 20,
+            "Oficinas": 20,
+            "Distribuidas": 20
+          }
         },
         "Valladolid": {
           "rowParents": ["Noroeste"],
-          "volumen": 20
+          "volumen": {
+            "UAM": 20,
+            "Oficinas": 20,
+            "Distribuidas": 20
+          }
         },
         "Oviedo": {
           "rowParents": ["Noroeste"],
-          "volumen": 30
+          "volumen": {
+            "UAM": 20,
+            "Oficinas": 20,
+            "Distribuidas": 20
+          }
         },
         "Álaba": {
           "rowParents": ["Norte", "Vitoria"],
-          "volumen": 1
+          "volumen": {
+            "UAM": 20,
+            "Oficinas": 20,
+            "Distribuidas": 20
+          }
         }
       }
     },

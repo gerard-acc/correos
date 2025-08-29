@@ -1,10 +1,14 @@
+export interface SubColumn {
+  [key: string]: number;
+}
+
 export interface DataStructure {
   [date: string]: {
     isFestivity: boolean;
     rows: {
       [rowName: string]: {
         rowParents: string[];
-        volumen: number;
+        volumen: number | SubColumn;
       };
     };
   };
@@ -18,6 +22,7 @@ export interface TableProps {
 export interface ColumnStructure {
   day: string;
   isFestivity: boolean;
+  subColumns?: SubColumn;
 }
 export interface RowStructure {
   type: "parent" | "child";

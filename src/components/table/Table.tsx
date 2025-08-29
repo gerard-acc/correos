@@ -4,6 +4,7 @@ import type {
   ColumnStructure,
   MonthStructure,
   RowStructure,
+  SubColumn,
   TableProps,
   WeekStructure,
 } from "./interfaces";
@@ -20,6 +21,7 @@ import {
   getMonthTotal,
   getWeekTotal,
   getWeekWordays,
+  getSubcolumnsStructure,
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
@@ -27,6 +29,9 @@ export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [weeksRow, setWeeksRow] = useState<WeekStructure>({});
   const [monthsRow, setMonthsRow] = useState<MonthStructure>({});
+  const [subColumnsStructure, setSubColumnsStructure] = useState<
+    SubColumn | undefined
+  >(undefined);
   const [columns, setColumns] = useState<ColumnStructure[]>([]);
   const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
@@ -66,6 +71,10 @@ export default function Table({ data, periods }: TableProps) {
     setWeeksRow(buildWeeks(data));
     setMonthsRow(buildMonths(data));
   }, [data]);
+
+  useEffect(() => {
+    setSubColumnsStructure(getSubcolumnsStructure(columns));
+  }, [columns]);
 
   useEffect(() => {
     console.log("use", periods, "periods");
@@ -187,11 +196,26 @@ export default function Table({ data, periods }: TableProps) {
                       : "var(--header-color)",
                   }}
                   key={column.day}
+                  colSpan={
+                    subColumnsStructure
+                      ? Object.keys(subColumnsStructure).length
+                      : 1
+                  }
                 >
                   Día {getDayNumberFrom(column.day)}
                 </td>
               ))}
             </tr>
+            {subColumnsStructure && (
+              <tr>
+                <td></td>
+                {columns.map((column) => {
+                  return Object.keys(subColumnsStructure).map((key) => (
+                    <td key={key}>{key}</td>
+                  ));
+                })}
+              </tr>
+            )}
           </thead>
           <tbody>
             {visibleRows.map((row, index) => (

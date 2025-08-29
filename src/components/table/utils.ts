@@ -6,11 +6,38 @@ import type {
 } from "./interfaces";
 import { format, getISOWeek, parse } from "date-fns";
 
+const findInconsistenciesIn = (data: DataStructure) => {
+  // TODO - If there are subcolumns in the day, all rows need to have the same subcolumns
+};
+
 export const buildColumns = (data: DataStructure) => {
+  /**
+   * Aquí construim els dies, i el que necessito és que dintre els dies hi hagi
+   * columnes. És a dir, la columna final ja no és el dia, sino el volumen
+   */
   const columns = Object.keys(data).map((day) => {
-    return { day: day, isFestivity: data[day].isFestivity };
+    const column = {
+      day: day,
+      isFestivity: data[day].isFestivity,
+    };
+
+    const subColumns = Object.values(data[day].rows)[0].volumen;
+
+    if (typeof subColumns === "object") {
+      column.subColumns = subColumns;
+    }
+
+    return column;
   });
+
+  console.log({ columns });
+
   return columns;
+};
+
+export const getSubcolumnsStructure = (columns: ColumnStructure[]) => {
+  console.log({ columns });
+  return columns[0]?.subColumns;
 };
 
 export const buildRows = (data: DataStructure) => {
@@ -233,11 +260,11 @@ export const getWeekWordays = (week: string, columns: ColumnStructure[]) => {
   const weekNum = parseInt(week);
 
   let totalWorkdays = 0;
-  
+
   for (const column of columns) {
     const date = parse(column.day, "dd/MM/yyyy", new Date());
     const keyWeek = getISOWeek(date);
-    
+
     if (keyWeek === weekNum && !column.isFestivity) {
       totalWorkdays++;
     }
