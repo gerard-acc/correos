@@ -23,7 +23,7 @@ import {
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
-export default function Table({ data }: TableProps) {
+export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [weeksRow, setWeeksRow] = useState<WeekStructure>({});
   const [monthsRow, setMonthsRow] = useState<MonthStructure>({});
@@ -33,15 +33,6 @@ export default function Table({ data }: TableProps) {
     new Set(),
   );
   const [editingCell, setEditingCell] = useState<string | null>(null);
-
-  /** TODO - Construir weeksRow i monthsRow en base al data recibido
-   * I refrescarlo cuando cambiamos un volumen en la tabla
-   *
-   * Fer algo semblant per les setmanes, hauré de fer algo per
-   * saber el número de la setmana a partir del dia, i ia
-   * Hi haurà el problema de les setmanes partides en dos mesos
-   * Potser si ho faig a partir de l'objecte aquet no serà tant difícil
-   */
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -75,6 +66,10 @@ export default function Table({ data }: TableProps) {
     setWeeksRow(buildWeeks(data));
     setMonthsRow(buildMonths(data));
   }, [data]);
+
+  useEffect(() => {
+    console.log("use", periods, "periods");
+  }, [periods]);
 
   const toggleParent = (toggledParent: string) => {
     setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
