@@ -8,6 +8,7 @@ import { format, getISOWeek, parse } from "date-fns";
 
 const findInconsistenciesIn = (data: DataStructure) => {
   // TODO - If there are subcolumns in the day, all rows need to have the same subcolumns
+  // TODO - If there subcolumns for a day, all days need the same subcolumns
 };
 
 export const buildColumns = (data: DataStructure) => {
