@@ -250,6 +250,7 @@ function Cell({
 }: Cell) {
   const [editingCell, setEditingCell] = useState<string | null>(null);
 
+  console.log({ nestedRows });
   const updateCellValue = (
     rowIndex: number,
     column: string,
@@ -257,29 +258,36 @@ function Cell({
     subColumn?: string,
   ) => {
     const row = visibleRows[rowIndex];
-    const key = subColumn ? `${column}.${subColumn}` : column;
+    const key = column;
 
-    if (row.type === "child" && row.rowData) {
-      if (!row.rowData[column]) row.rowData[column] = {};
+    if (!row.rowData) return;
 
+    if (!row.rowData[column]) row.rowData[column] = {};
+    if (!row.customValues) row.customValues = {};
+    if (!row.modifiedCells) row.modifiedCells = {};
+
+    if (row.type === "child") {
       if (subColumn) {
         row.rowData[column][subColumn] = parseFloat(value) || 0;
       } else {
         row.rowData[column] = parseFloat(value) || 0;
       }
-
-      if (!row.modifiedCells) row.modifiedCells = {};
-      row.modifiedCells[key] = true;
     } else if (row.type === "parent") {
-      if (!row.customValues) row.customValues = {};
-
+      console.log("Modifying parent");
       if (subColumn) {
+        console.log({ subColumn });
+        if (!row.customValues[key]) row.customValues[key] = {};
         row.customValues[key][subColumn] = parseFloat(value) || 0;
       } else {
         row.customValues[key] = parseFloat(value) || 0;
       }
+    }
+    console.log({ customValues: row.customValues });
 
-      if (!row.modifiedCells) row.modifiedCells = {};
+    if (subColumn) {
+      if (!row.modifiedCells[key]) row.modifiedCells[key] = {};
+      row.modifiedCells[key][subColumn] = true;
+    } else {
       row.modifiedCells[key] = true;
     }
     row.status = calculateRowStatus(row);

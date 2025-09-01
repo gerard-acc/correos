@@ -3,6 +3,7 @@ import type {
   ColumnStructure,
   DataStructure,
   RowStructure,
+  SubColumn,
 } from "./interfaces";
 import { format, getISOWeek, parse } from "date-fns";
 
@@ -47,7 +48,7 @@ export const buildRows = (data: DataStructure) => {
   const processedParents = new Set<string>();
   const allRows = new Map<
     string,
-    { rowParents: string[]; data: { [date: string]: number } }
+    { rowParents: string[]; data: { [date: string]: number | SubColumn } }
   >();
 
   // Primero guardamos todas las filas finales, las que no son desplegables, con su valor, en allRows
@@ -81,6 +82,7 @@ export const buildRows = (data: DataStructure) => {
       }
     });
 
+    console.log(rowInfo.data);
     // Metemos dentro del desplegable correcto cada row final
     rowStructure.push({
       type: "child",
@@ -123,8 +125,6 @@ export const getValueFor = (
   rowData: { [date: string]: number } | undefined,
   subColumn?: string,
 ) => {
-  console.log({ day, rowData });
-
   if (!rowData || !rowData[day]) return "";
   if (subColumn) {
     return rowData[day][subColumn];
@@ -141,55 +141,75 @@ export const isObjectEmpty = (object: any) => {
   return Object.keys(object).length === 0;
 };
 
-// TODO - Repasar esto, que me parece medio raro
 export const getCalculatedValue = (
   day: string,
   row: RowStructure,
   allRows: RowStructure[],
   subColumn?: string,
 ) => {
-  if (row.type === "child") return "";
-
-  // If parent has custom value, use it instead of calculated
-  if (row.customValues && row.customValues[day] !== undefined) {
-    return row.customValues[day].toLocaleString();
-  }
-
-  // Necesitamos sumar todas las filas hijas que cuelgan de este padre
-  const childRows = allRows.filter(
-    (r) =>
-      r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
-  );
-  const total = childRows.reduce((acc, current) => {
-    if (current.rowData && current.rowData[day]) {
-      // If subColumn is specified, use it to access nested data
-      if (subColumn && typeof current.rowData[day] === 'object' && current.rowData[day][subColumn] !== undefined) {
-        return acc + current.rowData[day][subColumn];
-      }
-      // Otherwise use the direct value (but only if no subColumn is specified or if the data is a number)
-      if (!subColumn && typeof current.rowData[day] === 'number') {
-        return acc + current.rowData[day];
-      }
-    }
-    return acc;
-  }, 0);
-
-  // Set the calculated value in the row's rowData property
-  if (!row.rowData) {
-    row.rowData = {};
-  }
-  
-  // Store the calculated value, considering subColumn if specified
   if (subColumn) {
-    if (typeof row.rowData[day] !== 'object' || row.rowData[day] === null) {
-      row.rowData[day] = {};
+    if (
+      row.customValues &&
+      row.customValues[day] !== undefined &&
+      row.customValues[day][subColumn] !== undefined
+    ) {
+      return row.customValues[day][subColumn].toLocaleString();
     }
-    row.rowData[day][subColumn] = total;
-  } else {
-    row.rowData[day] = total;
-  }
 
-  return total.toLocaleString();
+    console.log({ allRows });
+    const childRows = allRows.filter(
+      (r) =>
+        r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+    );
+    const total = childRows.reduce((acc, current) => {
+      if (current.rowData && current.rowData[day]) {
+        const value = current.rowData[day];
+        if (typeof value === 'object' && value[subColumn] !== undefined) {
+          return acc + value[subColumn];
+        }
+      }
+      return acc;
+    }, 0);
+
+    if (!row.rowData) row.rowData = {};
+    if (typeof row.rowData[day] !== 'object') row.rowData[day] = {};
+    (row.rowData[day] as SubColumn)[subColumn] = total;
+
+    return total.toLocaleString();
+  } else {
+    // If parent has custom value, use it instead of calculated
+    if (row.customValues && row.customValues[day] !== undefined) {
+      return row.customValues[day].toLocaleString();
+    }
+
+    // Necesitamos sumar todas las filas hijas que cuelgan de este padre
+    const childRows = allRows.filter(
+      (r) =>
+        r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+    );
+    const total = childRows.reduce((acc, current) => {
+      if (current.rowData && current.rowData[day]) {
+        const value = current.rowData[day];
+        if (typeof value === 'number') {
+          return acc + value;
+        } else if (typeof value === 'object') {
+          // Sum all subcolumn values when dealing with objects
+          return acc + Object.values(value).reduce((sum, subVal) => sum + subVal, 0);
+        }
+      }
+      return acc;
+    }, 0);
+
+    // Set the calculated value in the row's rowData property
+    if (!row.rowData) {
+      row.rowData = {};
+    }
+
+    // Store the calculated value, considering subColumn if specified
+    row.rowData[day] = total;
+
+    return total.toLocaleString();
+  }
 };
 
 export const buildWeeks = (data: DataStructure) => {

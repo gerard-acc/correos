@@ -29,7 +29,7 @@ export interface RowStructure {
   name: string;
   level: number;
   key?: string;
-  rowData?: { [date: string]: number };
+  rowData?: { [date: string]: number | SubColumn };
   parentKey?: string;
   customValues?: { [date: string]: number };
   modifiedCells?: { [date: string]: boolean };
