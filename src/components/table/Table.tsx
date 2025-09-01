@@ -25,6 +25,17 @@ import {
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 
+interface Cell {
+  index: number;
+  column: ColumnStructure;
+  row: RowStructure;
+  visibleRows: RowStructure[];
+  nestedRows: RowStructure[];
+  subColumn?: string;
+  isVerifying: boolean;
+  updateRows: () => void;
+}
+
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [weeksRow, setWeeksRow] = useState<WeekStructure>({});
@@ -37,7 +48,6 @@ export default function Table({ data, periods }: TableProps) {
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
   );
-  const [editingCell, setEditingCell] = useState<string | null>(null);
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -84,61 +94,6 @@ export default function Table({ data, periods }: TableProps) {
     setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
   };
 
-  const updateCellValue = (rowIndex: number, column: string, value: string) => {
-    const row = visibleRows[rowIndex];
-    if (row.type === "child" && row.rowData) {
-      if (!row.customValues) row.customValues = {};
-      row.customValues[column] = parseFloat(value) || 0;
-      row.rowData[column] = parseFloat(value) || 0;
-
-      if (!row.modifiedCells) row.modifiedCells = {};
-      row.modifiedCells[column] = true;
-    } else if (row.type === "parent") {
-      if (!row.customValues) row.customValues = {};
-      row.customValues[column] = parseFloat(value) || 0;
-
-      if (!row.modifiedCells) row.modifiedCells = {};
-      row.modifiedCells[column] = true;
-    }
-    row.status = calculateRowStatus(row);
-
-    setNestedRows([...nestedRows]);
-    setEditingCell(null);
-  };
-
-  const verifyCell = (rowIndex: number, column: string) => {
-    const row = visibleRows[rowIndex];
-
-    if (!row.modifiedCells?.[column]) {
-      console.log("Only modified cells can be verified");
-      return;
-    }
-    // TODO -> Ver qué quieren en back para validar la celda
-    console.log("Validate cell: ", rowIndex, column);
-
-    setTimeout(() => {
-      delete row.modifiedCells![column];
-
-      if (!row.verifiedCells) row.verifiedCells = {};
-      row.verifiedCells[column] = true;
-
-      row.status = calculateRowStatus(row);
-      setNestedRows([...nestedRows]);
-
-      console.log({ modified: row.modifiedCells, verified: row.verifiedCells });
-    }, 1000);
-  };
-
-  const calculateRowStatus = (row: RowStructure) => {
-    if (row.modifiedCells && !isObjectEmpty(row.modifiedCells)) {
-      return "presentModifications";
-    }
-    if (row.verifiedCells && !isObjectEmpty(row.verifiedCells)) {
-      return "allVerified";
-    }
-    return "noActivity";
-  };
-
   return (
     <>
       <div className="tableOptions">
@@ -149,7 +104,6 @@ export default function Table({ data, periods }: TableProps) {
         <button>Descargar</button>
       </div>
       <div className="tableContainer">
-        {isVerifying ? "Is being verifyied" : ""}
         <table>
           <thead>
             <tr className="monthRow">
@@ -242,65 +196,158 @@ export default function Table({ data, periods }: TableProps) {
                   )}
                   {row.name}
                 </td>
-                {columns.map((column) => {
-                  const cellKey = `${index}-${column.day}`;
-                  const isEditing = editingCell === cellKey;
-                  const currentValue =
-                    row.type === "child"
-                      ? getValueFor(column.day, row.rowData)
-                      : getCalculatedValue(column.day, row, nestedRows);
 
-                  return (
-                    <td
-                      key={column.day}
-                      onClick={() =>
-                        isVerifying
-                          ? verifyCell(index, column.day)
-                          : setEditingCell(cellKey)
-                      }
-                      style={{
-                        cursor: "pointer",
-                        backgroundColor: row.modifiedCells?.[column.day]
-                          ? "var(--modified-cell)"
-                          : row.verifiedCells?.[column.day]
-                            ? "var(--verified-cell)"
-                            : "unset",
+                {columns.map((column) =>
+                  subColumnsStructure ? (
+                    Object.keys(subColumnsStructure).map((key) => (
+                      <Cell
+                        key={`${column.day}-${key}-${index}`}
+                        index={index}
+                        column={column}
+                        row={row}
+                        isVerifying={isVerifying}
+                        visibleRows={visibleRows}
+                        nestedRows={nestedRows}
+                        subColumn={key}
+                        updateRows={() => {
+                          setNestedRows([...nestedRows]);
+                        }}
+                      />
+                    ))
+                  ) : (
+                    <Cell
+                      key={`${column.day}-${index}`}
+                      index={index}
+                      column={column}
+                      row={row}
+                      isVerifying={isVerifying}
+                      visibleRows={visibleRows}
+                      nestedRows={nestedRows}
+                      updateRows={() => {
+                        setNestedRows([...nestedRows]);
                       }}
-                    >
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          defaultValue={currentValue.replace(/,/g, "")}
-                          onBlur={(e) =>
-                            updateCellValue(index, column.day, e.target.value)
-                          }
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter")
-                              updateCellValue(
-                                index,
-                                column.day,
-                                e.currentTarget.value,
-                              );
-                            if (e.key === "Escape") setEditingCell(null);
-                          }}
-                          autoFocus
-                          style={{
-                            width: "100%",
-                            border: "1px solid #ccc",
-                            padding: "2px",
-                          }}
-                        />
-                      ) : (
-                        currentValue
-                      )}
-                    </td>
-                  );
-                })}
+                    />
+                  ),
+                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </>
+  );
+}
+
+function Cell({
+  index,
+  column,
+  row,
+  isVerifying,
+  visibleRows,
+  nestedRows,
+  subColumn,
+  updateRows,
+}: Cell) {
+  const [editingCell, setEditingCell] = useState<string | null>(null);
+
+  const updateCellValue = (rowIndex: number, column: string, value: string) => {
+    const row = visibleRows[rowIndex];
+    if (row.type === "child" && row.rowData) {
+      if (!row.customValues) row.customValues = {};
+      row.customValues[column] = parseFloat(value) || 0;
+      row.rowData[column] = parseFloat(value) || 0;
+
+      if (!row.modifiedCells) row.modifiedCells = {};
+      row.modifiedCells[column] = true;
+    } else if (row.type === "parent") {
+      if (!row.customValues) row.customValues = {};
+      row.customValues[column] = parseFloat(value) || 0;
+
+      if (!row.modifiedCells) row.modifiedCells = {};
+      row.modifiedCells[column] = true;
+    }
+    row.status = calculateRowStatus(row);
+
+    updateRows();
+    setEditingCell(null);
+  };
+
+  const verifyCell = (rowIndex: number, column: string) => {
+    const row = visibleRows[rowIndex];
+
+    if (!row.modifiedCells?.[column]) {
+      console.log("Only modified cells can be verified");
+      return;
+    }
+    // TODO -> Ver qué quieren en back para validar la celda
+    console.log("Validate cell: ", rowIndex, column);
+
+    setTimeout(() => {
+      delete row.modifiedCells![column];
+
+      if (!row.verifiedCells) row.verifiedCells = {};
+      row.verifiedCells[column] = true;
+
+      row.status = calculateRowStatus(row);
+
+      updateRows();
+
+      console.log({ modified: row.modifiedCells, verified: row.verifiedCells });
+    }, 1000);
+  };
+
+  const calculateRowStatus = (row: RowStructure) => {
+    if (row.modifiedCells && !isObjectEmpty(row.modifiedCells)) {
+      return "presentModifications";
+    }
+    if (row.verifiedCells && !isObjectEmpty(row.verifiedCells)) {
+      return "allVerified";
+    }
+    return "noActivity";
+  };
+
+  const cellKey = `${index}-${column.day}`;
+  const isEditing = editingCell === cellKey;
+  const currentValue =
+    row.type === "child"
+      ? getValueFor(column.day, row.rowData, subColumn)
+      : getCalculatedValue(column.day, row, nestedRows, subColumn);
+
+  return (
+    <td
+      key={column.day}
+      onClick={() =>
+        isVerifying ? verifyCell(index, column.day) : setEditingCell(cellKey)
+      }
+      style={{
+        cursor: "pointer",
+        backgroundColor: row.modifiedCells?.[column.day]
+          ? "var(--modified-cell)"
+          : row.verifiedCells?.[column.day]
+            ? "var(--verified-cell)"
+            : "unset",
+      }}
+    >
+      {isEditing ? (
+        <input
+          type="text"
+          defaultValue={currentValue && currentValue.replace(/,/g, "")}
+          onBlur={(e) => updateCellValue(index, column.day, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter")
+              updateCellValue(index, column.day, e.currentTarget.value);
+            if (e.key === "Escape") setEditingCell(null);
+          }}
+          autoFocus
+          style={{
+            width: "100%",
+            border: "1px solid #ccc",
+            padding: "2px",
+          }}
+        />
+      ) : (
+        currentValue
+      )}
+    </td>
   );
 }

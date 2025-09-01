@@ -121,9 +121,16 @@ export const getNewExpandedParents = (
 export const getValueFor = (
   day: string,
   rowData: { [date: string]: number } | undefined,
+  subColumn?: string,
 ) => {
+  console.log({ day, rowData });
+
   if (!rowData || !rowData[day]) return "";
-  return rowData[day].toLocaleString();
+  if (subColumn) {
+    return rowData[day][subColumn];
+  } else {
+    return rowData[day].toLocaleString();
+  }
 };
 
 export const getDayNumberFrom = (date: string) => {
@@ -139,6 +146,7 @@ export const getCalculatedValue = (
   day: string,
   row: RowStructure,
   allRows: RowStructure[],
+  subColumn?: string,
 ) => {
   if (row.type === "child") return "";
 
@@ -154,7 +162,14 @@ export const getCalculatedValue = (
   );
   const total = childRows.reduce((acc, current) => {
     if (current.rowData && current.rowData[day]) {
-      return acc + current.rowData[day];
+      // If subColumn is specified, use it to access nested data
+      if (subColumn && typeof current.rowData[day] === 'object' && current.rowData[day][subColumn] !== undefined) {
+        return acc + current.rowData[day][subColumn];
+      }
+      // Otherwise use the direct value (but only if no subColumn is specified or if the data is a number)
+      if (!subColumn && typeof current.rowData[day] === 'number') {
+        return acc + current.rowData[day];
+      }
     }
     return acc;
   }, 0);
@@ -163,7 +178,16 @@ export const getCalculatedValue = (
   if (!row.rowData) {
     row.rowData = {};
   }
-  row.rowData[day] = total;
+  
+  // Store the calculated value, considering subColumn if specified
+  if (subColumn) {
+    if (typeof row.rowData[day] !== 'object' || row.rowData[day] === null) {
+      row.rowData[day] = {};
+    }
+    row.rowData[day][subColumn] = total;
+  } else {
+    row.rowData[day] = total;
+  }
 
   return total.toLocaleString();
 };
