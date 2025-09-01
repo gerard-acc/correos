@@ -269,7 +269,16 @@ export const getMonthTotal = (month: string, allRows: RowStructure[]) => {
 
       const modifiedValue = row.customValues?.[key];
       if (keyMonth === monthNum && keyYear === year) {
-        rowSum += modifiedValue || row.rowData[key];
+        if (modifiedValue !== undefined) {
+          rowSum += modifiedValue;
+        } else {
+          const value = row.rowData[key];
+          if (typeof value === 'number') {
+            rowSum += value;
+          } else if (typeof value === 'object') {
+            rowSum += Object.values(value).reduce((sum, subVal) => sum + subVal, 0);
+          }
+        }
       }
     }
     totalSum += rowSum;
@@ -292,7 +301,16 @@ export const getWeekTotal = (week: string, allRows: RowStructure[]) => {
 
       const modifiedValue = row.customValues?.[key];
       if (keyWeek === weekNum) {
-        rowSum += modifiedValue || row.rowData[key];
+        if (modifiedValue !== undefined) {
+          rowSum += modifiedValue;
+        } else {
+          const value = row.rowData[key];
+          if (typeof value === 'number') {
+            rowSum += value;
+          } else if (typeof value === 'object') {
+            rowSum += Object.values(value).reduce((sum, subVal) => sum + subVal, 0);
+          }
+        }
       }
     }
     totalSum += rowSum;
