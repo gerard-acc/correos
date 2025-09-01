@@ -250,21 +250,37 @@ function Cell({
 }: Cell) {
   const [editingCell, setEditingCell] = useState<string | null>(null);
 
-  const updateCellValue = (rowIndex: number, column: string, value: string) => {
+  const updateCellValue = (
+    rowIndex: number,
+    column: string,
+    value: string,
+    subColumn?: string,
+  ) => {
     const row = visibleRows[rowIndex];
+    const key = subColumn ? `${column}.${subColumn}` : column;
+
     if (row.type === "child" && row.rowData) {
-      if (!row.customValues) row.customValues = {};
-      row.customValues[column] = parseFloat(value) || 0;
-      row.rowData[column] = parseFloat(value) || 0;
+      if (!row.rowData[column]) row.rowData[column] = {};
+
+      if (subColumn) {
+        row.rowData[column][subColumn] = parseFloat(value) || 0;
+      } else {
+        row.rowData[column] = parseFloat(value) || 0;
+      }
 
       if (!row.modifiedCells) row.modifiedCells = {};
-      row.modifiedCells[column] = true;
+      row.modifiedCells[key] = true;
     } else if (row.type === "parent") {
       if (!row.customValues) row.customValues = {};
-      row.customValues[column] = parseFloat(value) || 0;
+
+      if (subColumn) {
+        row.customValues[key][subColumn] = parseFloat(value) || 0;
+      } else {
+        row.customValues[key] = parseFloat(value) || 0;
+      }
 
       if (!row.modifiedCells) row.modifiedCells = {};
-      row.modifiedCells[column] = true;
+      row.modifiedCells[key] = true;
     }
     row.status = calculateRowStatus(row);
 
@@ -331,11 +347,18 @@ function Cell({
       {isEditing ? (
         <input
           type="text"
-          defaultValue={currentValue && currentValue.replace(/,/g, "")}
-          onBlur={(e) => updateCellValue(index, column.day, e.target.value)}
+          defaultValue={currentValue}
+          onBlur={(e) =>
+            updateCellValue(index, column.day, e.target.value, subColumn)
+          }
           onKeyDown={(e) => {
             if (e.key === "Enter")
-              updateCellValue(index, column.day, e.currentTarget.value);
+              updateCellValue(
+                index,
+                column.day,
+                e.currentTarget.value,
+                subColumn,
+              );
             if (e.key === "Escape") setEditingCell(null);
           }}
           autoFocus
