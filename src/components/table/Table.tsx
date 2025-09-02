@@ -111,7 +111,14 @@ export default function Table({ data, periods }: TableProps) {
               {Object.keys(monthsRow).map((month) => {
                 const current = monthsRow[month];
                 return (
-                  <td colSpan={current.days}>
+                  <td
+                    colSpan={
+                      subColumnsStructure
+                        ? current.days * Object.keys(subColumnsStructure).length
+                        : current.days
+                    }
+                    key={month}
+                  >
                     {current.monthName} {current.year} Total:{" "}
                     {getMonthTotal(month, nestedRows)}
                   </td>
@@ -123,7 +130,14 @@ export default function Table({ data, periods }: TableProps) {
               {Object.keys(weeksRow).map((week) => {
                 const current = weeksRow[parseInt(week)];
                 return (
-                  <td colSpan={current.days}>
+                  <td
+                    colSpan={
+                      subColumnsStructure
+                        ? current.days * Object.keys(subColumnsStructure).length
+                        : current.days
+                    }
+                    key={week}
+                  >
                     Días laborables: {getWeekWordays(week, columns)}
                   </td>
                 );
@@ -134,7 +148,14 @@ export default function Table({ data, periods }: TableProps) {
               {Object.keys(weeksRow).map((week) => {
                 const current = weeksRow[parseInt(week)];
                 return (
-                  <td colSpan={current.days}>
+                  <td
+                    colSpan={
+                      subColumnsStructure
+                        ? current.days * Object.keys(subColumnsStructure).length
+                        : current.days
+                    }
+                    key={week}
+                  >
                     Semana {week} Total: {getWeekTotal(week, nestedRows)}
                   </td>
                 );
