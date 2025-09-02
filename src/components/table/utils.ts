@@ -156,7 +156,6 @@ export const getCalculatedValue = (
       return row.customValues[day][subColumn].toLocaleString();
     }
 
-    console.log({ allRows });
     const childRows = allRows.filter(
       (r) =>
         r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
@@ -164,7 +163,7 @@ export const getCalculatedValue = (
     const total = childRows.reduce((acc, current) => {
       if (current.rowData && current.rowData[day]) {
         const value = current.rowData[day];
-        if (typeof value === 'object' && value[subColumn] !== undefined) {
+        if (typeof value === "object" && value[subColumn] !== undefined) {
           return acc + value[subColumn];
         }
       }
@@ -172,7 +171,7 @@ export const getCalculatedValue = (
     }, 0);
 
     if (!row.rowData) row.rowData = {};
-    if (typeof row.rowData[day] !== 'object') row.rowData[day] = {};
+    if (typeof row.rowData[day] !== "object") row.rowData[day] = {};
     (row.rowData[day] as SubColumn)[subColumn] = total;
 
     return total.toLocaleString();
@@ -190,11 +189,13 @@ export const getCalculatedValue = (
     const total = childRows.reduce((acc, current) => {
       if (current.rowData && current.rowData[day]) {
         const value = current.rowData[day];
-        if (typeof value === 'number') {
+        if (typeof value === "number") {
           return acc + value;
-        } else if (typeof value === 'object') {
+        } else if (typeof value === "object") {
           // Sum all subcolumn values when dealing with objects
-          return acc + Object.values(value).reduce((sum, subVal) => sum + subVal, 0);
+          return (
+            acc + Object.values(value).reduce((sum, subVal) => sum + subVal, 0)
+          );
         }
       }
       return acc;
@@ -270,13 +271,23 @@ export const getMonthTotal = (month: string, allRows: RowStructure[]) => {
       const modifiedValue = row.customValues?.[key];
       if (keyMonth === monthNum && keyYear === year) {
         if (modifiedValue !== undefined) {
-          rowSum += modifiedValue;
+          if (typeof modifiedValue === "number") {
+            rowSum += modifiedValue;
+          } else if (typeof modifiedValue === "object") {
+            rowSum += Object.values(modifiedValue).reduce(
+              (sum, subVal) => sum + subVal,
+              0,
+            );
+          }
         } else {
           const value = row.rowData[key];
-          if (typeof value === 'number') {
+          if (typeof value === "number") {
             rowSum += value;
-          } else if (typeof value === 'object') {
-            rowSum += Object.values(value).reduce((sum, subVal) => sum + subVal, 0);
+          } else if (typeof value === "object") {
+            rowSum += Object.values(value).reduce(
+              (sum, subVal) => sum + subVal,
+              0,
+            );
           }
         }
       }
@@ -302,13 +313,23 @@ export const getWeekTotal = (week: string, allRows: RowStructure[]) => {
       const modifiedValue = row.customValues?.[key];
       if (keyWeek === weekNum) {
         if (modifiedValue !== undefined) {
-          rowSum += modifiedValue;
+          if (typeof modifiedValue === "number") {
+            rowSum += modifiedValue;
+          } else if (typeof modifiedValue === "object") {
+            rowSum += Object.values(modifiedValue).reduce(
+              (sum, subVal) => sum + subVal,
+              0,
+            );
+          }
         } else {
           const value = row.rowData[key];
-          if (typeof value === 'number') {
+          if (typeof value === "number") {
             rowSum += value;
-          } else if (typeof value === 'object') {
-            rowSum += Object.values(value).reduce((sum, subVal) => sum + subVal, 0);
+          } else if (typeof value === "object") {
+            rowSum += Object.values(value).reduce(
+              (sum, subVal) => sum + subVal,
+              0,
+            );
           }
         }
       }

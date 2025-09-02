@@ -250,7 +250,6 @@ function Cell({
 }: Cell) {
   const [editingCell, setEditingCell] = useState<string | null>(null);
 
-  console.log({ nestedRows });
   const updateCellValue = (
     rowIndex: number,
     column: string,
