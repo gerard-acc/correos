@@ -29,11 +29,11 @@ export interface RowStructure {
   name: string;
   level: number;
   key?: string;
-  rowData?: { [date: string]: number | SubColumn };
   parentKey?: string;
-  customValues?: { [date: string]: number };
-  modifiedCells?: { [date: string]: boolean };
-  verifiedCells?: { [date: string]: boolean };
+  rowData?: { [date: string]: number | SubColumn };
+  customValues?: { [date: string]: number | SubColumn };
+  modifiedCells?: { [date: string]: boolean | { [key: string]: boolean } };
+  verifiedCells?: { [date: string]: boolean | { [key: string]: boolean } };
   status?: "presentModifications" | "allVerified" | "noActivity";
 }
 

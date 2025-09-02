@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { ColumnStructure, RowStructure } from "./interfaces";
 import { getCalculatedValue, getValueFor, isObjectEmpty } from "./utils";
 
-interface Cell {
+interface TableCell {
   index: number;
   column: ColumnStructure;
   row: RowStructure;
@@ -22,7 +22,7 @@ export default function TableCell({
   nestedRows,
   subColumn,
   updateRows,
-}: Cell) {
+}: TableCell) {
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [cellStatus, setCellStatus] = useState<
     "noActivity" | "modified" | "verified"

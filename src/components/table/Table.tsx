@@ -2,31 +2,23 @@ import "./table.css";
 import { useEffect, useState, useMemo } from "react";
 import type {
   ColumnStructure,
-  MonthStructure,
   RowStructure,
   SubColumn,
   TableProps,
-  WeekStructure,
 } from "./interfaces";
 import {
   buildRows,
   getDayNumberFrom,
   getNewExpandedParents,
   buildColumns,
-  buildWeeks,
-  buildMonths,
-  getMonthTotal,
-  getWeekTotal,
-  getWeekWordays,
   getSubcolumnsStructure,
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 import TableCell from "./TableCell";
+import TableTimelines from "./TableTimelines";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
-  const [weeksRow, setWeeksRow] = useState<WeekStructure>({});
-  const [monthsRow, setMonthsRow] = useState<MonthStructure>({});
   const [subColumnsStructure, setSubColumnsStructure] = useState<
     SubColumn | undefined
   >(undefined);
@@ -65,8 +57,6 @@ export default function Table({ data, periods }: TableProps) {
   useEffect(() => {
     setColumns(buildColumns(data));
     setNestedRows(buildRows(data));
-    setWeeksRow(buildWeeks(data));
-    setMonthsRow(buildMonths(data));
   }, [data]);
 
   useEffect(() => {
@@ -93,61 +83,12 @@ export default function Table({ data, periods }: TableProps) {
       <div className="tableContainer">
         <table>
           <thead>
-            <tr className="monthRow">
-              <td></td>
-              {Object.keys(monthsRow).map((month) => {
-                const current = monthsRow[month];
-                return (
-                  <td
-                    colSpan={
-                      subColumnsStructure
-                        ? current.days * Object.keys(subColumnsStructure).length
-                        : current.days
-                    }
-                    key={month}
-                  >
-                    {current.monthName} {current.year} Total:{" "}
-                    {getMonthTotal(month, nestedRows)}
-                  </td>
-                );
-              })}
-            </tr>
-            <tr className="workdaysRow">
-              <td></td>
-              {Object.keys(weeksRow).map((week) => {
-                const current = weeksRow[parseInt(week)];
-                return (
-                  <td
-                    colSpan={
-                      subColumnsStructure
-                        ? current.days * Object.keys(subColumnsStructure).length
-                        : current.days
-                    }
-                    key={week}
-                  >
-                    Días laborables: {getWeekWordays(week, columns)}
-                  </td>
-                );
-              })}
-            </tr>
-            <tr className="weekRow">
-              <td></td>
-              {Object.keys(weeksRow).map((week) => {
-                const current = weeksRow[parseInt(week)];
-                return (
-                  <td
-                    colSpan={
-                      subColumnsStructure
-                        ? current.days * Object.keys(subColumnsStructure).length
-                        : current.days
-                    }
-                    key={week}
-                  >
-                    Semana {week} Total: {getWeekTotal(week, nestedRows)}
-                  </td>
-                );
-              })}
-            </tr>
+            <TableTimelines
+              data={data}
+              subcolumnsStructure={subColumnsStructure}
+              nestedRows={nestedRows}
+              columns={columns}
+            ></TableTimelines>
             <tr>
               <td></td>
               {columns.map((column) => (
