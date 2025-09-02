@@ -274,6 +274,34 @@ function Cell({
     "noActivity" | "modified" | "verified"
   >("noActivity");
 
+  useEffect(() => {
+    if (subColumn) {
+      if (
+        row.modifiedCells &&
+        row.modifiedCells[column.day] &&
+        row.modifiedCells[column.day][subColumn]
+      ) {
+        setCellStatus("modified");
+      } else if (
+        row.verifiedCells &&
+        row.verifiedCells[column.day] &&
+        row.verifiedCells[column.day][subColumn]
+      ) {
+        setCellStatus("verified");
+      } else {
+        setCellStatus("noActivity");
+      }
+      return;
+    }
+    if (row.modifiedCells && row.modifiedCells[column.day]) {
+      setCellStatus("modified");
+    } else if (row.verifiedCells && row.verifiedCells[column.day]) {
+      setCellStatus("verified");
+    } else {
+      setCellStatus("noActivity");
+    }
+  }, [row.modifiedCells, row.verifiedCells, column, subColumn]);
+
   const updateCellValue = (
     rowIndex: number,
     column: string,
@@ -314,7 +342,6 @@ function Cell({
     }
     row.status = calculateRowStatus(row);
 
-    setCellStatus("modified");
     updateRows();
     setEditingCell(null);
   };
@@ -337,7 +364,6 @@ function Cell({
 
       row.status = calculateRowStatus(row);
 
-      setCellStatus("verified");
       updateRows();
     }, 1000);
   };
