@@ -16,17 +16,16 @@ export default function MultiButton({ buttons, onChange }: MultiButton) {
   return (
     <div className="multiButtons">
       {buttons.map((button) => (
-        <>
-          <button
-            className={`multiButton ${activeButton === button.id ? "active" : ""}`}
-            onClick={() => {
-              setActiveButton(button.id);
-              onChange?.(button.id);
-            }}
-          >
-            {button.label}
-          </button>
-        </>
+        <button
+          key={button.id}
+          className={`multiButton ${activeButton === button.id ? "active" : ""}`}
+          onClick={() => {
+            setActiveButton(button.id);
+            onChange?.(button.id);
+          }}
+        >
+          {button.label}
+        </button>
       ))}
     </div>
   );

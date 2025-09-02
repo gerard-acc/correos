@@ -13,7 +13,7 @@ export default function Checks({ title, checks, onCheckChange }: Checks) {
     <div className="checksContainer">
       <p>{title}</p>
       {checks.map((check) => (
-        <>
+        <div key={check.id}>
           <input
             type="checkbox"
             name={check.id}
@@ -22,7 +22,7 @@ export default function Checks({ title, checks, onCheckChange }: Checks) {
             onChange={(e) => onCheckChange?.(check.id, e.target.checked)}
           />
           <label htmlFor={check.id}>{check.label}</label>
-        </>
+        </div>
       ))}
     </div>
   );

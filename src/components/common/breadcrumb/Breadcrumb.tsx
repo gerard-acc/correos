@@ -9,16 +9,16 @@ interface Page {
 export default function Breadcrumb({ pages }: { pages: Page[] }) {
   return (
     <div className="breadcrumb">
-      {pages.map((page) =>
+      {pages.map((page, index) =>
         page.link ? (
-          <>
+          <div key={`${page.label}-${index}`}>
             <Link to={`${page.link}`} className="breacrumb__text">
               {page.label}
             </Link>
             <img src="/arrow_right.svg" width="5"></img>
-          </>
+          </div>
         ) : (
-          <p className="breacrumb__text">{page.label}</p>
+          <p key={`${page.label}-${index}`} className="breacrumb__text">{page.label}</p>
         ),
       )}
     </div>
