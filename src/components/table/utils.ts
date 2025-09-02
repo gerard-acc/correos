@@ -2,15 +2,18 @@ import { es } from "date-fns/locale";
 import type {
   ColumnStructure,
   DataStructure,
+  MonthStructure,
+  RowData,
   RowStructure,
   SubColumn,
+  WeekStructure,
 } from "./interfaces";
 import { format, getISOWeek, parse } from "date-fns";
 
-const findInconsistenciesIn = (data: DataStructure) => {
-  // TODO - If there are subcolumns in the day, all rows need to have the same subcolumns
-  // TODO - If there subcolumns for a day, all days need the same subcolumns
-};
+// const findInconsistenciesIn = (data: DataStructure) => {
+//   TODO - If there are subcolumns in the day, all rows need to have the same subcolumns
+//   TODO - If there subcolumns for a day, all days need the same subcolumns
+// };
 
 export const buildColumns = (data: DataStructure) => {
   /**
@@ -18,7 +21,7 @@ export const buildColumns = (data: DataStructure) => {
    * columnes. És a dir, la columna final ja no és el dia, sino el volumen
    */
   const columns = Object.keys(data).map((day) => {
-    const column = {
+    const column: ColumnStructure = {
       day: day,
       isFestivity: data[day].isFestivity,
     };
@@ -113,7 +116,7 @@ export const getNewExpandedParents = (
 
 export const getValueFor = (
   day: string,
-  rowData: { [date: string]: number } | undefined,
+  rowData: RowData | undefined,
   subColumn?: string,
 ) => {
   if (!rowData || !rowData[day]) return "";
@@ -128,7 +131,7 @@ export const getDayNumberFrom = (date: string) => {
   return date.split("/")[0];
 };
 
-export const isObjectEmpty = (object: any) => {
+export const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0;
 };
 
@@ -204,8 +207,8 @@ export const getCalculatedValue = (
   }
 };
 
-export const buildWeeks = (data: DataStructure) => {
-  const weeks = {};
+export const buildWeeks = (data: DataStructure): WeekStructure => {
+  const weeks: WeekStructure = {};
 
   for (const day in data) {
     const date = parse(day, "dd/MM/yyyy", new Date());
@@ -220,8 +223,8 @@ export const buildWeeks = (data: DataStructure) => {
   return weeks;
 };
 
-export const buildMonths = (data: DataStructure) => {
-  const months = {};
+export const buildMonths = (data: DataStructure): MonthStructure => {
+  const months: MonthStructure = {};
 
   for (const day in data) {
     const monthNumber = parseInt(day.split("/")[1]);
@@ -232,7 +235,7 @@ export const buildMonths = (data: DataStructure) => {
     const key = `${monthNumber}/${year}`;
     if (!months[key]) {
       months[key] = {
-        monthNumber,
+        monthNum: monthNumber,
         monthName: format(date, "MMMM", { locale: es }),
         year,
         days: 0,

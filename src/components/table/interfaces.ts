@@ -2,6 +2,14 @@ export interface SubColumn {
   [key: string]: number;
 }
 
+export interface CellState {
+  [key: string]: boolean;
+}
+
+export interface RowData {
+  [date: string]: number | SubColumn;
+}
+
 export interface DataStructure {
   [date: string]: {
     isFestivity: boolean;
@@ -24,16 +32,17 @@ export interface ColumnStructure {
   isFestivity: boolean;
   subColumns?: SubColumn;
 }
+
 export interface RowStructure {
   type: "parent" | "child";
   name: string;
   level: number;
   key?: string;
   parentKey?: string;
-  rowData?: { [date: string]: number | SubColumn };
+  rowData?: RowData;
   customValues?: { [date: string]: number | SubColumn };
-  modifiedCells?: { [date: string]: boolean | { [key: string]: boolean } };
-  verifiedCells?: { [date: string]: boolean | { [key: string]: boolean } };
+  modifiedCells?: { [date: string]: boolean | CellState };
+  verifiedCells?: { [date: string]: boolean | CellState };
   status?: "presentModifications" | "allVerified" | "noActivity";
 }
 
