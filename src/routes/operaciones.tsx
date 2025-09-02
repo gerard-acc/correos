@@ -1,7 +1,6 @@
 import CenteredContent from "../components/layout/CenteredContent";
 import Table from "../components/table/Table";
 import { createFileRoute } from "@tanstack/react-router";
-// import type { DataRow } from "../interfaces";
 import test_data from "../../public/test_data_2.json";
 import Section from "../components/layout/Section";
 import TableFooter from "../components/table/TableFooter";
