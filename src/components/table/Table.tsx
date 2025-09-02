@@ -360,7 +360,13 @@ function Cell({
       delete row.modifiedCells![column];
 
       if (!row.verifiedCells) row.verifiedCells = {};
-      row.verifiedCells[column] = true;
+
+      if (subColumn) {
+        if (!row.verifiedCells[column]) row.verifiedCells[column] = {};
+        row.verifiedCells[column][subColumn] = true;
+      } else {
+        row.verifiedCells[column] = true;
+      }
 
       row.status = calculateRowStatus(row);
 
