@@ -32,13 +32,10 @@ export const buildColumns = (data: DataStructure) => {
     return column;
   });
 
-  console.log({ columns });
-
   return columns;
 };
 
 export const getSubcolumnsStructure = (columns: ColumnStructure[]) => {
-  console.log({ columns });
   return columns[0]?.subColumns;
 };
 
@@ -65,8 +62,6 @@ export const buildRows = (data: DataStructure) => {
     }
   }
 
-  console.log({ allRows });
-
   // Después metemos todas las filas que hemos sacado en una estructura en base a las rowParents
   allRows.forEach((rowInfo, rowName) => {
     rowInfo.rowParents.forEach((parent, index) => {
@@ -82,7 +77,6 @@ export const buildRows = (data: DataStructure) => {
       }
     });
 
-    console.log(rowInfo.data);
     // Metemos dentro del desplegable correcto cada row final
     rowStructure.push({
       type: "child",
@@ -92,8 +86,6 @@ export const buildRows = (data: DataStructure) => {
       parentKey: rowInfo.rowParents.join("|"),
     });
   });
-
-  console.log({ rowStructure });
 
   return rowStructure;
 };
@@ -116,7 +108,6 @@ export const getNewExpandedParents = (
     expandedParents.add(toggledParent);
   }
 
-  console.log({ expandedParents });
   return expandedParents;
 };
 
@@ -225,8 +216,6 @@ export const buildWeeks = (data: DataStructure) => {
     }
     weeks[weekNumber].days = weeks[weekNumber].days + 1;
   }
-
-  console.log(weeks);
 
   return weeks;
 };

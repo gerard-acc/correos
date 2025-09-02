@@ -270,6 +270,9 @@ function Cell({
   updateRows,
 }: Cell) {
   const [editingCell, setEditingCell] = useState<string | null>(null);
+  const [cellStatus, setCellStatus] = useState<
+    "noActivity" | "modified" | "verified"
+  >("noActivity");
 
   const updateCellValue = (
     rowIndex: number,
@@ -293,25 +296,25 @@ function Cell({
         row.rowData[column] = parseFloat(value) || 0;
       }
     } else if (row.type === "parent") {
-      console.log("Modifying parent");
       if (subColumn) {
-        console.log({ subColumn });
         if (!row.customValues[key]) row.customValues[key] = {};
         row.customValues[key][subColumn] = parseFloat(value) || 0;
       } else {
         row.customValues[key] = parseFloat(value) || 0;
       }
     }
-    console.log({ customValues: row.customValues });
 
     if (subColumn) {
+      console.log({ key, subColumn });
       if (!row.modifiedCells[key]) row.modifiedCells[key] = {};
       row.modifiedCells[key][subColumn] = true;
+      console.log(row.modifiedCells);
     } else {
       row.modifiedCells[key] = true;
     }
     row.status = calculateRowStatus(row);
 
+    setCellStatus("modified");
     updateRows();
     setEditingCell(null);
   };
@@ -334,9 +337,8 @@ function Cell({
 
       row.status = calculateRowStatus(row);
 
+      setCellStatus("verified");
       updateRows();
-
-      console.log({ modified: row.modifiedCells, verified: row.verifiedCells });
     }, 1000);
   };
 
@@ -365,11 +367,12 @@ function Cell({
       }
       style={{
         cursor: "pointer",
-        backgroundColor: row.modifiedCells?.[column.day]
-          ? "var(--modified-cell)"
-          : row.verifiedCells?.[column.day]
-            ? "var(--verified-cell)"
-            : "unset",
+        backgroundColor:
+          cellStatus === "modified"
+            ? "var(--modified-cell)"
+            : cellStatus === "verified"
+              ? "var(--verified-cell)"
+              : "unset",
       }}
     >
       {isEditing ? (
