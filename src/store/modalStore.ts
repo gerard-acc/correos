@@ -1,12 +1,14 @@
 import { create } from "zustand";
 
+type ModalData = Record<string, unknown>;
+
 interface ModalStore {
-  modals: Record<string, any>;
-  openModal: (id: string, data?: any) => void;
+  modals: Record<string, ModalData | true>;
+  openModal: (id: string, data?: ModalData) => void;
   closeModal: (id: string) => void;
   closeAll: () => void;
   isOpen: (id: string) => boolean;
-  getModalData: (id: string) => any;
+  getModalData: (id: string) => ModalData | true | undefined;
 }
 
 export const useModalStore = create<ModalStore>((set, get) => ({
@@ -35,7 +37,7 @@ export const useSpecificModal = (modalId: string) => {
   const { openModal, closeModal, isOpen, getModalData } = useModalStore();
 
   return {
-    open: (data?: any) => openModal(modalId, data),
+    open: (data?: ModalData) => openModal(modalId, data),
     close: () => closeModal(modalId),
     isOpen: isOpen(modalId),
     data: getModalData(modalId),
