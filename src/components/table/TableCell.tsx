@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ColumnStructure, RowStructure } from "./interfaces";
+import type { CellState, ColumnStructure, RowStructure } from "./interfaces";
 import { getCalculatedValue, getValueFor, isObjectEmpty } from "./utils";
 
 interface TableCell {
@@ -33,13 +33,13 @@ export default function TableCell({
       if (
         row.modifiedCells &&
         row.modifiedCells[column.day] &&
-        row.modifiedCells[column.day][subColumn]
+        (row.modifiedCells[column.day] as CellState)[subColumn]
       ) {
         setCellStatus("modified");
       } else if (
         row.verifiedCells &&
         row.verifiedCells[column.day] &&
-        row.verifiedCells[column.day][subColumn]
+        (row.verifiedCells[column.day] as CellState)[subColumn]
       ) {
         setCellStatus("verified");
       } else {
@@ -47,9 +47,9 @@ export default function TableCell({
       }
       return;
     }
-    if (row.modifiedCells && row.modifiedCells[column.day]) {
+    if (row.modifiedCells?.[column.day]) {
       setCellStatus("modified");
-    } else if (row.verifiedCells && row.verifiedCells[column.day]) {
+    } else if (row.verifiedCells?.[column.day]) {
       setCellStatus("verified");
     } else {
       setCellStatus("noActivity");
@@ -72,13 +72,13 @@ export default function TableCell({
     if (!row.modifiedCells) row.modifiedCells = {};
 
     if (row.type === "child") {
-      if (subColumn) {
+      if (subColumn && typeof row.rowData[column] === "object") {
         row.rowData[column][subColumn] = parseFloat(value) || 0;
       } else {
         row.rowData[column] = parseFloat(value) || 0;
       }
     } else if (row.type === "parent") {
-      if (subColumn) {
+      if (subColumn && typeof row.customValues[key] === "object") {
         if (!row.customValues[key]) row.customValues[key] = {};
         row.customValues[key][subColumn] = parseFloat(value) || 0;
       } else {
@@ -87,10 +87,10 @@ export default function TableCell({
     }
 
     if (subColumn) {
-      console.log({ key, subColumn });
       if (!row.modifiedCells[key]) row.modifiedCells[key] = {};
-      row.modifiedCells[key][subColumn] = true;
-      console.log(row.modifiedCells);
+      if (typeof row.modifiedCells[key] === "object") {
+        row.modifiedCells[key][subColumn] = true;
+      }
     } else {
       row.modifiedCells[key] = true;
     }
@@ -117,7 +117,9 @@ export default function TableCell({
 
       if (subColumn) {
         if (!row.verifiedCells[column]) row.verifiedCells[column] = {};
-        row.verifiedCells[column][subColumn] = true;
+        if (typeof row.verifiedCells[column] === "object") {
+          row.verifiedCells[column][subColumn] = true;
+        }
       } else {
         row.verifiedCells[column] = true;
       }

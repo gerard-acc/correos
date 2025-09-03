@@ -121,10 +121,13 @@ export const getValueFor = (
 ) => {
   if (!rowData || !rowData[day]) return "";
   if (subColumn) {
-    return rowData[day][subColumn];
+    if (typeof rowData[day] === "object") {
+      return rowData[day][subColumn];
+    }
   } else {
     return rowData[day].toLocaleString();
   }
+  return "";
 };
 
 export const getDayNumberFrom = (date: string) => {
@@ -145,6 +148,7 @@ export const getCalculatedValue = (
     if (
       row.customValues &&
       row.customValues[day] !== undefined &&
+      typeof row.customValues[day] === "object" &&
       row.customValues[day][subColumn] !== undefined
     ) {
       return row.customValues[day][subColumn].toLocaleString();
