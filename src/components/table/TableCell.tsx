@@ -77,7 +77,9 @@ export default function TableCell({
       } else {
         row.rowData[column] = parseFloat(value) || 0;
       }
-    } else if (row.type === "parent") {
+    }
+
+    if (row.type === "parent") {
       if (subColumn && typeof row.customValues[key] === "object") {
         if (!row.customValues[key]) row.customValues[key] = {};
         row.customValues[key][subColumn] = parseFloat(value) || 0;
@@ -92,12 +94,15 @@ export default function TableCell({
         row.modifiedCells[key][subColumn] = true;
       }
     } else {
+      console.log("Set modified cell", key);
       row.modifiedCells[key] = true;
     }
     row.status = calculateRowStatus(row);
-
-    updateRows();
     setEditingCell(null);
+
+    // Force updates
+    updateRows();
+    row.modifiedCells = { ...row.modifiedCells };
   };
 
   const verifyCell = (rowIndex: number, column: string) => {
@@ -126,7 +131,9 @@ export default function TableCell({
 
       row.status = calculateRowStatus(row);
 
+      // Force updates
       updateRows();
+      row.verifiedCells = { ...row.verifiedCells };
     }, 1000);
   };
 
