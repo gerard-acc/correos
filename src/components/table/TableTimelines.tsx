@@ -27,7 +27,7 @@ export default function TableTimelines({
   useEffect(() => {
     setWeeksRow(buildWeeks(data));
     setMonthsRow(buildMonths(data));
-  }, [data]);
+  }, [data, nestedRows]);
 
   const getWeekWordays = (week: string, columns: ColumnStructure[]) => {
     const weekNum = parseInt(week);
