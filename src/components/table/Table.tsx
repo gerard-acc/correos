@@ -9,7 +9,6 @@ import type {
 import {
   buildRows,
   getDayNumberFrom,
-  getNewExpandedParents,
   buildColumns,
   getSubcolumnsStructure,
 } from "./utils";
@@ -69,6 +68,25 @@ export default function Table({ data, periods }: TableProps) {
 
   const toggleParent = (toggledParent: string) => {
     setExpandedParents((prev) => getNewExpandedParents(toggledParent, prev));
+  };
+
+  const getNewExpandedParents = (
+    toggledParent: string,
+    currentParents: Set<string>,
+  ) => {
+    const expandedParents = new Set(currentParents);
+    if (expandedParents.has(toggledParent)) {
+      expandedParents.delete(toggledParent);
+      Array.from(expandedParents).forEach((expandedKey) => {
+        if (expandedKey.startsWith(toggledParent + "|")) {
+          expandedParents.delete(expandedKey);
+        }
+      });
+    } else {
+      expandedParents.add(toggledParent);
+    }
+
+    return expandedParents;
   };
 
   return (

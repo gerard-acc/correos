@@ -38,10 +38,6 @@ export const buildColumns = (data: DataStructure) => {
   return columns;
 };
 
-export const getSubcolumnsStructure = (columns: ColumnStructure[]) => {
-  return columns[0]?.subColumns;
-};
-
 export const buildRows = (data: DataStructure) => {
   // Las filas se complican porque tienen subfilas
   const rowStructure: RowStructure[] = [];
@@ -93,25 +89,44 @@ export const buildRows = (data: DataStructure) => {
   return rowStructure;
 };
 
-export const getNewExpandedParents = (
-  toggledParent: string,
-  currentParents: Set<string>,
-) => {
-  const expandedParents = new Set(currentParents);
-  // Si el padre ya estaba abierto, lo cerramos y cerramos todos sus hijos
-  if (expandedParents.has(toggledParent)) {
-    expandedParents.delete(toggledParent);
-    Array.from(expandedParents).forEach((expandedKey) => {
-      if (expandedKey.startsWith(toggledParent + "|")) {
-        expandedParents.delete(expandedKey);
-      }
-    });
-  } else {
-    // Si no estaba abierto, lo abrimos
-    expandedParents.add(toggledParent);
+export const buildWeeks = (data: DataStructure): WeekStructure => {
+  const weeks: WeekStructure = {};
+
+  for (const day in data) {
+    const date = parse(day, "dd/MM/yyyy", new Date());
+    const weekNumber = getISOWeek(date);
+
+    if (!weeks[weekNumber]) {
+      weeks[weekNumber] = { days: 0 };
+    }
+    weeks[weekNumber].days = weeks[weekNumber].days + 1;
   }
 
-  return expandedParents;
+  return weeks;
+};
+
+export const buildMonths = (data: DataStructure): MonthStructure => {
+  const months: MonthStructure = {};
+
+  for (const day in data) {
+    const monthNumber = parseInt(day.split("/")[1]);
+    const year = parseInt(day.split("/")[2]);
+
+    const date = new Date(year, monthNumber - 1);
+
+    const key = `${monthNumber}/${year}`;
+    if (!months[key]) {
+      months[key] = {
+        monthNum: monthNumber,
+        monthName: format(date, "MMMM", { locale: es }),
+        year,
+        days: 0,
+      };
+    }
+    months[key].days = months[key].days + 1;
+  }
+
+  return months;
 };
 
 export const getValueFor = (
@@ -128,14 +143,6 @@ export const getValueFor = (
     return rowData[day].toLocaleString();
   }
   return "";
-};
-
-export const getDayNumberFrom = (date: string) => {
-  return date.split("/")[0];
-};
-
-export const isObjectEmpty = (object: object) => {
-  return Object.keys(object).length === 0;
 };
 
 export const getCalculatedValue = (
@@ -211,42 +218,14 @@ export const getCalculatedValue = (
   }
 };
 
-export const buildWeeks = (data: DataStructure): WeekStructure => {
-  const weeks: WeekStructure = {};
-
-  for (const day in data) {
-    const date = parse(day, "dd/MM/yyyy", new Date());
-    const weekNumber = getISOWeek(date);
-
-    if (!weeks[weekNumber]) {
-      weeks[weekNumber] = { days: 0 };
-    }
-    weeks[weekNumber].days = weeks[weekNumber].days + 1;
-  }
-
-  return weeks;
+export const getSubcolumnsStructure = (columns: ColumnStructure[]) => {
+  return columns[0]?.subColumns;
 };
 
-export const buildMonths = (data: DataStructure): MonthStructure => {
-  const months: MonthStructure = {};
+export const getDayNumberFrom = (date: string) => {
+  return date.split("/")[0];
+};
 
-  for (const day in data) {
-    const monthNumber = parseInt(day.split("/")[1]);
-    const year = parseInt(day.split("/")[2]);
-
-    const date = new Date(year, monthNumber - 1);
-
-    const key = `${monthNumber}/${year}`;
-    if (!months[key]) {
-      months[key] = {
-        monthNum: monthNumber,
-        monthName: format(date, "MMMM", { locale: es }),
-        year,
-        days: 0,
-      };
-    }
-    months[key].days = months[key].days + 1;
-  }
-
-  return months;
+export const isObjectEmpty = (object: object) => {
+  return Object.keys(object).length === 0;
 };
