@@ -1,5 +1,5 @@
 import "./table.css";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Fragment } from "react";
 import type {
   ColumnStructure,
   RowStructure,
@@ -15,6 +15,7 @@ import {
 import Toggle from "../common/toggle/Toggle";
 import TableCell from "./TableCell";
 import TableTimelines from "./TableTimelines";
+import TableTotalCell from "./TableTotalCell";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -119,7 +120,7 @@ export default function Table({ data, periods }: TableProps) {
                   key={column.day}
                   colSpan={
                     subColumnsStructure
-                      ? Object.keys(subColumnsStructure).length
+                      ? Object.keys(subColumnsStructure).length + 1 // +1 for Total column
                       : 1
                   }
                 >
@@ -130,10 +131,15 @@ export default function Table({ data, periods }: TableProps) {
             {subColumnsStructure && (
               <tr>
                 <td></td>
-                {columns.map(() => {
-                  return Object.keys(subColumnsStructure).map((key) => (
-                    <td key={key}>{key}</td>
-                  ));
+                {columns.map((column) => {
+                  return (
+                    <Fragment key={column.day}>
+                      {Object.keys(subColumnsStructure).map((key) => (
+                        <td key={`${column.day}-${key}`}>{key}</td>
+                      ))}
+                      <td key={`${column.day}-total`}>Total</td>
+                    </Fragment>
+                  );
                 })}
               </tr>
             )}
@@ -166,21 +172,26 @@ export default function Table({ data, periods }: TableProps) {
 
                 {columns.map((column) =>
                   subColumnsStructure ? (
-                    Object.keys(subColumnsStructure).map((key) => (
-                      <TableCell
-                        key={`${column.day}-${key}-${index}`}
-                        index={index}
-                        column={column}
-                        row={row}
-                        isVerifying={isVerifying}
-                        visibleRows={visibleRows}
-                        nestedRows={nestedRows}
-                        subColumn={key}
-                        updateRows={() => {
-                          setNestedRows([...nestedRows]);
-                        }}
-                      />
-                    ))
+                    <Fragment key={column.day}>
+                      {Object.keys(subColumnsStructure).map((key) => (
+                        <TableCell
+                          key={`${column.day}-${key}-${index}`}
+                          index={index}
+                          column={column}
+                          row={row}
+                          isVerifying={isVerifying}
+                          visibleRows={visibleRows}
+                          nestedRows={nestedRows}
+                          subColumn={key}
+                          updateRows={() => {
+                            setNestedRows([...nestedRows]);
+                          }}
+                        />
+                      ))}
+                      <TableTotalCell
+                        subColumns={row.rowData?.[column.day] as SubColumn}
+                      ></TableTotalCell>
+                    </Fragment>
                   ) : (
                     <TableCell
                       key={`${column.day}-${index}`}

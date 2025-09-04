@@ -49,6 +49,8 @@ export default function TableTimelines({
   const getWeekTotal = (week: string, allRows: RowStructure[]) => {
     const weekNum = parseInt(week);
 
+    // console.log({ allRows });
+
     let totalSum = 0;
     for (const row of allRows) {
       if (!row.rowData || row.level !== 0) continue;
@@ -138,10 +140,11 @@ export default function TableTimelines({
         {Object.keys(monthsRow).map((month) => {
           const current = monthsRow[month];
           return (
+            // Expandimos la columna la cantidad de subcolumnas + 1 por la columna Total que se añade siempre
             <td
               colSpan={
                 subcolumnsStructure
-                  ? current.days * Object.keys(subcolumnsStructure).length
+                  ? current.days * (Object.keys(subcolumnsStructure).length + 1)
                   : current.days
               }
               key={month}
@@ -157,10 +160,11 @@ export default function TableTimelines({
         {Object.keys(weeksRow).map((week) => {
           const current = weeksRow[parseInt(week)];
           return (
+            // Expandimos la columna la cantidad de subcolumnas + 1 por la columna Total que se añade siempre
             <td
               colSpan={
                 subcolumnsStructure
-                  ? current.days * Object.keys(subcolumnsStructure).length
+                  ? current.days * (Object.keys(subcolumnsStructure).length + 1)
                   : current.days
               }
               key={week}
@@ -175,10 +179,11 @@ export default function TableTimelines({
         {Object.keys(weeksRow).map((week) => {
           const current = weeksRow[parseInt(week)];
           return (
+            // Expandimos la columna la cantidad de subcolumnas + 1 por la columna Total que se añade siempre
             <td
               colSpan={
                 subcolumnsStructure
-                  ? current.days * Object.keys(subcolumnsStructure).length
+                  ? current.days * (Object.keys(subcolumnsStructure).length + 1)
                   : current.days
               }
               key={week}
