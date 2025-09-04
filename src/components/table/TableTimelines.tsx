@@ -49,39 +49,50 @@ export default function TableTimelines({
   const getWeekTotal = (week: string, allRows: RowStructure[]) => {
     const weekNum = parseInt(week);
 
-    // console.log({ allRows });
-
     let totalSum = 0;
     for (const row of allRows) {
-      if (!row.rowData || row.level !== 0) continue;
+      if (row.level !== 0) continue; // only top-level parents
 
       let rowSum = 0;
-      for (const key in row.rowData) {
-        const date = parse(key, "dd/MM/yyyy", new Date());
+      for (const col of columns) {
+        const date = parse(col.day, "dd/MM/yyyy", new Date());
         const keyWeek = getISOWeek(date);
+        if (keyWeek !== weekNum) continue;
 
-        const modifiedValue = row.customValues?.[key];
-        if (keyWeek === weekNum) {
-          if (modifiedValue !== undefined) {
-            if (typeof modifiedValue === "number") {
-              rowSum += modifiedValue;
-            } else if (typeof modifiedValue === "object") {
-              rowSum += Object.values(modifiedValue).reduce(
-                (sum, subVal) => sum + subVal,
-                0,
-              );
-            }
-          } else {
-            const value = row.rowData[key];
-            if (typeof value === "number") {
-              rowSum += value;
-            } else if (typeof value === "object") {
-              rowSum += Object.values(value).reduce(
-                (sum, subVal) => sum + subVal,
-                0,
-              );
+        // Aggregate children's values for this parent and day
+        const childRows = allRows.filter(
+          (r) => r.type === "child" && r.parentKey && row.key && r.parentKey.startsWith(row.key),
+        );
+        let numberTotal = 0;
+        const subTotals: { [k: string]: number } = {};
+        for (const child of childRows) {
+          const value = child.rowData?.[col.day];
+          if (typeof value === "number") numberTotal += value;
+          else if (typeof value === "object") {
+            for (const [k, v] of Object.entries(value)) {
+              subTotals[k] = (subTotals[k] || 0) + (v as number);
             }
           }
+        }
+
+        const override = row.customValues?.[col.day];
+        if (override !== undefined) {
+          if (typeof override === "number") {
+            rowSum += override; // full override
+          } else if (typeof override === "object") {
+            // Merge override per subcolumn with children's totals
+            const merged = { ...subTotals } as { [k: string]: number };
+            for (const [k, v] of Object.entries(override)) {
+              merged[k] = v as number;
+            }
+            rowSum += Object.values(merged).reduce((s, v) => s + v, 0);
+          }
+        } else {
+          // No override: use children's totals (object vs number)
+          rowSum +=
+            Object.keys(subTotals).length > 0
+              ? Object.values(subTotals).reduce((s, v) => s + v, 0)
+              : numberTotal;
         }
       }
       totalSum += rowSum;
@@ -96,35 +107,47 @@ export default function TableTimelines({
 
     let totalSum = 0;
     for (const row of allRows) {
-      if (!row.rowData || row.level !== 0) continue;
+      if (row.level !== 0) continue; // only top-level parents
 
       let rowSum = 0;
-      for (const key in row.rowData) {
-        const keyMonth = parseInt(key.split("/")[1]);
-        const keyYear = parseInt(key.split("/")[2]);
+      for (const col of columns) {
+        const parts = col.day.split("/");
+        const keyMonth = parseInt(parts[1]);
+        const keyYear = parseInt(parts[2]);
+        if (keyMonth !== monthNum || keyYear !== year) continue;
 
-        const modifiedValue = row.customValues?.[key];
-        if (keyMonth === monthNum && keyYear === year) {
-          if (modifiedValue !== undefined) {
-            if (typeof modifiedValue === "number") {
-              rowSum += modifiedValue;
-            } else if (typeof modifiedValue === "object") {
-              rowSum += Object.values(modifiedValue).reduce(
-                (sum, subVal) => sum + subVal,
-                0,
-              );
-            }
-          } else {
-            const value = row.rowData[key];
-            if (typeof value === "number") {
-              rowSum += value;
-            } else if (typeof value === "object") {
-              rowSum += Object.values(value).reduce(
-                (sum, subVal) => sum + subVal,
-                0,
-              );
+        // Aggregate children's values for this parent and day
+        const childRows = allRows.filter(
+          (r) => r.type === "child" && r.parentKey && row.key && r.parentKey.startsWith(row.key),
+        );
+        let numberTotal = 0;
+        const subTotals: { [k: string]: number } = {};
+        for (const child of childRows) {
+          const value = child.rowData?.[col.day];
+          if (typeof value === "number") numberTotal += value;
+          else if (typeof value === "object") {
+            for (const [k, v] of Object.entries(value)) {
+              subTotals[k] = (subTotals[k] || 0) + (v as number);
             }
           }
+        }
+
+        const override = row.customValues?.[col.day];
+        if (override !== undefined) {
+          if (typeof override === "number") {
+            rowSum += override; // full override
+          } else if (typeof override === "object") {
+            const merged = { ...subTotals } as { [k: string]: number };
+            for (const [k, v] of Object.entries(override)) {
+              merged[k] = v as number;
+            }
+            rowSum += Object.values(merged).reduce((s, v) => s + v, 0);
+          }
+        } else {
+          rowSum +=
+            Object.keys(subTotals).length > 0
+              ? Object.values(subTotals).reduce((s, v) => s + v, 0)
+              : numberTotal;
         }
       }
       totalSum += rowSum;
