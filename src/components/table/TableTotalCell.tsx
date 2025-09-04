@@ -1,14 +1,20 @@
 // No imports needed
-import type { SubColumn } from "./interfaces";
+import type { ColumnStructure, RowStructure, SubColumn } from "./interfaces";
 
 interface TableTotalCellProps {
-  subColumns: SubColumn | undefined;
+  rowInfo: RowStructure | undefined;
+  column: ColumnStructure;
 }
 
-export default function TableTotalCell({ subColumns }: TableTotalCellProps) {
-  const total = !subColumns
-    ? 0
-    : Object.values(subColumns).reduce((acc, val) => acc + val, 0);
+export default function TableTotalCell({
+  rowInfo,
+  column,
+}: TableTotalCellProps) {
+  const base = (rowInfo?.rowData?.[column.day] || {}) as SubColumn;
+  const custom = (rowInfo?.customValues?.[column.day] || {}) as SubColumn;
+
+  const merged = { ...base, ...custom } as SubColumn;
+  const total = Object.values(merged).reduce((acc, val) => acc + val, 0);
 
   return <td>{total}</td>;
 }

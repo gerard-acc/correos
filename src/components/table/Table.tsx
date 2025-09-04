@@ -189,7 +189,10 @@ export default function Table({ data, periods }: TableProps) {
                         />
                       ))}
                       <TableTotalCell
-                        subColumns={row.rowData?.[column.day] as SubColumn}
+                        column={column}
+                        rowInfo={nestedRows.find(
+                          (nestedRow) => nestedRow.key === row.key,
+                        )}
                       ></TableTotalCell>
                     </Fragment>
                   ) : (
