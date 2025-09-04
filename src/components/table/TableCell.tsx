@@ -80,9 +80,11 @@ export default function TableCell({
     }
 
     if (row.type === "parent") {
-      if (subColumn && typeof row.customValues[key] === "object") {
+      if (subColumn) {
         if (!row.customValues[key]) row.customValues[key] = {};
-        row.customValues[key][subColumn] = parseFloat(value) || 0;
+        if (typeof row.customValues[key] === "object") {
+          row.customValues[key][subColumn] = parseFloat(value) || 0;
+        }
       } else {
         row.customValues[key] = parseFloat(value) || 0;
       }
@@ -94,7 +96,6 @@ export default function TableCell({
         row.modifiedCells[key][subColumn] = true;
       }
     } else {
-      console.log("Set modified cell", key);
       row.modifiedCells[key] = true;
     }
     row.status = calculateRowStatus(row);
