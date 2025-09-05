@@ -105,6 +105,26 @@ export const buildWeeks = (data: DataStructure): WeekStructure => {
   return weeks;
 };
 
+// Returns a map of ISO week number -> list of day keys (dd/MM/yyyy)
+export const groupDaysByWeek = (data: DataStructure): { [week: number]: string[] } => {
+  const weeks: { [week: number]: string[] } = {};
+  for (const day in data) {
+    const date = parse(day, "dd/MM/yyyy", new Date());
+    const weekNumber = getISOWeek(date);
+    if (!weeks[weekNumber]) weeks[weekNumber] = [];
+    weeks[weekNumber].push(day);
+  }
+  // Ensure each week's days are ordered by date ascending
+  Object.values(weeks).forEach((arr) =>
+    arr.sort((a, b) => {
+      const da = parse(a, "dd/MM/yyyy", new Date()).getTime();
+      const db = parse(b, "dd/MM/yyyy", new Date()).getTime();
+      return da - db;
+    }),
+  );
+  return weeks;
+};
+
 export const buildMonths = (data: DataStructure): MonthStructure => {
   const months: MonthStructure = {};
 
