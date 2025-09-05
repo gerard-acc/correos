@@ -1,5 +1,5 @@
 import "./table.css";
-import { useEffect, useState, useMemo, Fragment } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type {
   ColumnStructure,
   RowStructure,
@@ -15,11 +15,10 @@ import {
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 import MultiButton from "../common/multiButton/MultiButton";
-import TableCell from "./TableCell";
-import TableTimelines from "./TableTimelines";
-import TableTotalCell from "./TableTotalCell";
 import WeeklyTimelines from "./WeeklyTimelines";
 import TableWeeklyCells from "./TableWeeklyCells";
+import DailyTimelines from "./DailyTimelines";
+import TableDailyCells from "./TableDailyCells";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -126,49 +125,13 @@ export default function Table({ data, periods }: TableProps) {
         <table>
           <thead>
             {currentPeriod === "daily" ? (
-              <>
-            <TableTimelines
-              data={data}
-              subcolumnsStructure={subColumnsStructure}
-              nestedRows={nestedRows}
-              columns={columns}
-            ></TableTimelines>
-            <tr>
-              <td></td>
-              {columns.map((column) => (
-                <td
-                  style={{
-                    backgroundColor: column.isFestivity
-                      ? "var(--festivity-color)"
-                      : "var(--header-color)",
-                  }}
-                  key={column.day}
-                  colSpan={
-                    subColumnsStructure
-                      ? Object.keys(subColumnsStructure).length + 1 // +1 for Total column
-                      : 1
-                  }
-                >
-                  Día {getDayNumberFrom(column.day)}
-                </td>
-              ))}
-            </tr>
-            {subColumnsStructure && (
-              <tr>
-                <td></td>
-                {columns.map((column) => {
-                  return (
-                    <Fragment key={column.day}>
-                      {Object.keys(subColumnsStructure).map((key) => (
-                        <td key={`${column.day}-${key}`}>{key}</td>
-                      ))}
-                      <td key={`${column.day}-total`}>Total</td>
-                    </Fragment>
-                  );
-                })}
-              </tr>
-            )}
-              </>
+              <DailyTimelines
+                data={data}
+                columns={columns}
+                nestedRows={nestedRows}
+                subcolumnsStructure={subColumnsStructure}
+                getDayNumberFrom={getDayNumberFrom}
+              />
             ) : (
               <WeeklyTimelines
                 weeksMap={weeksMap}
@@ -206,58 +169,17 @@ export default function Table({ data, periods }: TableProps) {
                 </td>
 
                 {currentPeriod === "daily"
-                  ? columns.map((column) =>
-                      subColumnsStructure ? (
-                        <Fragment key={column.day}>
-                          {Object.keys(subColumnsStructure).map((key) => (
-                            <TableCell
-                              key={`${column.day}-${key}-${index}`}
-                              index={index}
-                              column={column}
-                              row={row}
-                              isVerifying={isVerifying}
-                              visibleRows={visibleRows}
-                              nestedRows={nestedRows}
-                              subColumn={key}
-                              updateRows={() => {
-                                setNestedRows([...nestedRows]);
-                              }}
-                            />
-                          ))}
-                          <TableTotalCell
-                            day={column.day}
-                            overrideForDay={
-                              row.customValues?.[column.day] as SubColumn
-                            }
-                            baseSubcolumnsForDay={
-                              row.rowData?.[column.day] as SubColumn
-                            }
-                            childrenRows={
-                              row.type === "parent" && row.key
-                                ? nestedRows.filter(
-                                    (r) =>
-                                      r.type === "child" &&
-                                      r.parentKey &&
-                                      r.parentKey.startsWith(row.key!),
-                                  )
-                                : undefined
-                            }
-                          ></TableTotalCell>
-                        </Fragment>
-                      ) : (
-                        <TableCell
-                          key={`${column.day}-${index}`}
-                          index={index}
-                          column={column}
-                          row={row}
-                          isVerifying={isVerifying}
-                          visibleRows={visibleRows}
-                          nestedRows={nestedRows}
-                          updateRows={() => {
-                            setNestedRows([...nestedRows]);
-                          }}
-                        />
-                      ),
+                  ? (
+                      <TableDailyCells
+                        row={row}
+                        columns={columns}
+                        subcolumnsStructure={subColumnsStructure}
+                        isVerifying={isVerifying}
+                        visibleRows={visibleRows}
+                        nestedRows={nestedRows}
+                        rowIndex={index}
+                        onUpdateRows={() => setNestedRows([...nestedRows])}
+                      />
                     ) : (
                       <TableWeeklyCells
                         row={row}
