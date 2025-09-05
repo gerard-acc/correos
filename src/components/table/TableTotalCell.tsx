@@ -1,47 +1,57 @@
-// No imports needed
 import type { RowStructure, SubColumn } from "./interfaces";
 
 interface TableTotalCellProps {
   day: string;
-  isParent: boolean;
   overrideForDay?: SubColumn;
   baseSubcolumnsForDay?: SubColumn;
   childrenRows?: RowStructure[];
 }
 
+// Merge two SubColumn maps by summing numeric values for matching keys
+function mergeSubTotals(a: SubColumn, b: SubColumn): SubColumn {
+  const result: SubColumn = { ...a };
+  for (const [key, val] of Object.entries(b)) {
+    const num = typeof val === "number" ? val : 0;
+    result[key] = (result[key] ?? 0) + num;
+  }
+  return result;
+}
+
+// Compute aggregated subcolumns for a parent row from its children
+function aggregateFromChildren(
+  day: string,
+  children: RowStructure[],
+): SubColumn {
+  return children.reduce<SubColumn>((acc, child) => {
+    const value = child.rowData?.[day] as SubColumn | undefined;
+    return value ? mergeSubTotals(acc, value) : acc;
+  }, {} as SubColumn);
+}
+
+function sumSubColumns(subcolumns: SubColumn): number {
+  return Object.values(subcolumns).reduce((sum, v) => sum + (v ?? 0), 0);
+}
+
 export default function TableTotalCell({
   day,
-  isParent,
   overrideForDay,
   baseSubcolumnsForDay,
   childrenRows,
 }: TableTotalCellProps) {
-  // Aggregate values. For parent: derive from children; for child: use own base subcolumns.
-  const subTotals: Record<string, number> = {};
+  const baseTotals: SubColumn =
+    childrenRows && childrenRows.length > 0
+      ? aggregateFromChildren(day, childrenRows)
+      : baseSubcolumnsForDay
+        ? { ...baseSubcolumnsForDay }
+        : {};
 
-  if (isParent) {
-    const children = childrenRows || [];
-    for (const child of children) {
-      const val = child.rowData?.[day];
-      if (typeof val === "object" && val) {
-        for (const [k, v] of Object.entries(val)) {
-          subTotals[k] = (subTotals[k] || 0) + (v as number);
-        }
-      }
-    }
-  } else if (baseSubcolumnsForDay) {
-    for (const [k, v] of Object.entries(baseSubcolumnsForDay)) {
-      subTotals[k] = (v as number) ?? 0;
-    }
-  }
+  // Apply overrides by replacing only the provided subcolumn keys
+  const overriddenTotals: SubColumn = overrideForDay
+    ? { ...baseTotals, ...overrideForDay }
+    : baseTotals;
 
-  // Apply overrides as object: replace only specified subcolumns
-  if (overrideForDay) {
-    for (const [k, v] of Object.entries(overrideForDay)) {
-      subTotals[k] = (v as number) ?? 0;
-    }
-  }
+  // Sum to a single total number
+  const total = sumSubColumns(overriddenTotals);
 
-  const total = Object.values(subTotals).reduce((s, v) => s + v, 0);
   return <td>{total}</td>;
 }

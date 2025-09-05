@@ -30,6 +30,8 @@ export default function Table({ data, periods }: TableProps) {
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
+      console.log({ nestedRows, expandedParents });
+
       if (row.type === "parent" && row.key) {
         const parentParts = row.key.split("|");
         for (let i = 1; i < parentParts.length; i++) {
@@ -190,7 +192,6 @@ export default function Table({ data, periods }: TableProps) {
                       ))}
                       <TableTotalCell
                         day={column.day}
-                        isParent={row.type === "parent"}
                         overrideForDay={
                           row.customValues?.[column.day] as SubColumn
                         }
