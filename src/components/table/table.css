@@ -17,6 +17,10 @@ table {
   --month-color: #c9e1ff;
   --week-color: #ffe7c9;
   --workday-color: #dbd9d7;
+  --subcolumn-color: #f5f2e7;
+  --parent-row: #e3e3e3;
+  --child-odd-row: #f6f6f3;
+
   font-family: "OpenSans";
 }
 
@@ -70,6 +74,17 @@ thead {
       background-color: white;
     }
   }
+
+  & .subcolumnsRow {
+    color: black;
+    & td {
+      background-color: var(--subcolumn-color);
+      padding: 8px;
+    }
+    & td:first-child {
+      background-color: white;
+    }
+  }
 }
 
 tbody tr {
@@ -84,12 +99,16 @@ tbody tr {
   }
 
   &.parent {
-    background-color: #f8f9fa;
+    background-color: var(--parent-row);
     font-weight: 600;
   }
 
   &.child {
     background-color: white;
+  }
+
+  &.child:nth-child(odd) {
+    background-color: var(--child-odd-row);
   }
 
   &.level-1 {

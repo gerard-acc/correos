@@ -1,10 +1,14 @@
 import type { RowStructure, SubColumn } from "./interfaces";
+import { getCalculatedSubcolumnNumber } from "./utils";
 
 interface TableTotalCellProps {
   day: string;
   overrideForDay?: SubColumn;
   baseSubcolumnsForDay?: SubColumn;
   childrenRows?: RowStructure[];
+  allRows?: RowStructure[];
+  row?: RowStructure;
+  subKeys?: string[];
 }
 
 // Merge two SubColumn maps by summing numeric values for matching keys
@@ -37,7 +41,30 @@ export default function TableTotalCell({
   overrideForDay,
   baseSubcolumnsForDay,
   childrenRows,
+  allRows,
+  row,
+  subKeys,
 }: TableTotalCellProps) {
+  // If we have context, compute the total by summing effective subcolumn values
+  if (allRows && row && subKeys && subKeys.length > 0) {
+    // Child rows: sum their own subcolumns for the day
+    if (row.type === "child") {
+      const v = row.rowData?.[day] as SubColumn | number | undefined;
+      let total = 0;
+      if (typeof v === "number") total = v;
+      else if (typeof v === "object" && v) {
+        total = subKeys.reduce((acc, k) => acc + (v[k] || 0), 0);
+      }
+      return <td>{total}</td>;
+    }
+
+    // Parent rows: use effective subcolumn values including direct child-parent overrides
+    const total = subKeys.reduce(
+      (acc, k) => acc + getCalculatedSubcolumnNumber(day, row, allRows, k),
+      0,
+    );
+    return <td>{total}</td>;
+  }
   const baseTotals: SubColumn =
     childrenRows && childrenRows.length > 0
       ? aggregateFromChildren(day, childrenRows)

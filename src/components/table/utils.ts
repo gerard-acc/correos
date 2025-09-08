@@ -181,11 +181,12 @@ export const getCalculatedValue = (
       return row.customValues[day][subColumn].toLocaleString();
     }
 
+    // Sum of all leaf child rows under this parent
     const childRows = allRows.filter(
       (r) =>
         r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
     );
-    const total = childRows.reduce((acc, current) => {
+    let total = childRows.reduce((acc, current) => {
       if (current.rowData && current.rowData[day]) {
         const value = current.rowData[day];
         if (typeof value === "object" && value[subColumn] !== undefined) {
@@ -194,6 +195,31 @@ export const getCalculatedValue = (
       }
       return acc;
     }, 0);
+
+    // Plus deltas from immediate child parents that have overrides
+    const directChildParents = allRows.filter((r) => {
+      if (r.type !== "parent" || !r.key || !row.key) return false;
+      const parts = r.key.split("|");
+      return parts.slice(0, -1).join("|") === row.key;
+    });
+    directChildParents.forEach((p) => {
+      const override = p.customValues?.[day];
+      if (!override || typeof override !== "object") return;
+      if (override[subColumn] === undefined) return; // only apply explicit subcolumn override
+      const underLeaf = allRows
+        .filter(
+          (r) =>
+            r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
+        )
+        .reduce((acc, current) => {
+          const value = current.rowData?.[day];
+          if (typeof value === "object" && value[subColumn] !== undefined) {
+            return acc + value[subColumn];
+          }
+          return acc;
+        }, 0);
+      total += (override[subColumn] || 0) - underLeaf;
+    });
 
     if (!row.rowData) row.rowData = {};
     if (typeof row.rowData[day] !== "object") row.rowData[day] = {};
@@ -211,7 +237,7 @@ export const getCalculatedValue = (
       (r) =>
         r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
     );
-    const total = childRows.reduce((acc, current) => {
+    let total = childRows.reduce((acc, current) => {
       if (current.rowData && current.rowData[day]) {
         const value = current.rowData[day];
         if (typeof value === "number") {
@@ -225,6 +251,38 @@ export const getCalculatedValue = (
       }
       return acc;
     }, 0);
+
+    // Plus deltas from immediate child parents that have overrides
+    const directChildParents = allRows.filter((r) => {
+      if (r.type !== "parent" || !r.key || !row.key) return false;
+      const parts = r.key.split("|");
+      return parts.slice(0, -1).join("|") === row.key;
+    });
+    directChildParents.forEach((p) => {
+      const override = p.customValues?.[day];
+      if (override === undefined) return;
+      // Sum leaf under this immediate child parent
+      const underLeaf = allRows
+        .filter(
+          (r) =>
+            r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
+        )
+        .reduce((acc, current) => {
+          const value = current.rowData?.[day];
+          if (typeof value === "number") return acc + value;
+          if (typeof value === "object")
+            return acc + Object.values(value).reduce((s, v) => s + (v || 0), 0);
+          return acc;
+        }, 0);
+      const overrideTotal =
+        typeof override === "number"
+          ? override
+          : Object.values(override as SubColumn).reduce(
+              (s, v) => s + (v || 0),
+              0,
+            );
+      total += overrideTotal - underLeaf;
+    });
 
     // Set the calculated value in the row's rowData property
     if (!row.rowData) {
@@ -240,6 +298,121 @@ export const getCalculatedValue = (
 
 export const getSubcolumnsStructure = (columns: ColumnStructure[]) => {
   return columns[0]?.subColumns;
+};
+
+// Helper used by TableTotalCell to compute a parent's effective value for a specific subcolumn
+export const getCalculatedSubcolumnNumber = (
+  day: string,
+  row: RowStructure,
+  allRows: RowStructure[],
+  subColumn: string,
+) => {
+  // If parent has an explicit override for this subcolumn, just return it
+  if (
+    row.customValues &&
+    row.customValues[day] !== undefined &&
+    typeof row.customValues[day] === "object" &&
+    row.customValues[day][subColumn] !== undefined
+  ) {
+    return row.customValues[day][subColumn] || 0;
+  }
+
+  // Base: sum of leaf child rows under this parent for the subcolumn
+  const childRows = allRows.filter(
+    (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+  );
+  let total = childRows.reduce((acc, current) => {
+    if (current.rowData && current.rowData[day]) {
+      const value = current.rowData[day];
+      if (typeof value === "object" && value[subColumn] !== undefined) {
+        return acc + value[subColumn];
+      }
+    }
+    return acc;
+  }, 0);
+
+  // Delta: immediate child parents' overrides for this subcolumn
+  const directChildParents = allRows.filter((r) => {
+    if (r.type !== "parent" || !r.key || !row.key) return false;
+    const parts = r.key.split("|");
+    return parts.slice(0, -1).join("|") === row.key;
+  });
+  directChildParents.forEach((p) => {
+    const override = p.customValues?.[day];
+    if (!override || typeof override !== "object") return;
+    if (override[subColumn] === undefined) return;
+
+    const underLeaf = allRows
+      .filter(
+        (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
+      )
+      .reduce((acc, current) => {
+        const value = current.rowData?.[day];
+        if (typeof value === "object" && value[subColumn] !== undefined) {
+          return acc + value[subColumn];
+        }
+        return acc;
+      }, 0);
+
+    total += (override[subColumn] || 0) - underLeaf;
+  });
+
+  return total;
+};
+
+// Helper to compute a parent's effective aggregated value (no subcolumn)
+export const getCalculatedAggregatedNumber = (
+  day: string,
+  row: RowStructure,
+  allRows: RowStructure[],
+) => {
+  // If parent has explicit numeric override, use it
+  if (row.customValues && typeof row.customValues[day] === "number") {
+    return row.customValues[day] as number;
+  }
+
+  // Base: sum of leaf child rows under this parent for the day
+  const childRows = allRows.filter(
+    (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+  );
+  let total = childRows.reduce((acc, current) => {
+    const value = current.rowData?.[day];
+    if (typeof value === "number") return acc + value;
+    if (typeof value === "object")
+      return acc + Object.values(value).reduce((s, v) => s + (v || 0), 0);
+    return acc;
+  }, 0);
+
+  // Delta: immediate child parents' overrides (numeric or object)
+  const directChildParents = allRows.filter((r) => {
+    if (r.type !== "parent" || !r.key || !row.key) return false;
+    const parts = r.key.split("|");
+    return parts.slice(0, -1).join("|") === row.key;
+  });
+  directChildParents.forEach((p) => {
+    const override = p.customValues?.[day];
+    if (override === undefined) return;
+
+    const underLeaf = allRows
+      .filter(
+        (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
+      )
+      .reduce((acc, current) => {
+        const v = current.rowData?.[day];
+        if (typeof v === "number") return acc + v;
+        if (typeof v === "object")
+          return acc + Object.values(v).reduce((s, n) => s + (n || 0), 0);
+        return acc;
+      }, 0);
+
+    const overrideTotal =
+      typeof override === "number"
+        ? override
+        : Object.values(override as SubColumn).reduce((s, v) => s + (v || 0), 0);
+    total += overrideTotal - underLeaf;
+  });
+
+  return total;
 };
 
 export const getDayNumberFrom = (date: string) => {

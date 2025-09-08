@@ -31,7 +31,11 @@ function computeParentSubcolumnForWeek(
   let sum = 0;
   days.forEach((d) => {
     const override = row.customValues?.[d];
-    if (override && typeof override === "object" && override[subKey] !== undefined) {
+    if (
+      override &&
+      typeof override === "object" &&
+      override[subKey] !== undefined
+    ) {
       sum += override[subKey];
     } else {
       childRows.forEach((child) => {
@@ -65,4 +69,3 @@ export default function WeeklySubcolumnsGroup({
     </Fragment>
   );
 }
-

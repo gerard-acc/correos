@@ -21,7 +21,12 @@ export default function WeeklyTimelines({
   const monthGroups = useMemo(() => {
     const order: string[] = [];
     const map: {
-      [key: string]: { monthNum: number; monthName: string; year: number; weeks: number };
+      [key: string]: {
+        monthNum: number;
+        monthName: string;
+        year: number;
+        weeks: number;
+      };
     } = {};
     weekKeys.forEach((week) => {
       const days = weeksMap[week] || [];
@@ -34,7 +39,9 @@ export default function WeeklyTimelines({
       if (!map[key]) {
         map[key] = {
           monthNum,
-          monthName: format(new Date(year, monthNum - 1), "MMMM", { locale: es }),
+          monthName: format(new Date(year, monthNum - 1), "MMMM", {
+            locale: es,
+          }),
           year,
           weeks: 0,
         };
@@ -62,7 +69,11 @@ export default function WeeklyTimelines({
       if (row.level !== 0) continue; // top-level parents only
       let rowSum = 0;
       const childRows = allRows.filter(
-        (r) => r.type === "child" && r.parentKey && row.key && r.parentKey.startsWith(row.key),
+        (r) =>
+          r.type === "child" &&
+          r.parentKey &&
+          row.key &&
+          r.parentKey.startsWith(row.key),
       );
       days.forEach((d) => {
         let numberTotal = 0;
@@ -117,7 +128,11 @@ export default function WeeklyTimelines({
         if (keyMonth !== monthNum || keyYear !== year) continue;
 
         const childRows = allRows.filter(
-          (r) => r.type === "child" && r.parentKey && row.key && r.parentKey.startsWith(row.key),
+          (r) =>
+            r.type === "child" &&
+            r.parentKey &&
+            row.key &&
+            r.parentKey.startsWith(row.key),
         );
         let numberTotal = 0;
         const subTotals: { [k: string]: number } = {};
@@ -163,10 +178,14 @@ export default function WeeklyTimelines({
           <td
             key={`month-${m.key}`}
             colSpan={
-              m.weeks * (subcolumnsStructure ? Object.keys(subcolumnsStructure).length + 1 : 1)
+              m.weeks *
+              (subcolumnsStructure
+                ? Object.keys(subcolumnsStructure).length + 1
+                : 1)
             }
           >
-            {m.monthName} {m.year} Total: {getMonthTotalAggregated(m.monthNum, m.year, nestedRows)}
+            {m.monthName} {m.year} Total:{" "}
+            {getMonthTotalAggregated(m.monthNum, m.year, nestedRows)}
           </td>
         ))}
       </tr>
@@ -176,7 +195,9 @@ export default function WeeklyTimelines({
           <td
             key={`workdays-${week}`}
             colSpan={
-              subcolumnsStructure ? Object.keys(subcolumnsStructure).length + 1 : 1
+              subcolumnsStructure
+                ? Object.keys(subcolumnsStructure).length + 1
+                : 1
             }
           >
             Días laborables: {getWeekWorkdays(week)}
@@ -189,7 +210,9 @@ export default function WeeklyTimelines({
           <td
             key={`week-${week}`}
             colSpan={
-              subcolumnsStructure ? Object.keys(subcolumnsStructure).length + 1 : 1
+              subcolumnsStructure
+                ? Object.keys(subcolumnsStructure).length + 1
+                : 1
             }
           >
             Semana {week} Total: {getWeekTotalAggregated(week, nestedRows)}
@@ -197,14 +220,16 @@ export default function WeeklyTimelines({
         ))}
       </tr>
       {subcolumnsStructure && (
-        <tr>
+        <tr className="subcolumnsRow">
           <td></td>
           {weekKeys.map((week) => (
             <>
               {Object.keys(subcolumnsStructure).map((key) => (
                 <td key={`week-${week}-${key}`}>{key}</td>
               ))}
-              <td key={`week-${week}-total`}>Total</td>
+              <td key={`week-${week}-total`}>
+                <strong>Total</strong>
+              </td>
             </>
           ))}
         </tr>

@@ -22,9 +22,8 @@ import TableDailyCells from "./TableDailyCells";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
-  const [currentPeriod, setCurrentPeriod] = useState<TableProps["periods"]>(
-    periods,
-  );
+  const [currentPeriod, setCurrentPeriod] =
+    useState<TableProps["periods"]>(periods);
   const [subColumnsStructure, setSubColumnsStructure] = useState<
     SubColumn | undefined
   >(undefined);
@@ -35,10 +34,12 @@ export default function Table({ data, periods }: TableProps) {
     new Set(),
   );
   const weekKeys = useMemo(
-    () => Object.keys(weeksMap).map((w) => parseInt(w, 10)).sort((a, b) => a - b),
+    () =>
+      Object.keys(weeksMap)
+        .map((w) => parseInt(w, 10))
+        .sort((a, b) => a - b),
     [weeksMap],
   );
-
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -117,7 +118,7 @@ export default function Table({ data, periods }: TableProps) {
             { id: "daily", label: "Diario" },
             { id: "weekly", label: "Semanal" },
           ]}
-          onChange={(id) => setCurrentPeriod(id as TableProps["periods"]) }
+          onChange={(id) => setCurrentPeriod(id as TableProps["periods"])}
         ></MultiButton>
         <button>Descargar</button>
       </div>
@@ -150,9 +151,12 @@ export default function Table({ data, periods }: TableProps) {
               >
                 <td
                   style={{
-                    paddingLeft: `${row.level * 20}px`,
+                    paddingLeft: `${(row.level + 1) * 10}px`,
                     cursor: row.type === "parent" ? "pointer" : "default",
                     borderLeft: `4px solid ${row.status === "allVerified" ? "var(--verified-cell)" : row.status === "presentModifications" ? "var(--modified-cell)" : "unset"}`,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
                   }}
                   onClick={
                     row.type === "parent" && row.key
@@ -160,35 +164,39 @@ export default function Table({ data, periods }: TableProps) {
                       : undefined
                   }
                 >
-                  {row.type === "parent" && (
-                    <span style={{ marginRight: "8px" }}>
-                      {row.key && expandedParents.has(row.key) ? "▼" : "▶"}
-                    </span>
+                  {row.type === "parent" ? (
+                    row.key && expandedParents.has(row.key) ? (
+                      <img src="/arrow_down.svg" width="10px" />
+                    ) : (
+                      <img src="/arrow_right.svg" width="7px" />
+                    )
+                  ) : (
+                    ""
                   )}
+
                   {row.name}
                 </td>
 
-                {currentPeriod === "daily"
-                  ? (
-                      <TableDailyCells
-                        row={row}
-                        columns={columns}
-                        subcolumnsStructure={subColumnsStructure}
-                        isVerifying={isVerifying}
-                        visibleRows={visibleRows}
-                        nestedRows={nestedRows}
-                        rowIndex={index}
-                        onUpdateRows={() => setNestedRows([...nestedRows])}
-                      />
-                    ) : (
-                      <TableWeeklyCells
-                        row={row}
-                        weekKeys={weekKeys}
-                        weeksMap={weeksMap}
-                        subcolumnsStructure={subColumnsStructure}
-                        nestedRows={nestedRows}
-                      />
-                    )}
+                {currentPeriod === "daily" ? (
+                  <TableDailyCells
+                    row={row}
+                    columns={columns}
+                    subcolumnsStructure={subColumnsStructure}
+                    isVerifying={isVerifying}
+                    visibleRows={visibleRows}
+                    nestedRows={nestedRows}
+                    rowIndex={index}
+                    onUpdateRows={() => setNestedRows([...nestedRows])}
+                  />
+                ) : (
+                  <TableWeeklyCells
+                    row={row}
+                    weekKeys={weekKeys}
+                    weeksMap={weeksMap}
+                    subcolumnsStructure={subColumnsStructure}
+                    nestedRows={nestedRows}
+                  />
+                )}
               </tr>
             ))}
           </tbody>

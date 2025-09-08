@@ -6,7 +6,12 @@ import type {
   RowStructure,
   WeekStructure,
 } from "./interfaces";
-import { buildMonths, buildWeeks } from "./utils";
+import {
+  buildMonths,
+  buildWeeks,
+  getCalculatedAggregatedNumber,
+  getCalculatedSubcolumnNumber,
+} from "./utils";
 import { getISOWeek, parse } from "date-fns";
 
 interface TableTimelines {
@@ -59,40 +64,17 @@ export default function TableTimelines({
         const keyWeek = getISOWeek(date);
         if (keyWeek !== weekNum) continue;
 
-        // Aggregate children's values for this parent and day
-        const childRows = allRows.filter(
-          (r) => r.type === "child" && r.parentKey && row.key && r.parentKey.startsWith(row.key),
-        );
-        let numberTotal = 0;
-        const subTotals: { [k: string]: number } = {};
-        for (const child of childRows) {
-          const value = child.rowData?.[col.day];
-          if (typeof value === "number") numberTotal += value;
-          else if (typeof value === "object") {
-            for (const [k, v] of Object.entries(value)) {
-              subTotals[k] = (subTotals[k] || 0) + (v as number);
-            }
-          }
-        }
-
-        const override = row.customValues?.[col.day];
-        if (override !== undefined) {
-          if (typeof override === "number") {
-            rowSum += override; // full override
-          } else if (typeof override === "object") {
-            // Merge override per subcolumn with children's totals
-            const merged = { ...subTotals } as { [k: string]: number };
-            for (const [k, v] of Object.entries(override)) {
-              merged[k] = v as number;
-            }
-            rowSum += Object.values(merged).reduce((s, v) => s + v, 0);
-          }
-        } else {
-          // No override: use children's totals (object vs number)
-          rowSum +=
-            Object.keys(subTotals).length > 0
-              ? Object.values(subTotals).reduce((s, v) => s + v, 0)
-              : numberTotal;
+        if (subcolumnsStructure && row.key) {
+          // Sum effective subcolumn numbers for this parent and day
+          const subKeys = Object.keys(subcolumnsStructure);
+          const dayTotal = subKeys.reduce(
+            (acc, k) => acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
+            0,
+          );
+          rowSum += dayTotal;
+        } else if (row.key) {
+          // Aggregated effective number
+          rowSum += getCalculatedAggregatedNumber(col.day, row, allRows);
         }
       }
       totalSum += rowSum;
@@ -116,38 +98,15 @@ export default function TableTimelines({
         const keyYear = parseInt(parts[2]);
         if (keyMonth !== monthNum || keyYear !== year) continue;
 
-        // Aggregate children's values for this parent and day
-        const childRows = allRows.filter(
-          (r) => r.type === "child" && r.parentKey && row.key && r.parentKey.startsWith(row.key),
-        );
-        let numberTotal = 0;
-        const subTotals: { [k: string]: number } = {};
-        for (const child of childRows) {
-          const value = child.rowData?.[col.day];
-          if (typeof value === "number") numberTotal += value;
-          else if (typeof value === "object") {
-            for (const [k, v] of Object.entries(value)) {
-              subTotals[k] = (subTotals[k] || 0) + (v as number);
-            }
-          }
-        }
-
-        const override = row.customValues?.[col.day];
-        if (override !== undefined) {
-          if (typeof override === "number") {
-            rowSum += override; // full override
-          } else if (typeof override === "object") {
-            const merged = { ...subTotals } as { [k: string]: number };
-            for (const [k, v] of Object.entries(override)) {
-              merged[k] = v as number;
-            }
-            rowSum += Object.values(merged).reduce((s, v) => s + v, 0);
-          }
-        } else {
-          rowSum +=
-            Object.keys(subTotals).length > 0
-              ? Object.values(subTotals).reduce((s, v) => s + v, 0)
-              : numberTotal;
+        if (subcolumnsStructure && row.key) {
+          const subKeys = Object.keys(subcolumnsStructure);
+          const dayTotal = subKeys.reduce(
+            (acc, k) => acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
+            0,
+          );
+          rowSum += dayTotal;
+        } else if (row.key) {
+          rowSum += getCalculatedAggregatedNumber(col.day, row, allRows);
         }
       }
       totalSum += rowSum;

@@ -1,5 +1,9 @@
 import { Fragment } from "react";
-import type { ColumnStructure, DataStructure, RowStructure } from "./interfaces";
+import type {
+  ColumnStructure,
+  DataStructure,
+  RowStructure,
+} from "./interfaces";
 import TableTimelines from "./TableTimelines";
 
 interface DailyTimelinesProps {
@@ -46,14 +50,17 @@ export default function DailyTimelines({
         ))}
       </tr>
       {subcolumnsStructure && (
-        <tr>
+        <tr className="subcolumnsRow">
           <td></td>
           {columns.map((column) => (
             <Fragment key={column.day}>
               {Object.keys(subcolumnsStructure).map((key) => (
                 <td key={`${column.day}-${key}`}>{key}</td>
               ))}
-              <td key={`${column.day}-total`}>Total</td>
+              <td key={`${column.day}-total`}>
+                {" "}
+                <strong>Total</strong>
+              </td>
             </Fragment>
           ))}
         </tr>
@@ -61,4 +68,3 @@ export default function DailyTimelines({
     </>
   );
 }
-

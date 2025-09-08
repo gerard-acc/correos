@@ -56,6 +56,9 @@ export default function TableDailyCells({
                     )
                   : undefined
               }
+              allRows={nestedRows}
+              row={row}
+              subKeys={Object.keys(subcolumnsStructure)}
             />
           </Fragment>
         ) : (
@@ -74,4 +77,3 @@ export default function TableDailyCells({
     </>
   );
 }
-
