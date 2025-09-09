@@ -32,9 +32,6 @@ function Index() {
         <Link to="/operaciones">
           <BoxLink title="Operaciones" icon={calculate}></BoxLink>
         </Link>
-        <Link to="/estrategia">
-          <BoxLink title="Estrategia" icon={graph_2}></BoxLink>
-        </Link>
         <Link to="/rendimiento">
           <BoxLink title="Rendimiento" icon={chart_data}></BoxLink>
         </Link>

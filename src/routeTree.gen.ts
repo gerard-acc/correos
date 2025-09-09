@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SeguimientoRouteImport } from './routes/seguimiento'
 import { Route as RendimientoRouteImport } from './routes/rendimiento'
 import { Route as OperacionesRouteImport } from './routes/operaciones'
-import { Route as EstrategiaRouteImport } from './routes/estrategia'
 import { Route as ComercialRouteImport } from './routes/comercial'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -31,11 +30,6 @@ const OperacionesRoute = OperacionesRouteImport.update({
   path: '/operaciones',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EstrategiaRoute = EstrategiaRouteImport.update({
-  id: '/estrategia',
-  path: '/estrategia',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ComercialRoute = ComercialRouteImport.update({
   id: '/comercial',
   path: '/comercial',
@@ -50,7 +44,6 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/comercial': typeof ComercialRoute
-  '/estrategia': typeof EstrategiaRoute
   '/operaciones': typeof OperacionesRoute
   '/rendimiento': typeof RendimientoRoute
   '/seguimiento': typeof SeguimientoRoute
@@ -58,7 +51,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/comercial': typeof ComercialRoute
-  '/estrategia': typeof EstrategiaRoute
   '/operaciones': typeof OperacionesRoute
   '/rendimiento': typeof RendimientoRoute
   '/seguimiento': typeof SeguimientoRoute
@@ -67,7 +59,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/comercial': typeof ComercialRoute
-  '/estrategia': typeof EstrategiaRoute
   '/operaciones': typeof OperacionesRoute
   '/rendimiento': typeof RendimientoRoute
   '/seguimiento': typeof SeguimientoRoute
@@ -77,23 +68,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/comercial'
-    | '/estrategia'
     | '/operaciones'
     | '/rendimiento'
     | '/seguimiento'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/comercial'
-    | '/estrategia'
-    | '/operaciones'
-    | '/rendimiento'
-    | '/seguimiento'
+  to: '/' | '/comercial' | '/operaciones' | '/rendimiento' | '/seguimiento'
   id:
     | '__root__'
     | '/'
     | '/comercial'
-    | '/estrategia'
     | '/operaciones'
     | '/rendimiento'
     | '/seguimiento'
@@ -102,7 +85,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ComercialRoute: typeof ComercialRoute
-  EstrategiaRoute: typeof EstrategiaRoute
   OperacionesRoute: typeof OperacionesRoute
   RendimientoRoute: typeof RendimientoRoute
   SeguimientoRoute: typeof SeguimientoRoute
@@ -131,13 +113,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OperacionesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/estrategia': {
-      id: '/estrategia'
-      path: '/estrategia'
-      fullPath: '/estrategia'
-      preLoaderRoute: typeof EstrategiaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/comercial': {
       id: '/comercial'
       path: '/comercial'
@@ -158,7 +133,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ComercialRoute: ComercialRoute,
-  EstrategiaRoute: EstrategiaRoute,
   OperacionesRoute: OperacionesRoute,
   RendimientoRoute: RendimientoRoute,
   SeguimientoRoute: SeguimientoRoute,

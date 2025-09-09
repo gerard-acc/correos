@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { RowStructure } from "./interfaces";
+import type { RowStructure } from "../../interfaces";
 import WeeklySubcolumnsGroup from "./WeeklySubcolumnsGroup";
 import WeeklyTotalCell from "./WeeklyTotalCell";
 
@@ -23,12 +23,18 @@ export default function TableWeeklyCells({
     () =>
       row.type === "parent" && row.key
         ? nestedRows.filter(
-            (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+            (r) =>
+              r.type === "child" &&
+              r.parentKey &&
+              r.parentKey.startsWith(row.key!),
           )
         : [],
     [nestedRows, row],
   );
-  const subKeys = useMemo(() => Object.keys(subcolumnsStructure || {}), [subcolumnsStructure]);
+  const subKeys = useMemo(
+    () => Object.keys(subcolumnsStructure || {}),
+    [subcolumnsStructure],
+  );
 
   return (
     <>

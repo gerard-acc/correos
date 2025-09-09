@@ -1,5 +1,9 @@
 import { Fragment } from "react";
-import type { ColumnStructure, RowStructure, SubColumn } from "./interfaces";
+import type {
+  ColumnStructure,
+  RowStructure,
+  SubColumn,
+} from "../../interfaces";
 import TableCell from "./TableCell";
 import TableTotalCell from "./TableTotalCell";
 

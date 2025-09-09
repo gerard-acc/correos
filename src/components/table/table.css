@@ -96,6 +96,9 @@ tbody tr {
   & td:first-child {
     min-width: 150px;
     text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 
   &.parent {

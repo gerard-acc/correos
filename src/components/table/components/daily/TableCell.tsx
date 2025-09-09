@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import type { CellState, ColumnStructure, RowStructure } from "./interfaces";
-import { getCalculatedValue, getValueFor, isObjectEmpty } from "./utils";
+import type {
+  CellState,
+  ColumnStructure,
+  RowStructure,
+} from "../../interfaces";
+import { getCalculatedValue, getValueFor, isObjectEmpty } from "../../utils";
 
 interface TableCell {
   index: number;

@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import type { RowStructure } from "./interfaces";
+import type { RowStructure } from "../../interfaces";
 
 interface WeeklySubcolumnsGroupProps {
   week: number;

@@ -15,10 +15,11 @@ import {
 } from "./utils";
 import Toggle from "../common/toggle/Toggle";
 import MultiButton from "../common/multiButton/MultiButton";
-import WeeklyTimelines from "./WeeklyTimelines";
-import TableWeeklyCells from "./TableWeeklyCells";
-import DailyTimelines from "./DailyTimelines";
-import TableDailyCells from "./TableDailyCells";
+import WeeklyTimelines from "./components/weekly/WeeklyTimelines";
+import TableWeeklyCells from "./components/weekly/TableWeeklyCells";
+import DailyTimelines from "./components/daily/DailyTimelines";
+import TableDailyCells from "./components/daily/TableDailyCells";
+import TableFirstCol from "./components/TableFirstCol";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -149,33 +150,11 @@ export default function Table({ data, periods }: TableProps) {
                 key={`${row.type}-${index}`}
                 className={`level-${row.level} ${row.type}`}
               >
-                <td
-                  style={{
-                    paddingLeft: `${(row.level + 1) * 10}px`,
-                    cursor: row.type === "parent" ? "pointer" : "default",
-                    borderLeft: `4px solid ${row.status === "allVerified" ? "var(--verified-cell)" : row.status === "presentModifications" ? "var(--modified-cell)" : "unset"}`,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                  }}
-                  onClick={
-                    row.type === "parent" && row.key
-                      ? () => toggleParent(row.key!)
-                      : undefined
-                  }
-                >
-                  {row.type === "parent" ? (
-                    row.key && expandedParents.has(row.key) ? (
-                      <img src="/arrow_down.svg" width="10px" />
-                    ) : (
-                      <img src="/arrow_right.svg" width="7px" />
-                    )
-                  ) : (
-                    ""
-                  )}
-
-                  {row.name}
-                </td>
+                <TableFirstCol
+                  row={row}
+                  expandedParents={expandedParents}
+                  onToggle={(key) => toggleParent(key)}
+                ></TableFirstCol>
 
                 {currentPeriod === "daily" ? (
                   <TableDailyCells

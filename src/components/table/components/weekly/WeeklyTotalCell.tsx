@@ -1,4 +1,4 @@
-import type { RowStructure } from "./interfaces";
+import type { RowStructure } from "../../interfaces";
 
 interface WeeklyTotalCellProps {
   week: number;
@@ -57,4 +57,3 @@ export default function WeeklyTotalCell({
       : computeParentTotalForWeek(row, childRows, days);
   return <td key={`week-${week}`}>{total}</td>;
 }
-

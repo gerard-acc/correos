@@ -1,5 +1,5 @@
-import type { RowStructure, SubColumn } from "./interfaces";
-import { getCalculatedSubcolumnNumber } from "./utils";
+import type { RowStructure, SubColumn } from "../../interfaces";
+import { getCalculatedSubcolumnNumber } from "../../utils";
 
 interface TableTotalCellProps {
   day: string;

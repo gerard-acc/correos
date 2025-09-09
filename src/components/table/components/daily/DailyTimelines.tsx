@@ -3,7 +3,7 @@ import type {
   ColumnStructure,
   DataStructure,
   RowStructure,
-} from "./interfaces";
+} from "../../interfaces";
 import TableTimelines from "./TableTimelines";
 
 interface DailyTimelinesProps {

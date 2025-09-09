@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { ColumnStructure, RowStructure } from "./interfaces";
+import type { ColumnStructure, RowStructure } from "../../interfaces";
 import { parse, format } from "date-fns";
 import { es } from "date-fns/locale";
 

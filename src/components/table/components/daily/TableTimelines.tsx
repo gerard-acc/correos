@@ -5,13 +5,13 @@ import type {
   MonthStructure,
   RowStructure,
   WeekStructure,
-} from "./interfaces";
+} from "../../interfaces";
 import {
   buildMonths,
   buildWeeks,
   getCalculatedAggregatedNumber,
   getCalculatedSubcolumnNumber,
-} from "./utils";
+} from "../../utils";
 import { getISOWeek, parse } from "date-fns";
 
 interface TableTimelines {
@@ -68,7 +68,8 @@ export default function TableTimelines({
           // Sum effective subcolumn numbers for this parent and day
           const subKeys = Object.keys(subcolumnsStructure);
           const dayTotal = subKeys.reduce(
-            (acc, k) => acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
+            (acc, k) =>
+              acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
             0,
           );
           rowSum += dayTotal;
@@ -101,7 +102,8 @@ export default function TableTimelines({
         if (subcolumnsStructure && row.key) {
           const subKeys = Object.keys(subcolumnsStructure);
           const dayTotal = subKeys.reduce(
-            (acc, k) => acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
+            (acc, k) =>
+              acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
             0,
           );
           rowSum += dayTotal;
