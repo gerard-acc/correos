@@ -11,7 +11,7 @@ interface MultiButton {
 }
 
 export default function MultiButton({ buttons, onChange }: MultiButton) {
-  const [activeButton, setActiveButton] = useState("");
+  const [activeButton, setActiveButton] = useState(buttons[0]?.id || "");
 
   return (
     <div className="multiButtons">

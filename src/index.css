@@ -71,6 +71,10 @@ h3 {
   line-height: 130%;
   font-weight: 500;
 }
+.textTitle {
+  font-size: 1rem;
+  font-weight: 700;
+}
 .smallTitle {
   font-size: 12px;
   line-height: 24px;
@@ -80,4 +84,10 @@ h3 {
   font-size: 12px;
   line-height: 24px;
   font-weight: 400;
+}
+input {
+  padding: 12px;
+  border: 1px solid var(--global-border-color);
+  border-radius: 8px;
+  color: #333;
 }

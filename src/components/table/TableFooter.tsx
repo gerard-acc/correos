@@ -2,10 +2,14 @@ import "./tableFooter.css";
 import Button from "../common/button/Button";
 import LegendPoint from "../common/legendPoint/LegendPoint";
 import { useSpecificModal } from "../../store/modalStore";
-import { Modal } from "../layout/modal/Modal";
+import EditRangeModal from "./modals/editRange.modal";
+import HistoricChangesModal from "./modals/historicChanges.modal";
+import WriteCommentModal from "./modals/writeComment";
 
 export default function TableFooter() {
-  const deleteModal = useSpecificModal("delete-user");
+  const editRangeModal = useSpecificModal("edit-range");
+  const historicChangesModal = useSpecificModal("historic-changes");
+  const writeCommentModal = useSpecificModal("write-comment");
 
   return (
     <>
@@ -27,42 +31,27 @@ export default function TableFooter() {
           <Button
             text="Escribir un comentario"
             onClick={() => {
-              alert("comentario");
+              writeCommentModal.open();
             }}
           ></Button>
           <Button
             text="Ver histórico de cambios"
             onClick={() => {
-              alert("histórico");
+              historicChangesModal.open();
             }}
           ></Button>
           <Button
             filled={true}
             text="Editar por % en un rango de tiempo"
             onClick={() => {
-              deleteModal.open({ userId: "ola" });
+              editRangeModal.open();
             }}
           ></Button>
         </div>
       </div>
-      <Modal
-        id="delete-user"
-        title="Editar por % en un rango de tiempo"
-        footer={
-          <>
-            <Button text="Cancelar" onClick={deleteModal.close}></Button>
-            <Button
-              text="Guardar"
-              filled={true}
-              onClick={() => {
-                console.log("Saving");
-              }}
-            ></Button>
-          </>
-        }
-      >
-        <p>Modal</p>
-      </Modal>
+      <WriteCommentModal></WriteCommentModal>
+      <HistoricChangesModal></HistoricChangesModal>
+      <EditRangeModal></EditRangeModal>
     </>
   );
 }

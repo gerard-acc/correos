@@ -41,6 +41,7 @@
     justify-content: flex-end;
     gap: 12px;
     align-items: center;
+    margin-top: 1rem;
   }
 }
 

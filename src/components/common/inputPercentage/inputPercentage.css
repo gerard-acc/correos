@@ -1,0 +1,16 @@
+.inputPercentage {
+  position: relative;
+  & input {
+    padding-right: 20px;
+    text-align: right;
+  }
+  & span {
+    position: absolute;
+    right: 19px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    width: 17px;
+    text-align: right;
+  }
+}

@@ -20,6 +20,7 @@ import TableWeeklyCells from "./components/weekly/TableWeeklyCells";
 import DailyTimelines from "./components/daily/DailyTimelines";
 import TableDailyCells from "./components/daily/TableDailyCells";
 import TableFirstCol from "./components/TableFirstCol";
+import Button from "../common/button/Button";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -44,8 +45,6 @@ export default function Table({ data, periods }: TableProps) {
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
-      console.log({ nestedRows, expandedParents });
-
       if (row.type === "parent" && row.key) {
         const parentParts = row.key.split("|");
         for (let i = 1; i < parentParts.length; i++) {
@@ -121,7 +120,12 @@ export default function Table({ data, periods }: TableProps) {
           ]}
           onChange={(id) => setCurrentPeriod(id as TableProps["periods"])}
         ></MultiButton>
-        <button>Descargar</button>
+        <Button
+          text="Descargar"
+          onClick={() => console.log("Descargar")}
+          icon="download.svg"
+          border={false}
+        ></Button>
       </div>
       <div className="tableContainer">
         <table>

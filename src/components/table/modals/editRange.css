@@ -1,0 +1,12 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.formRow {
+  display: flex;
+  gap: 1.5rem;
+}
+.textTitle {
+  margin-bottom: 10px;
+}
