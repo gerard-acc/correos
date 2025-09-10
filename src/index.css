@@ -48,7 +48,17 @@ a {
 
 @font-face {
   font-family: "OpenSans";
-  src: url("/fonts/OpenSans-VariableFont.ttf");
+  src: url("/fonts/OpenSans-VariableFont.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "OpenSans";
+  src: url("/fonts/OpenSans-MediumItalic.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
 }
 p {
   font-weight: 400;

@@ -12,8 +12,9 @@
 table {
   --header-color: #423d47;
   --festivity-color: #726f73;
-  --modified-cell: #faedc8;
+  --modified-cell: #e5faf1;
   --verified-cell: #e5faf1;
+  --uncompleted-row: #faedc8;
   --month-color: #c9e1ff;
   --week-color: #ffe7c9;
   --workday-color: #dbd9d7;

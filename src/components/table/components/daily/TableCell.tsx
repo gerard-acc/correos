@@ -173,6 +173,7 @@ export default function TableCell({
             : cellStatus === "verified"
               ? "var(--verified-cell)"
               : "unset",
+        fontStyle: cellStatus === "modified" ? "italic" : "",
       }}
     >
       {isEditing ? (
