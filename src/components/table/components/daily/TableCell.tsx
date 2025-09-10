@@ -113,18 +113,22 @@ export default function TableCell({
   const verifyCell = (rowIndex: number, column: string) => {
     const row = visibleRows[rowIndex];
 
-    if (!row.modifiedCells?.[column]) {
-      console.log("Only modified cells can be verified");
-      return;
-    }
     // TODO -> Ver qué quieren en back para validar la celda
     console.log("Validate cell: ", rowIndex, column);
 
     setTimeout(() => {
-      delete row.modifiedCells![column];
+      // Delete the modified cell mark
+      if (row.modifiedCells && row.modifiedCells[column]) {
+        delete row.modifiedCells[column];
+      }
 
+      // Add a verified cell mark
+
+      // If verifiedCells doesn't exist, create it
       if (!row.verifiedCells) row.verifiedCells = {};
 
+      // If it's a subcolumn, we need to mark the specific subcolumn as verified
+      // If not, we mark the column of this row as verified
       if (subColumn) {
         if (!row.verifiedCells[column]) row.verifiedCells[column] = {};
         if (typeof row.verifiedCells[column] === "object") {
@@ -134,6 +138,7 @@ export default function TableCell({
         row.verifiedCells[column] = true;
       }
 
+      // We modify the row status based on the cells
       row.status = calculateRowStatus(row);
 
       // Force updates
@@ -168,9 +173,9 @@ export default function TableCell({
       style={{
         cursor: "pointer",
         backgroundColor:
-          cellStatus === "modified"
+          cellStatus === "modified" && !isVerifying
             ? "var(--modified-cell)"
-            : cellStatus === "verified"
+            : cellStatus === "verified" && isVerifying
               ? "var(--verified-cell)"
               : "unset",
         fontStyle: cellStatus === "modified" ? "italic" : "",
