@@ -26,12 +26,10 @@ export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [currentPeriod, setCurrentPeriod] =
     useState<TableProps["periods"]>(periods);
-  const [subColumnsStructure, setSubColumnsStructure] = useState<
-    SubColumn | undefined
-  >(undefined);
-  const [columns, setColumns] = useState<ColumnStructure[]>([]);
+  // columns and weeks are derived from data; keep rows as state for edits
+  const columns = useMemo<ColumnStructure[]>(() => buildColumns(data), [data]);
   const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
-  const [weeksMap, setWeeksMap] = useState<{ [week: number]: string[] }>({});
+  const weeksMap = useMemo<{ [week: number]: string[] }>(() => groupDaysByWeek(data), [data]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
   );
@@ -42,6 +40,7 @@ export default function Table({ data, periods }: TableProps) {
         .sort((a, b) => a - b),
     [weeksMap],
   );
+  const subColumnsStructure = useMemo<SubColumn | undefined>(() => getSubcolumnsStructure(columns), [columns]);
 
   const visibleRows = useMemo(() => {
     return nestedRows.filter((row: RowStructure): boolean => {
@@ -70,14 +69,8 @@ export default function Table({ data, periods }: TableProps) {
   }, [nestedRows, expandedParents]);
 
   useEffect(() => {
-    setColumns(buildColumns(data));
     setNestedRows(buildRows(data));
-    setWeeksMap(groupDaysByWeek(data));
   }, [data]);
-
-  useEffect(() => {
-    setSubColumnsStructure(getSubcolumnsStructure(columns));
-  }, [columns]);
 
   useEffect(() => {
     setCurrentPeriod(periods);
@@ -151,13 +144,13 @@ export default function Table({ data, periods }: TableProps) {
           <tbody>
             {visibleRows.map((row, index) => (
               <tr
-                key={`${row.type}-${index}`}
+                key={row.key ?? `${row.name}-${index}`}
                 className={`level-${row.level} ${row.type}`}
               >
                 <TableFirstCol
                   row={row}
                   expandedParents={expandedParents}
-                  onToggle={(key) => toggleParent(key)}
+                  onToggle={toggleParent}
                 ></TableFirstCol>
 
                 {currentPeriod === "daily" ? (
