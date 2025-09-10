@@ -106,7 +106,9 @@ export const buildWeeks = (data: DataStructure): WeekStructure => {
 };
 
 // Returns a map of ISO week number -> list of day keys (dd/MM/yyyy)
-export const groupDaysByWeek = (data: DataStructure): { [week: number]: string[] } => {
+export const groupDaysByWeek = (
+  data: DataStructure,
+): { [week: number]: string[] } => {
   const weeks: { [week: number]: string[] } = {};
   for (const day in data) {
     const date = parse(day, "dd/MM/yyyy", new Date());
@@ -319,7 +321,8 @@ export const getCalculatedSubcolumnNumber = (
 
   // Base: sum of leaf child rows under this parent for the subcolumn
   const childRows = allRows.filter(
-    (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+    (r) =>
+      r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
   );
   let total = childRows.reduce((acc, current) => {
     if (current.rowData && current.rowData[day]) {
@@ -344,7 +347,8 @@ export const getCalculatedSubcolumnNumber = (
 
     const underLeaf = allRows
       .filter(
-        (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
+        (r) =>
+          r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
       )
       .reduce((acc, current) => {
         const value = current.rowData?.[day];
@@ -373,7 +377,8 @@ export const getCalculatedAggregatedNumber = (
 
   // Base: sum of leaf child rows under this parent for the day
   const childRows = allRows.filter(
-    (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
+    (r) =>
+      r.type === "child" && r.parentKey && r.parentKey.startsWith(row.key!),
   );
   let total = childRows.reduce((acc, current) => {
     const value = current.rowData?.[day];
@@ -395,7 +400,8 @@ export const getCalculatedAggregatedNumber = (
 
     const underLeaf = allRows
       .filter(
-        (r) => r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
+        (r) =>
+          r.type === "child" && r.parentKey && r.parentKey.startsWith(p.key!),
       )
       .reduce((acc, current) => {
         const v = current.rowData?.[day];
@@ -408,7 +414,10 @@ export const getCalculatedAggregatedNumber = (
     const overrideTotal =
       typeof override === "number"
         ? override
-        : Object.values(override as SubColumn).reduce((s, v) => s + (v || 0), 0);
+        : Object.values(override as SubColumn).reduce(
+            (s, v) => s + (v || 0),
+            0,
+          );
     total += overrideTotal - underLeaf;
   });
 
@@ -421,4 +430,61 @@ export const getDayNumberFrom = (date: string) => {
 
 export const isObjectEmpty = (object: object) => {
   return Object.keys(object).length === 0;
+};
+
+// Sum effective aggregated values for a row over a list of day keys (dd/MM/yyyy)
+export const sumAggregatedForDays = (
+  days: string[],
+  row: RowStructure,
+  allRows: RowStructure[],
+) => {
+  if (row.type === "child") {
+    // Child: sum own values (numbers or sum of object values)
+    return days.reduce((acc, d) => {
+      const v = row.rowData?.[d];
+      if (typeof v === "number") return acc + v;
+      if (typeof v === "object")
+        return acc + Object.values(v).reduce((s, n) => s + (n || 0), 0);
+      return acc;
+    }, 0);
+  }
+  // Parent: use effective aggregated helper per day
+  return days.reduce(
+    (acc, d) => acc + getCalculatedAggregatedNumber(d, row, allRows),
+    0,
+  );
+};
+
+// Sum effective subcolumn values for a row over a list of day keys
+export const sumSubcolumnForDays = (
+  days: string[],
+  row: RowStructure,
+  allRows: RowStructure[],
+  subKey: string,
+) => {
+  if (row.type === "child") {
+    return days.reduce((acc, d) => {
+      const v = row.rowData?.[d];
+      if (typeof v === "object" && v[subKey] !== undefined)
+        return acc + (v[subKey] || 0);
+      return acc;
+    }, 0);
+  }
+  return days.reduce(
+    (acc, d) => acc + getCalculatedSubcolumnNumber(d, row, allRows, subKey),
+    0,
+  );
+};
+
+// Count non-festive days in a list of day keys using the columns metadata
+export const countWorkdaysForDays = (
+  days: string[],
+  columns: ColumnStructure[],
+) => {
+  const set = new Set(days);
+  let count = 0;
+  for (const col of columns) {
+    if (set.has(col.day) && !col.isFestivity) count += 1;
+  }
+  return count;
 };

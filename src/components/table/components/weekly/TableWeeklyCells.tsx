@@ -46,7 +46,7 @@ export default function TableWeeklyCells({
             week={week}
             days={days}
             row={row}
-            childRows={childRows}
+            allRows={nestedRows}
             subKeys={subKeys}
           />
         ) : (
@@ -55,7 +55,7 @@ export default function TableWeeklyCells({
             week={week}
             days={days}
             row={row}
-            childRows={childRows}
+            allRows={nestedRows}
           />
         );
       })}

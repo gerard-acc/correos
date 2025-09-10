@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import type { ColumnStructure, RowStructure } from "../../interfaces";
 import { parse, format } from "date-fns";
 import { es } from "date-fns/locale";
+import { countWorkdaysForDays, sumAggregatedForDays } from "../../utils";
 
 interface WeeklyTimelinesProps {
   weeksMap: { [week: number]: string[] };
@@ -54,61 +55,17 @@ export default function WeeklyTimelines({
 
   const getWeekWorkdays = (week: number) => {
     const days = weeksMap[week] || [];
-    let count = 0;
-    days.forEach((d) => {
-      const c = columns.find((col) => col.day === d);
-      if (c && !c.isFestivity) count += 1;
-    });
-    return count;
+    return countWorkdaysForDays(days, columns);
   };
 
   const getWeekTotalAggregated = (week: number, allRows: RowStructure[]) => {
     const days = weeksMap[week] || [];
-    let totalSum = 0;
+    let total = 0;
     for (const row of allRows) {
-      if (row.level !== 0) continue; // top-level parents only
-      let rowSum = 0;
-      const childRows = allRows.filter(
-        (r) =>
-          r.type === "child" &&
-          r.parentKey &&
-          row.key &&
-          r.parentKey.startsWith(row.key),
-      );
-      days.forEach((d) => {
-        let numberTotal = 0;
-        const subTotals: { [k: string]: number } = {};
-        for (const child of childRows) {
-          const value = child.rowData?.[d];
-          if (typeof value === "number") numberTotal += value;
-          else if (typeof value === "object") {
-            for (const [k, v] of Object.entries(value)) {
-              subTotals[k] = (subTotals[k] || 0) + (v as number);
-            }
-          }
-        }
-
-        const override = row.customValues?.[d];
-        if (override !== undefined) {
-          if (typeof override === "number") {
-            rowSum += override;
-          } else if (typeof override === "object") {
-            const merged = { ...subTotals } as { [k: string]: number };
-            for (const [k, v] of Object.entries(override)) {
-              merged[k] = v as number;
-            }
-            rowSum += Object.values(merged).reduce((s, v) => s + v, 0);
-          }
-        } else {
-          rowSum +=
-            Object.keys(subTotals).length > 0
-              ? Object.values(subTotals).reduce((s, v) => s + v, 0)
-              : numberTotal;
-        }
-      });
-      totalSum += rowSum;
+      if (row.level !== 0) continue; // only top-level parents
+      total += sumAggregatedForDays(days, row, allRows);
     }
-    return totalSum;
+    return total;
   };
 
   const getMonthTotalAggregated = (
@@ -116,58 +73,18 @@ export default function WeeklyTimelines({
     year: number,
     allRows: RowStructure[],
   ) => {
-    let totalSum = 0;
+    const daysInMonth = columns
+      .filter((c) => {
+        const [d, m, y] = c.day.split("/").map((n) => parseInt(n));
+        return m === monthNum && y === year;
+      })
+      .map((c) => c.day);
+    let total = 0;
     for (const row of allRows) {
       if (row.level !== 0) continue; // only top-level parents
-
-      let rowSum = 0;
-      for (const col of columns) {
-        const parts = col.day.split("/");
-        const keyMonth = parseInt(parts[1]);
-        const keyYear = parseInt(parts[2]);
-        if (keyMonth !== monthNum || keyYear !== year) continue;
-
-        const childRows = allRows.filter(
-          (r) =>
-            r.type === "child" &&
-            r.parentKey &&
-            row.key &&
-            r.parentKey.startsWith(row.key),
-        );
-        let numberTotal = 0;
-        const subTotals: { [k: string]: number } = {};
-        for (const child of childRows) {
-          const value = child.rowData?.[col.day];
-          if (typeof value === "number") numberTotal += value;
-          else if (typeof value === "object") {
-            for (const [k, v] of Object.entries(value)) {
-              subTotals[k] = (subTotals[k] || 0) + (v as number);
-            }
-          }
-        }
-
-        const override = row.customValues?.[col.day];
-        if (override !== undefined) {
-          if (typeof override === "number") {
-            rowSum += override;
-          } else if (typeof override === "object") {
-            const merged = { ...subTotals } as { [k: string]: number };
-            for (const [k, v] of Object.entries(override)) {
-              merged[k] = v as number;
-            }
-            rowSum += Object.values(merged).reduce((s, v) => s + v, 0);
-          }
-        } else {
-          rowSum +=
-            Object.keys(subTotals).length > 0
-              ? Object.values(subTotals).reduce((s, v) => s + v, 0)
-              : numberTotal;
-        }
-      }
-      totalSum += rowSum;
+      total += sumAggregatedForDays(daysInMonth, row, allRows);
     }
-
-    return totalSum;
+    return total;
   };
 
   return (
