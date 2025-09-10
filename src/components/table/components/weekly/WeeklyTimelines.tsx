@@ -8,7 +8,7 @@ interface WeeklyTimelinesProps {
   weeksMap: { [week: number]: string[] };
   weekKeys: number[];
   subcolumnsStructure?: { [key: string]: number };
-  nestedRows: RowStructure[];
+  rows: RowStructure[];
   columns: ColumnStructure[];
 }
 
@@ -16,7 +16,7 @@ export default function WeeklyTimelines({
   weeksMap,
   weekKeys,
   subcolumnsStructure,
-  nestedRows,
+  rows,
   columns,
 }: WeeklyTimelinesProps) {
   const monthGroups = useMemo(() => {
@@ -75,7 +75,7 @@ export default function WeeklyTimelines({
   ) => {
     const daysInMonth = columns
       .filter((c) => {
-        const [d, m, y] = c.day.split("/").map((n) => parseInt(n));
+        const [, m, y] = c.day.split("/").map((n) => parseInt(n));
         return m === monthNum && y === year;
       })
       .map((c) => c.day);
@@ -102,7 +102,7 @@ export default function WeeklyTimelines({
             }
           >
             {m.monthName} {m.year} Total:{" "}
-            {getMonthTotalAggregated(m.monthNum, m.year, nestedRows)}
+            {getMonthTotalAggregated(m.monthNum, m.year, rows)}
           </td>
         ))}
       </tr>
@@ -132,7 +132,7 @@ export default function WeeklyTimelines({
                 : 1
             }
           >
-            Semana {week} Total: {getWeekTotalAggregated(week, nestedRows)}
+            Semana {week} Total: {getWeekTotalAggregated(week, rows)}
           </td>
         ))}
       </tr>

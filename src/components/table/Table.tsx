@@ -28,7 +28,7 @@ export default function Table({ data, periods }: TableProps) {
     useState<TableProps["periods"]>(periods);
   // columns and weeks are derived from data; keep rows as state for edits
   const columns = useMemo<ColumnStructure[]>(() => buildColumns(data), [data]);
-  const [nestedRows, setNestedRows] = useState<RowStructure[]>([]);
+  const [rows, setRows] = useState<RowStructure[]>([]);
   const weeksMap = useMemo<{ [week: number]: string[] }>(() => groupDaysByWeek(data), [data]);
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
@@ -43,7 +43,7 @@ export default function Table({ data, periods }: TableProps) {
   const subColumnsStructure = useMemo<SubColumn | undefined>(() => getSubcolumnsStructure(columns), [columns]);
 
   const visibleRows = useMemo(() => {
-    return nestedRows.filter((row: RowStructure): boolean => {
+    return rows.filter((row: RowStructure): boolean => {
       if (row.type === "parent" && row.key) {
         const parentParts = row.key.split("|");
         for (let i = 1; i < parentParts.length; i++) {
@@ -66,10 +66,10 @@ export default function Table({ data, periods }: TableProps) {
       }
       return true;
     });
-  }, [nestedRows, expandedParents]);
+  }, [rows, expandedParents]);
 
   useEffect(() => {
-    setNestedRows(buildRows(data));
+    setRows(buildRows(data));
   }, [data]);
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function Table({ data, periods }: TableProps) {
               <DailyTimelines
                 data={data}
                 columns={columns}
-                nestedRows={nestedRows}
+                rows={rows}
                 subcolumnsStructure={subColumnsStructure}
                 getDayNumberFrom={getDayNumberFrom}
               />
@@ -136,7 +136,7 @@ export default function Table({ data, periods }: TableProps) {
                 weeksMap={weeksMap}
                 weekKeys={weekKeys}
                 subcolumnsStructure={subColumnsStructure}
-                nestedRows={nestedRows}
+                rows={rows}
                 columns={columns}
               />
             )}
@@ -160,9 +160,9 @@ export default function Table({ data, periods }: TableProps) {
                     subcolumnsStructure={subColumnsStructure}
                     isVerifying={isVerifying}
                     visibleRows={visibleRows}
-                    nestedRows={nestedRows}
+                    rows={rows}
                     rowIndex={index}
-                    onUpdateRows={() => setNestedRows([...nestedRows])}
+                    onUpdateRows={() => setRows([...rows])}
                   />
                 ) : (
                   <TableWeeklyCells
@@ -170,7 +170,7 @@ export default function Table({ data, periods }: TableProps) {
                     weekKeys={weekKeys}
                     weeksMap={weeksMap}
                     subcolumnsStructure={subColumnsStructure}
-                    nestedRows={nestedRows}
+                    rows={rows}
                   />
                 )}
               </tr>

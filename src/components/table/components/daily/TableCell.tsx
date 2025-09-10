@@ -11,7 +11,7 @@ interface TableCell {
   column: ColumnStructure;
   row: RowStructure;
   visibleRows: RowStructure[];
-  nestedRows: RowStructure[];
+  rows: RowStructure[];
   subColumn?: string;
   isVerifying: boolean;
   updateRows: () => void;
@@ -23,7 +23,7 @@ export default function TableCell({
   row,
   isVerifying,
   visibleRows,
-  nestedRows,
+  rows,
   subColumn,
   updateRows,
 }: TableCell) {
@@ -157,7 +157,7 @@ export default function TableCell({
   const currentValue =
     row.type === "child"
       ? getValueFor(column.day, row.rowData, subColumn)
-      : getCalculatedValue(column.day, row, nestedRows, subColumn);
+      : getCalculatedValue(column.day, row, rows, subColumn);
 
   return (
     <td

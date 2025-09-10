@@ -17,13 +17,13 @@ import { getISOWeek, parse } from "date-fns";
 interface TableTimelines {
   data: DataStructure;
   subcolumnsStructure?: { [key: string]: number };
-  nestedRows: RowStructure[];
+  rows: RowStructure[];
   columns: ColumnStructure[];
 }
 export default function TableTimelines({
   data,
   subcolumnsStructure,
-  nestedRows,
+  rows,
   columns,
 }: TableTimelines) {
   const [weeksRow, setWeeksRow] = useState<WeekStructure>({});
@@ -32,7 +32,7 @@ export default function TableTimelines({
   useEffect(() => {
     setWeeksRow(buildWeeks(data));
     setMonthsRow(buildMonths(data));
-  }, [data, nestedRows]);
+  }, [data, rows]);
 
   const getWeekWordays = (week: string, columns: ColumnStructure[]) => {
     const weekNum = parseInt(week);
@@ -134,7 +134,7 @@ export default function TableTimelines({
               key={month}
             >
               {current.monthName} {current.year} Total:{" "}
-              {getMonthTotal(month, nestedRows)}
+              {getMonthTotal(month, rows)}
             </td>
           );
         })}
@@ -172,7 +172,7 @@ export default function TableTimelines({
               }
               key={week}
             >
-              Semana {week} Total: {getWeekTotal(week, nestedRows)}
+              Semana {week} Total: {getWeekTotal(week, rows)}
             </td>
           );
         })}

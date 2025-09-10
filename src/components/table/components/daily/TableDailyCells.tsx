@@ -13,7 +13,7 @@ interface TableDailyCellsProps {
   subcolumnsStructure?: { [key: string]: number };
   isVerifying: boolean;
   visibleRows: RowStructure[];
-  nestedRows: RowStructure[];
+  rows: RowStructure[];
   rowIndex: number;
   onUpdateRows: () => void;
 }
@@ -24,7 +24,7 @@ export default function TableDailyCells({
   subcolumnsStructure,
   isVerifying,
   visibleRows,
-  nestedRows,
+  rows,
   rowIndex,
   onUpdateRows,
 }: TableDailyCellsProps) {
@@ -41,7 +41,7 @@ export default function TableDailyCells({
                 row={row}
                 isVerifying={isVerifying}
                 visibleRows={visibleRows}
-                nestedRows={nestedRows}
+                rows={rows}
                 subColumn={key}
                 updateRows={onUpdateRows}
               />
@@ -52,7 +52,7 @@ export default function TableDailyCells({
               baseSubcolumnsForDay={row.rowData?.[column.day] as SubColumn}
               childrenRows={
                 row.type === "parent" && row.key
-                  ? nestedRows.filter(
+                  ? rows.filter(
                       (r) =>
                         r.type === "child" &&
                         r.parentKey &&
@@ -60,7 +60,7 @@ export default function TableDailyCells({
                     )
                   : undefined
               }
-              allRows={nestedRows}
+              allRows={rows}
               row={row}
               subKeys={Object.keys(subcolumnsStructure)}
             />
@@ -73,7 +73,7 @@ export default function TableDailyCells({
             row={row}
             isVerifying={isVerifying}
             visibleRows={visibleRows}
-            nestedRows={nestedRows}
+            rows={rows}
             updateRows={onUpdateRows}
           />
         ),

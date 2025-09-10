@@ -9,7 +9,7 @@ import TableTimelines from "./TableTimelines";
 interface DailyTimelinesProps {
   data: DataStructure;
   columns: ColumnStructure[];
-  nestedRows: RowStructure[];
+  rows: RowStructure[];
   subcolumnsStructure?: { [key: string]: number };
   getDayNumberFrom: (date: string) => string;
 }
@@ -17,7 +17,7 @@ interface DailyTimelinesProps {
 export default function DailyTimelines({
   data,
   columns,
-  nestedRows,
+  rows,
   subcolumnsStructure,
   getDayNumberFrom,
 }: DailyTimelinesProps) {
@@ -26,7 +26,7 @@ export default function DailyTimelines({
       <TableTimelines
         data={data}
         subcolumnsStructure={subcolumnsStructure}
-        nestedRows={nestedRows}
+        rows={rows}
         columns={columns}
       />
       <tr>

@@ -8,7 +8,7 @@ interface TableWeeklyCellsProps {
   weekKeys: number[];
   weeksMap: { [week: number]: string[] };
   subcolumnsStructure?: { [key: string]: number };
-  nestedRows: RowStructure[];
+  rows: RowStructure[];
 }
 
 // ---------- Main component ----------
@@ -17,20 +17,8 @@ export default function TableWeeklyCells({
   weekKeys,
   weeksMap,
   subcolumnsStructure,
-  nestedRows,
+  rows,
 }: TableWeeklyCellsProps) {
-  const childRows = useMemo(
-    () =>
-      row.type === "parent" && row.key
-        ? nestedRows.filter(
-            (r) =>
-              r.type === "child" &&
-              r.parentKey &&
-              r.parentKey.startsWith(row.key!),
-          )
-        : [],
-    [nestedRows, row],
-  );
   const subKeys = useMemo(
     () => Object.keys(subcolumnsStructure || {}),
     [subcolumnsStructure],
@@ -46,7 +34,7 @@ export default function TableWeeklyCells({
             week={week}
             days={days}
             row={row}
-            allRows={nestedRows}
+            allRows={rows}
             subKeys={subKeys}
           />
         ) : (
@@ -55,7 +43,7 @@ export default function TableWeeklyCells({
             week={week}
             days={days}
             row={row}
-            allRows={nestedRows}
+            allRows={rows}
           />
         );
       })}
