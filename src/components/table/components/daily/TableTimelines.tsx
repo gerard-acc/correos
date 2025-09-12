@@ -9,8 +9,8 @@ import type {
 import {
   buildMonths,
   buildWeeks,
-  getCalculatedAggregatedNumber,
-  getCalculatedSubcolumnNumber,
+  // getCalculatedAggregatedNumber,
+  // getCalculatedSubcolumnNumber,
 } from "../../utils";
 import { getISOWeek, parse } from "date-fns";
 
@@ -51,71 +51,71 @@ export default function TableTimelines({
     return totalWorkdays;
   };
 
-  const getWeekTotal = (week: string, allRows: RowStructure[]) => {
-    const weekNum = parseInt(week);
+  // const getWeekTotal = (week: string, allRows: RowStructure[]) => {
+  //   const weekNum = parseInt(week);
 
-    let totalSum = 0;
-    for (const row of allRows) {
-      if (row.level !== 0) continue; // only top-level parents
+  //   let totalSum = 0;
+  //   for (const row of allRows) {
+  //     if (row.level !== 0) continue; // only top-level parents
 
-      let rowSum = 0;
-      for (const col of columns) {
-        const date = parse(col.day, "dd/MM/yyyy", new Date());
-        const keyWeek = getISOWeek(date);
-        if (keyWeek !== weekNum) continue;
+  //     let rowSum = 0;
+  //     for (const col of columns) {
+  //       const date = parse(col.day, "dd/MM/yyyy", new Date());
+  //       const keyWeek = getISOWeek(date);
+  //       if (keyWeek !== weekNum) continue;
 
-        if (subcolumnsStructure && row.key) {
-          // Sum effective subcolumn numbers for this parent and day
-          const subKeys = Object.keys(subcolumnsStructure);
-          const dayTotal = subKeys.reduce(
-            (acc, k) =>
-              acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
-            0,
-          );
-          rowSum += dayTotal;
-        } else if (row.key) {
-          // Aggregated effective number
-          rowSum += getCalculatedAggregatedNumber(col.day, row, allRows);
-        }
-      }
-      totalSum += rowSum;
-    }
+  //       if (subcolumnsStructure && row.key) {
+  //         // Sum effective subcolumn numbers for this parent and day
+  //         const subKeys = Object.keys(subcolumnsStructure);
+  //         const dayTotal = subKeys.reduce(
+  //           (acc, k) =>
+  //             acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
+  //           0,
+  //         );
+  //         rowSum += dayTotal;
+  //       } else if (row.key) {
+  //         // Aggregated effective number
+  //         rowSum += getCalculatedAggregatedNumber(col.day, row, allRows);
+  //       }
+  //     }
+  //     totalSum += rowSum;
+  //   }
 
-    return totalSum;
-  };
+  //   return totalSum;
+  // };
 
-  const getMonthTotal = (month: string, allRows: RowStructure[]) => {
-    const monthNum = parseInt(month.split("/")[0]);
-    const year = parseInt(month.split("/")[1]);
+  // const getMonthTotal = (month: string, allRows: RowStructure[]) => {
+  //   const monthNum = parseInt(month.split("/")[0]);
+  //   const year = parseInt(month.split("/")[1]);
 
-    let totalSum = 0;
-    for (const row of allRows) {
-      if (row.level !== 0) continue; // only top-level parents
+  //   let totalSum = 0;
+  //   for (const row of allRows) {
+  //     if (row.level !== 0) continue; // only top-level parents
 
-      let rowSum = 0;
-      for (const col of columns) {
-        const parts = col.day.split("/");
-        const keyMonth = parseInt(parts[1]);
-        const keyYear = parseInt(parts[2]);
-        if (keyMonth !== monthNum || keyYear !== year) continue;
+  //     let rowSum = 0;
+  //     for (const col of columns) {
+  //       const parts = col.day.split("/");
+  //       const keyMonth = parseInt(parts[1]);
+  //       const keyYear = parseInt(parts[2]);
+  //       if (keyMonth !== monthNum || keyYear !== year) continue;
 
-        if (subcolumnsStructure && row.key) {
-          const subKeys = Object.keys(subcolumnsStructure);
-          const dayTotal = subKeys.reduce(
-            (acc, k) =>
-              acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
-            0,
-          );
-          rowSum += dayTotal;
-        } else if (row.key) {
-          rowSum += getCalculatedAggregatedNumber(col.day, row, allRows);
-        }
-      }
-      totalSum += rowSum;
-    }
+  //       if (subcolumnsStructure && row.key) {
+  //         const subKeys = Object.keys(subcolumnsStructure);
+  //         const dayTotal = subKeys.reduce(
+  //           (acc, k) =>
+  //             acc + getCalculatedSubcolumnNumber(col.day, row, allRows, k),
+  //           0,
+  //         );
+  //         rowSum += dayTotal;
+  //       } else if (row.key) {
+  //         rowSum += getCalculatedAggregatedNumber(col.day, row, allRows);
+  //       }
+  //     }
+  //     totalSum += rowSum;
+  //   }
 
-    return totalSum;
-  };
+  //   return totalSum;
+  // };
 
   return (
     <>
@@ -133,27 +133,7 @@ export default function TableTimelines({
               }
               key={month}
             >
-              {current.monthName} {current.year} Total:{" "}
-              {getMonthTotal(month, rows)}
-            </td>
-          );
-        })}
-      </tr>
-      <tr className="workdaysRow">
-        <td></td>
-        {Object.keys(weeksRow).map((week) => {
-          const current = weeksRow[parseInt(week)];
-          return (
-            // Expandimos la columna la cantidad de subcolumnas + 1 por la columna Total que se añade siempre
-            <td
-              colSpan={
-                subcolumnsStructure
-                  ? current.days * (Object.keys(subcolumnsStructure).length + 1)
-                  : current.days
-              }
-              key={week}
-            >
-              Días laborables: {getWeekWordays(week, columns)}
+              {current.monthName}
             </td>
           );
         })}
@@ -172,7 +152,10 @@ export default function TableTimelines({
               }
               key={week}
             >
-              Semana {week} Total: {getWeekTotal(week, rows)}
+              <span className="headerPill headerPill--noFill">S{week}</span>
+              <span className="headerPill">
+                Días laborables: {getWeekWordays(week, columns)}
+              </span>
             </td>
           );
         })}

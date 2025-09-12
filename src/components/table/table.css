@@ -16,7 +16,6 @@ table {
   --verified-cell: #e5faf1;
   --uncompleted-row: #faedc8;
   --month-color: #c9e1ff;
-  --week-color: #ffe7c9;
   --workday-color: #dbd9d7;
   --subcolumn-color: #f5f2e7;
   --parent-row: #e3e3e3;
@@ -27,13 +26,21 @@ table {
 
 thead {
   & tr {
-    background-color: var(--header-color);
     color: white;
     font-weight: 500;
     text-align: left;
     & td {
       padding: 15px 8px;
       min-width: 100px;
+      & .headerPill {
+        background-color: var(--gray);
+        margin-right: 1rem;
+        padding: 8px 12px;
+        border-radius: 30px;
+        &.headerPill--noFill {
+          background: none;
+        }
+      }
     }
     & td:first-child {
       min-width: 150px;
@@ -45,19 +52,6 @@ thead {
     color: black;
     text-transform: capitalize;
     & td {
-      background-color: var(--month-color);
-      padding: 8px;
-    }
-    & td:first-child {
-      background-color: white;
-    }
-  }
-
-  & .workdaysRow {
-    color: black;
-    text-transform: capitalize;
-    & td {
-      background-color: var(--workday-color);
       padding: 8px;
     }
     & td:first-child {
@@ -68,7 +62,6 @@ thead {
   & .weekRow {
     color: black;
     & td {
-      background-color: var(--week-color);
       padding: 8px;
     }
     & td:first-child {
