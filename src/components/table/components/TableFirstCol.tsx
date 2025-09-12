@@ -16,7 +16,7 @@ export default function TableFirstCol({
       style={{
         paddingLeft: `${(row.level + 1) * 10}px`,
         cursor: row.type === "parent" ? "pointer" : "default",
-        borderLeft: `4px solid ${row.status === "allVerified" ? "var(--verified-cell)" : row.status === "presentModifications" ? "var(--modified-cell)" : "unset"}`,
+        borderLeft: `4px solid ${row.status === "allVerified" ? "var(--verified-cell)" : row.status === "uncompletedVerification" ? "var(--uncompleted-row)" : "unset"}`,
       }}
       onClick={
         row.type === "parent" && row.key ? () => onToggle(row.key!) : undefined

@@ -148,11 +148,15 @@ export default function TableCell({
   };
 
   const calculateRowStatus = (row: RowStructure) => {
-    if (row.modifiedCells && !isObjectEmpty(row.modifiedCells)) {
-      return "presentModifications";
+    if (
+      row.verifiedCells &&
+      Object.keys(row.verifiedCells).length ===
+        Object.keys(row.rowData || {}).length
+    ) {
+      return "allVerified";
     }
     if (row.verifiedCells && !isObjectEmpty(row.verifiedCells)) {
-      return "allVerified";
+      return "uncompletedVerification";
     }
     return "noActivity";
   };

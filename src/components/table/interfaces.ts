@@ -43,7 +43,7 @@ export interface RowStructure {
   customValues?: { [date: string]: number | SubColumn };
   modifiedCells?: { [date: string]: boolean | CellState };
   verifiedCells?: { [date: string]: boolean | CellState };
-  status?: "presentModifications" | "allVerified" | "noActivity";
+  status?: "uncompletedVerification" | "allVerified" | "noActivity";
 }
 
 export interface MonthStructure {
