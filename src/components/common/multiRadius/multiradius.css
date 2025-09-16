@@ -1,0 +1,20 @@
+.multiradius {
+  display: flex;
+  flex-direction: column;
+  /* Use brand blue for radio controls */
+  input[type="radio"] {
+    accent-color: var(--blue-correos);
+  }
+  .options {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+
+    label {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}

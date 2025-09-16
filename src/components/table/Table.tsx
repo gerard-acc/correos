@@ -13,7 +13,7 @@ import {
   getSubcolumnsStructure,
   groupDaysByWeek,
 } from "./utils";
-import Toggle from "../common/toggle/Toggle";
+import MultiRadius from "../common/multiRadius/MultiRadius";
 import MultiButton from "../common/multiButton/MultiButton";
 import WeeklyTimelines from "./components/weekly/WeeklyTimelines";
 import TableWeeklyCells from "./components/weekly/TableWeeklyCells";
@@ -29,7 +29,10 @@ export default function Table({ data, periods }: TableProps) {
   // columns and weeks are derived from data; keep rows as state for edits
   const columns = useMemo<ColumnStructure[]>(() => buildColumns(data), [data]);
   const [rows, setRows] = useState<RowStructure[]>([]);
-  const weeksMap = useMemo<{ [week: number]: string[] }>(() => groupDaysByWeek(data), [data]);
+  const weeksMap = useMemo<{ [week: number]: string[] }>(
+    () => groupDaysByWeek(data),
+    [data],
+  );
   const [expandedParents, setExpandedParents] = useState<Set<string>>(
     new Set(),
   );
@@ -40,7 +43,10 @@ export default function Table({ data, periods }: TableProps) {
         .sort((a, b) => a - b),
     [weeksMap],
   );
-  const subColumnsStructure = useMemo<SubColumn | undefined>(() => getSubcolumnsStructure(columns), [columns]);
+  const subColumnsStructure = useMemo<SubColumn | undefined>(
+    () => getSubcolumnsStructure(columns),
+    [columns],
+  );
 
   const visibleRows = useMemo(() => {
     return rows.filter((row: RowStructure): boolean => {
@@ -102,10 +108,15 @@ export default function Table({ data, periods }: TableProps) {
   return (
     <>
       <div className="tableOptions">
-        <Toggle
-          onChange={(status) => setIsVerifying(status)}
-          label="Verificar"
-        ></Toggle>
+        <MultiRadius
+          onChange={(id) => setIsVerifying(id === "verificar")}
+          title="Modo"
+          defaultLabel="editar"
+          labels={[
+            { id: "verificar", name: "Verificar" },
+            { id: "editar", name: "Editar" },
+          ]}
+        ></MultiRadius>
         <MultiButton
           buttons={[
             { id: "daily", label: "Diario" },
