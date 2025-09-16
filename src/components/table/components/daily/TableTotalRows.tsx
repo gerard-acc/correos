@@ -3,14 +3,19 @@ import type {
   ColumnStructure,
   RowStructure,
   SubColumn,
+  TableProps,
 } from "../../interfaces";
 import { useEffect, useState } from "react";
 import {
   getCalculatedAggregatedNumber,
   getCalculatedSubcolumnNumber,
+  sumAggregatedForDays,
+  sumSubcolumnForDays,
 } from "../../utils";
+import { getISOWeek, parse } from "date-fns";
 
 interface TableTotalRows {
+  currentPeriod: TableProps["periods"];
   columns: ColumnStructure[];
   subcolumnsStructure?: SubColumn;
   rows: RowStructure[];
@@ -21,6 +26,7 @@ interface LocalSums {
 }
 
 export default function TableTotalRows({
+  currentPeriod,
   columns,
   subcolumnsStructure,
   rows,
@@ -29,60 +35,147 @@ export default function TableTotalRows({
 
   // Para obtener los totales, sumamos lo que nos convenga cogiendolo de columns y rows
   useEffect(() => {
-    // Padres de nivel 0 (los más altos) para sumar por cada día
+    // Padres de nivel 0 (los más altos)
     const topParents = rows.filter((r) => r.type === "parent" && r.level === 0);
 
     const computedTotals: LocalSums = {};
 
-    for (const col of columns) {
-      // Si hay subcolumnas, sumamos cada una por separado
-      if (subcolumnsStructure && Object.keys(subcolumnsStructure).length > 0) {
-        const dayTotals: SubColumn = {};
-        for (const key of Object.keys(subcolumnsStructure)) {
-          const totalForKey = topParents.reduce(
+    if (currentPeriod === "daily") {
+      // Totales por día (vista diaria actual)
+      for (const col of columns) {
+        if (
+          subcolumnsStructure &&
+          Object.keys(subcolumnsStructure).length > 0
+        ) {
+          const dayTotals: SubColumn = {};
+          for (const key of Object.keys(subcolumnsStructure)) {
+            const totalForKey = topParents.reduce(
+              (acc, row) =>
+                acc + getCalculatedSubcolumnNumber(col.day, row, rows, key),
+              0,
+            );
+            dayTotals[key] = totalForKey;
+          }
+          computedTotals[col.day] = dayTotals;
+        } else {
+          const total = topParents.reduce(
             (acc, row) =>
-              acc + getCalculatedSubcolumnNumber(col.day, row, rows, key),
+              acc + getCalculatedAggregatedNumber(col.day, row, rows),
             0,
           );
-          dayTotals[key] = totalForKey;
+          computedTotals[col.day] = total;
         }
-        computedTotals[col.day] = dayTotals;
-      } else {
-        // Sin subcolumnas, vamos sumando el valor del dia
-        const total = topParents.reduce(
-          (acc, row) => acc + getCalculatedAggregatedNumber(col.day, row, rows),
-          0,
-        );
-        computedTotals[col.day] = total;
+      }
+    } else {
+      // Totales por semana (vista semanal)
+      // Construimos el mapa semana -> lista de días a partir de las columnas
+      const weeksMap: { [week: number]: string[] } = {};
+      for (const col of columns) {
+        const date = parse(col.day, "dd/MM/yyyy", new Date());
+        const week = getISOWeek(date);
+        if (!weeksMap[week]) weeksMap[week] = [];
+        weeksMap[week].push(col.day);
+      }
+      // Ordenamos los días dentro de cada semana para consistencia
+      Object.values(weeksMap).forEach((arr) =>
+        arr.sort((a, b) => {
+          const da = parse(a, "dd/MM/yyyy", new Date()).getTime();
+          const db = parse(b, "dd/MM/yyyy", new Date()).getTime();
+          return da - db;
+        }),
+      );
+
+      const weekKeys = Object.keys(weeksMap)
+        .map((w) => parseInt(w, 10))
+        .sort((a, b) => a - b);
+
+      for (const week of weekKeys) {
+        const days = weeksMap[week];
+        if (
+          subcolumnsStructure &&
+          Object.keys(subcolumnsStructure).length > 0
+        ) {
+          const weekTotals: SubColumn = {};
+          for (const key of Object.keys(subcolumnsStructure)) {
+            const totalForKey = topParents.reduce(
+              (acc, row) => acc + sumSubcolumnForDays(days, row, rows, key),
+              0,
+            );
+            weekTotals[key] = totalForKey;
+          }
+          computedTotals[String(week)] = weekTotals;
+        } else {
+          const total = topParents.reduce(
+            (acc, row) => acc + sumAggregatedForDays(days, row, rows),
+            0,
+          );
+          computedTotals[String(week)] = total;
+        }
       }
     }
 
     setTotals(computedTotals);
-  }, [rows, columns, subcolumnsStructure]);
+  }, [rows, columns, subcolumnsStructure, currentPeriod]);
 
   return (
     <>
       <tr>
         <td>Total</td>
-        {columns.map((column) =>
-          subcolumnsStructure ? (
-            <Fragment key={column.day}>
-              {Object.keys(subcolumnsStructure).map((key) => (
-                <td key={`${column.day}-${key}-total1`}>
-                  {(totals[column.day] as SubColumn)?.[key]}
+        {currentPeriod === "daily"
+          ? columns.map((column) =>
+              subcolumnsStructure ? (
+                <Fragment key={column.day}>
+                  {Object.keys(subcolumnsStructure).map((key) => (
+                    <td key={`${column.day}-${key}-total1`}>
+                      {(totals[column.day] as SubColumn)?.[key]}
+                    </td>
+                  ))}
+                  <td>
+                    {Object.values(
+                      (totals[column.day] as SubColumn) || {},
+                    ).reduce((acc, v) => acc + (v || 0), 0)}
+                  </td>
+                </Fragment>
+              ) : (
+                <td key={`${column.day}-total`}>
+                  {totals[column.day] as number}
                 </td>
-              ))}
-              <td>
-                {Object.values((totals[column.day] as SubColumn) || {}).reduce(
-                  (acc, v) => acc + (v || 0),
-                  0,
-                )}
-              </td>
-            </Fragment>
-          ) : (
-            <td>{totals[column.day] as number}</td>
-          ),
-        )}
+              ),
+            )
+          : // Weekly rendering
+            (() => {
+              // Reuse the same weeks calculation used above (derive from columns)
+              const weeksMap: { [week: number]: string[] } = {};
+              for (const col of columns) {
+                const date = parse(col.day, "dd/MM/yyyy", new Date());
+                const week = getISOWeek(date);
+                if (!weeksMap[week]) weeksMap[week] = [];
+                weeksMap[week].push(col.day);
+              }
+              const weekKeys = Object.keys(weeksMap)
+                .map((w) => parseInt(w, 10))
+                .sort((a, b) => a - b);
+              return weekKeys.map((week) =>
+                subcolumnsStructure ? (
+                  <Fragment key={`week-${week}`}>
+                    {Object.keys(subcolumnsStructure).map((key) => (
+                      <td key={`week-${week}-${key}-total1`}>
+                        {(totals[String(week)] as SubColumn)?.[key]}
+                      </td>
+                    ))}
+                    <td key={`week-${week}-total`}>
+                      {Object.values(
+                        (totals[String(week)] as SubColumn) || {},
+                      ).reduce((acc, v) => acc + (v || 0), 0)}
+                    </td>
+                  </Fragment>
+                ) : (
+                  <td key={`week-${week}-total`}>
+                    {(totals[String(week)] as number) ?? 0}
+                  </td>
+                ),
+              );
+            })()}
       </tr>
       <tr>
         <td>Total modificado</td>

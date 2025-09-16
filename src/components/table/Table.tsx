@@ -188,6 +188,7 @@ export default function Table({ data, periods }: TableProps) {
               </tr>
             ))}
             <TableTotalRows
+              currentPeriod={currentPeriod}
               columns={columns}
               subcolumnsStructure={subColumnsStructure}
               rows={rows}
