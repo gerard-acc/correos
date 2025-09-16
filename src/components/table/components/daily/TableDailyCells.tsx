@@ -10,7 +10,7 @@ import TableTotalCell from "./TableTotalCell";
 interface TableDailyCellsProps {
   row: RowStructure;
   columns: ColumnStructure[];
-  subcolumnsStructure?: { [key: string]: number };
+  subcolumnsStructure?: SubColumn;
   isVerifying: boolean;
   visibleRows: RowStructure[];
   rows: RowStructure[];

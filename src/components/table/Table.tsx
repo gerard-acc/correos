@@ -21,6 +21,7 @@ import DailyTimelines from "./components/daily/DailyTimelines";
 import TableDailyCells from "./components/daily/TableDailyCells";
 import TableFirstCol from "./components/TableFirstCol";
 import Button from "../common/button/Button";
+import TableTotalRows from "./components/daily/TableTotalRows";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -186,6 +187,11 @@ export default function Table({ data, periods }: TableProps) {
                 )}
               </tr>
             ))}
+            <TableTotalRows
+              columns={columns}
+              subcolumnsStructure={subColumnsStructure}
+              rows={rows}
+            ></TableTotalRows>
           </tbody>
         </table>
       </div>
