@@ -1,21 +1,17 @@
-import { es } from "date-fns/locale";
 import type {
   ColumnStructure,
   DataStructure,
-  MonthStructure,
   RowData,
   RowStructure,
   SubColumn,
-  WeekStructure,
 } from "./interfaces";
-import { format, getISOWeek, parse } from "date-fns";
+import { getISOWeek, parse } from "date-fns";
 
-// const findInconsistenciesIn = (data: DataStructure) => {
-//   TODO - If there are subcolumns in the day, all rows need to have the same subcolumns
-//   TODO - If there subcolumns for a day, all days need the same subcolumns
-// };
-
-export const buildColumns = (data: DataStructure) => {
+// Construye un objeto con todas las columnas de la tabla, es decir el dia, si es festivo, etc (ver interfaz ColumnStructure)
+// La única complejidad es que hay tres tipos de columna, la normal con el dia y su valor, la normal pero con subcolumnas, que
+// al final es que en vez del valor tiene un objeto con los distintos valores de las subcolumnas, y la columna de Total que
+// aparece al final de cada mes
+export const buildColumns = (data: DataStructure): ColumnStructure[] => {
   const columns = Object.keys(data).map((day) => {
     const column: ColumnStructure = {
       key: day,
@@ -54,12 +50,12 @@ export const buildColumns = (data: DataStructure) => {
     isMonthlyTotal: true,
   });
 
-  console.log({ columnsWithTotals });
-
   return columnsWithTotals;
 };
 
-export const buildRows = (data: DataStructure) => {
+// Construye las filas. No tiene la info anidada para las subfilas, es un objeto plano y cada fila tiene info de si es padre, de qué
+// nivel, etc
+export const buildRows = (data: DataStructure): RowStructure[] => {
   // Las filas se complican porque tienen subfilas
   const rowStructure: RowStructure[] = [];
   const processedParents = new Set<string>();
@@ -110,23 +106,7 @@ export const buildRows = (data: DataStructure) => {
   return rowStructure;
 };
 
-export const buildWeeks = (data: DataStructure): WeekStructure => {
-  const weeks: WeekStructure = {};
-
-  for (const day in data) {
-    const date = parse(day, "dd/MM/yyyy", new Date());
-    const weekNumber = getISOWeek(date);
-
-    if (!weeks[weekNumber]) {
-      weeks[weekNumber] = { days: 0 };
-    }
-    weeks[weekNumber].days = weeks[weekNumber].days + 1;
-  }
-
-  return weeks;
-};
-
-// Returns a map of ISO week number -> list of day keys (dd/MM/yyyy)
+// Retorna un objeto con grupos de dias en cada semana
 export const groupDaysByWeek = (
   data: DataStructure,
 ): { [week: number]: string[] } => {
@@ -137,7 +117,7 @@ export const groupDaysByWeek = (
     if (!weeks[weekNumber]) weeks[weekNumber] = [];
     weeks[weekNumber].push(day);
   }
-  // Ensure each week's days are ordered by date ascending
+
   Object.values(weeks).forEach((arr) =>
     arr.sort((a, b) => {
       const da = parse(a, "dd/MM/yyyy", new Date()).getTime();
@@ -148,30 +128,13 @@ export const groupDaysByWeek = (
   return weeks;
 };
 
-export const buildMonths = (data: DataStructure): MonthStructure => {
-  const months: MonthStructure = {};
-
-  for (const day in data) {
-    const monthNumber = parseInt(day.split("/")[1]);
-    const year = parseInt(day.split("/")[2]);
-
-    const date = new Date(year, monthNumber - 1);
-
-    const key = `${monthNumber}/${year}`;
-    if (!months[key]) {
-      months[key] = {
-        monthNum: monthNumber,
-        monthName: format(date, "MMMM", { locale: es }),
-        year,
-        days: 0,
-      };
-    }
-    months[key].days = months[key].days + 1;
-  }
-
-  return months;
+export const getWeekKeys = (weeksMap: { [week: number]: string[] }) => {
+  return Object.keys(weeksMap)
+    .map((w) => parseInt(w, 10))
+    .sort((a, b) => a - b);
 };
 
+// Obtiene le valor base de una celda HIJA (las que tienen la data real del backend) simplemente cogiendo la data que hay en la row para la columna de la celda
 export const getValueFor = (
   day: string,
   rowData: RowData | undefined,
@@ -188,6 +151,23 @@ export const getValueFor = (
   return "";
 };
 
+// Utilidades simples solo para obtener las cosas de una manera descriptiva por ai
+export const getDayNumberFrom = (date: string) => {
+  return date.split("/")[0];
+};
+
+export const isObjectEmpty = (object: object) => {
+  return Object.keys(object).length === 0;
+};
+
+/**
+ * Aquí se pone chungo, confié a tope en la IA para estos cálculos, pero creo que hay algunas cosas que se pueden optimizar mucho.
+ * El problema es que no me da la cabeza.
+ */
+
+// Se usa en los PADRES (los que la info que tienen es calculada a partir de sus filas hijas)
+// Tiene en cuenta las modificaciones de las hijas, las filas que son hijas pero
+// padre a la vez, etc.
 export const getCalculatedValue = (
   day: string,
   row: RowStructure,
@@ -319,11 +299,7 @@ export const getCalculatedValue = (
   }
 };
 
-export const getSubcolumnsStructure = (columns: ColumnStructure[]) => {
-  return columns[0]?.subColumns;
-};
-
-// Helper used by TableTotalCell to compute a parent's effective value for a specific subcolumn
+// Se usa en TableTotalCell (las columnas de total de cuando hay subcolumnas) para calcular el valor
 export const getCalculatedSubcolumnNumber = (
   day: string,
   row: RowStructure,
@@ -385,7 +361,7 @@ export const getCalculatedSubcolumnNumber = (
   return total;
 };
 
-// Helper to compute a parent's effective aggregated value (no subcolumn)
+// Se usa en varios sitios para calcular un total
 export const getCalculatedAggregatedNumber = (
   day: string,
   row: RowStructure,
@@ -445,14 +421,6 @@ export const getCalculatedAggregatedNumber = (
   return total;
 };
 
-export const getDayNumberFrom = (date: string) => {
-  return date.split("/")[0];
-};
-
-export const isObjectEmpty = (object: object) => {
-  return Object.keys(object).length === 0;
-};
-
 // Sum effective aggregated values for a row over a list of day keys (dd/MM/yyyy)
 export const sumAggregatedForDays = (
   days: string[],
@@ -495,17 +463,4 @@ export const sumSubcolumnForDays = (
     (acc, d) => acc + getCalculatedSubcolumnNumber(d, row, allRows, subKey),
     0,
   );
-};
-
-// Count non-festive days in a list of day keys using the columns metadata
-export const countWorkdaysForDays = (
-  days: string[],
-  columns: ColumnStructure[],
-) => {
-  const set = new Set(days);
-  let count = 0;
-  for (const col of columns) {
-    if (set.has(col.key) && !col.isFestivity) count += 1;
-  }
-  return count;
 };

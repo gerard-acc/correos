@@ -10,7 +10,6 @@ interface TableCell {
   index: number;
   column: ColumnStructure;
   row: RowStructure;
-  visibleRows: RowStructure[];
   rows: RowStructure[];
   subColumn?: string;
   isVerifying: boolean;
@@ -22,7 +21,6 @@ export default function TableCell({
   column,
   row,
   isVerifying,
-  visibleRows,
   rows,
   subColumn,
   updateRows,
@@ -66,7 +64,7 @@ export default function TableCell({
     value: string,
     subColumn?: string,
   ) => {
-    const row = visibleRows[rowIndex];
+    const row = rows[rowIndex];
     const key = column;
 
     if (!row.rowData) return;
@@ -111,7 +109,7 @@ export default function TableCell({
   };
 
   const verifyCell = (rowIndex: number, column: string) => {
-    const row = visibleRows[rowIndex];
+    const row = rows[rowIndex];
 
     // TODO -> Ver qué quieren en back para validar la celda
     console.log("Validate cell: ", rowIndex, column);

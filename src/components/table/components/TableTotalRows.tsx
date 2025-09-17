@@ -4,14 +4,14 @@ import type {
   RowStructure,
   SubColumn,
   TableProps,
-} from "../../interfaces";
+} from "../interfaces";
 import { useEffect, useState } from "react";
 import {
   getCalculatedAggregatedNumber,
   getCalculatedSubcolumnNumber,
   sumAggregatedForDays,
   sumSubcolumnForDays,
-} from "../../utils";
+} from "../utils";
 import { getISOWeek, parse } from "date-fns";
 
 interface TableTotalRows {
