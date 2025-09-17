@@ -32,10 +32,10 @@ export default function TableDailyCells({
     <>
       {columns.map((column) =>
         subcolumnsStructure ? (
-          <Fragment key={column.day}>
+          <Fragment key={column.key}>
             {Object.keys(subcolumnsStructure).map((key) => (
               <TableCell
-                key={`${column.day}-${key}-${rowIndex}`}
+                key={`${column.key}-${key}-${rowIndex}`}
                 index={rowIndex}
                 column={column}
                 row={row}
@@ -47,9 +47,9 @@ export default function TableDailyCells({
               />
             ))}
             <TableTotalCell
-              day={column.day}
-              overrideForDay={row.customValues?.[column.day] as SubColumn}
-              baseSubcolumnsForDay={row.rowData?.[column.day] as SubColumn}
+              day={column.key}
+              overrideForDay={row.customValues?.[column.key] as SubColumn}
+              baseSubcolumnsForDay={row.rowData?.[column.key] as SubColumn}
               childrenRows={
                 row.type === "parent" && row.key
                   ? rows.filter(
@@ -67,7 +67,7 @@ export default function TableDailyCells({
           </Fragment>
         ) : (
           <TableCell
-            key={`${column.day}-${rowIndex}`}
+            key={`${column.key}-${rowIndex}`}
             index={rowIndex}
             column={column}
             row={row}

@@ -28,9 +28,10 @@ export interface TableProps {
 }
 
 export interface ColumnStructure {
-  day: string;
-  isFestivity: boolean;
+  key: string;
+  isFestivity?: boolean;
   subColumns?: SubColumn;
+  isMonthlyTotal?: boolean;
 }
 
 export interface RowStructure {

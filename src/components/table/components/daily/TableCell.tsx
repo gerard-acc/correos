@@ -36,14 +36,14 @@ export default function TableCell({
     if (subColumn) {
       if (
         row.modifiedCells &&
-        row.modifiedCells[column.day] &&
-        (row.modifiedCells[column.day] as CellState)[subColumn]
+        row.modifiedCells[column.key] &&
+        (row.modifiedCells[column.key] as CellState)[subColumn]
       ) {
         setCellStatus("modified");
       } else if (
         row.verifiedCells &&
-        row.verifiedCells[column.day] &&
-        (row.verifiedCells[column.day] as CellState)[subColumn]
+        row.verifiedCells[column.key] &&
+        (row.verifiedCells[column.key] as CellState)[subColumn]
       ) {
         setCellStatus("verified");
       } else {
@@ -51,9 +51,9 @@ export default function TableCell({
       }
       return;
     }
-    if (row.modifiedCells?.[column.day]) {
+    if (row.modifiedCells?.[column.key]) {
       setCellStatus("modified");
-    } else if (row.verifiedCells?.[column.day]) {
+    } else if (row.verifiedCells?.[column.key]) {
       setCellStatus("verified");
     } else {
       setCellStatus("noActivity");
@@ -161,18 +161,18 @@ export default function TableCell({
     return "noActivity";
   };
 
-  const cellKey = `${index}-${column.day}`;
+  const cellKey = `${index}-${column.key}`;
   const isEditing = editingCell === cellKey;
   const currentValue =
     row.type === "child"
-      ? getValueFor(column.day, row.rowData, subColumn)
-      : getCalculatedValue(column.day, row, rows, subColumn);
+      ? getValueFor(column.key, row.rowData, subColumn)
+      : getCalculatedValue(column.key, row, rows, subColumn);
 
   return (
     <td
-      key={column.day}
+      key={column.key}
       onClick={() =>
-        isVerifying ? verifyCell(index, column.day) : setEditingCell(cellKey)
+        isVerifying ? verifyCell(index, column.key) : setEditingCell(cellKey)
       }
       style={{
         cursor: "pointer",
@@ -190,13 +190,13 @@ export default function TableCell({
           type="text"
           defaultValue={currentValue}
           onBlur={(e) =>
-            updateCellValue(index, column.day, e.target.value, subColumn)
+            updateCellValue(index, column.key, e.target.value, subColumn)
           }
           onKeyDown={(e) => {
             if (e.key === "Enter")
               updateCellValue(
                 index,
-                column.day,
+                column.key,
                 e.currentTarget.value,
                 subColumn,
               );

@@ -28,14 +28,18 @@ export default function DailyTimelines({
                 ? "var(--festivity-color)"
                 : "var(--header-color)",
             }}
-            key={column.day}
+            key={column.key}
             colSpan={
               subcolumnsStructure
                 ? Object.keys(subcolumnsStructure).length + 1 // +1 for Total column
                 : 1
             }
           >
-            Día {getDayNumberFrom(column.day)}
+            {column.isMonthlyTotal ? (
+              <>Total del mes</>
+            ) : (
+              <>Día {getDayNumberFrom(column.key)}</>
+            )}
           </td>
         ))}
       </tr>
@@ -43,11 +47,11 @@ export default function DailyTimelines({
         <tr className="subcolumnsRow">
           <td></td>
           {columns.map((column) => (
-            <Fragment key={column.day}>
+            <Fragment key={column.key}>
               {Object.keys(subcolumnsStructure).map((key) => (
-                <td key={`${column.day}-${key}`}>{key}</td>
+                <td key={`${column.key}-${key}`}>{key}</td>
               ))}
-              <td key={`${column.day}-total`}>
+              <td key={`${column.key}-total`}>
                 {" "}
                 <strong>Total</strong>
               </td>

@@ -16,13 +16,9 @@ import { format, getISOWeek, parse } from "date-fns";
 // };
 
 export const buildColumns = (data: DataStructure) => {
-  /**
-   * Aquí construim els dies, i el que necessito és que dintre els dies hi hagi
-   * columnes. És a dir, la columna final ja no és el dia, sino el volumen
-   */
   const columns = Object.keys(data).map((day) => {
     const column: ColumnStructure = {
-      day: day,
+      key: day,
       isFestivity: data[day].isFestivity,
     };
 
@@ -35,7 +31,32 @@ export const buildColumns = (data: DataStructure) => {
     return column;
   });
 
-  return columns;
+  // Añadimos una columna de totales al final de cada mes y al final de la tabla
+  const columnsWithTotals: ColumnStructure[] = [];
+  let currentMonth = -1;
+  columns.forEach((col) => {
+    const month = parse(col.key, "dd/MM/yyyy", new Date()).getMonth() + 1;
+    if (month !== currentMonth) {
+      if (currentMonth !== -1) {
+        columnsWithTotals.push({
+          key: `total-${currentMonth}`,
+          isFestivity: false,
+          isMonthlyTotal: true,
+        });
+      }
+      currentMonth = month;
+    }
+    columnsWithTotals.push(col);
+  });
+  columnsWithTotals.push({
+    key: `total-${currentMonth}`,
+    isFestivity: false,
+    isMonthlyTotal: true,
+  });
+
+  console.log({ columnsWithTotals });
+
+  return columnsWithTotals;
 };
 
 export const buildRows = (data: DataStructure) => {
@@ -484,7 +505,7 @@ export const countWorkdaysForDays = (
   const set = new Set(days);
   let count = 0;
   for (const col of columns) {
-    if (set.has(col.day) && !col.isFestivity) count += 1;
+    if (set.has(col.key) && !col.isFestivity) count += 1;
   }
   return count;
 };
