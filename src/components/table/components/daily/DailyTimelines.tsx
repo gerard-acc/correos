@@ -4,31 +4,21 @@ import type {
   DataStructure,
   RowStructure,
 } from "../../interfaces";
-import TableTimelines from "./TableTimelines";
+import { getDayNumberFrom } from "../../utils";
 
 interface DailyTimelinesProps {
   data: DataStructure;
   columns: ColumnStructure[];
   rows: RowStructure[];
   subcolumnsStructure?: { [key: string]: number };
-  getDayNumberFrom: (date: string) => string;
 }
 
 export default function DailyTimelines({
-  data,
   columns,
-  rows,
   subcolumnsStructure,
-  getDayNumberFrom,
 }: DailyTimelinesProps) {
   return (
     <>
-      <TableTimelines
-        data={data}
-        subcolumnsStructure={subcolumnsStructure}
-        rows={rows}
-        columns={columns}
-      />
       <tr>
         <td></td>
         {columns.map((column) => (

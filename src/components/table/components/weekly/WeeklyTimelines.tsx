@@ -1,23 +1,17 @@
 import { useMemo } from "react";
-import type { ColumnStructure, RowStructure } from "../../interfaces";
 import { parse, format } from "date-fns";
 import { es } from "date-fns/locale";
-// import { countWorkdaysForDays, sumAggregatedForDays } from "../../utils";
 
 interface WeeklyTimelinesProps {
   weeksMap: { [week: number]: string[] };
   weekKeys: number[];
   subcolumnsStructure?: { [key: string]: number };
-  rows: RowStructure[];
-  columns: ColumnStructure[];
 }
 
 export default function WeeklyTimelines({
   weeksMap,
   weekKeys,
   subcolumnsStructure,
-  // rows,
-  // columns,
 }: WeeklyTimelinesProps) {
   const monthGroups = useMemo(() => {
     const order: string[] = [];
@@ -52,40 +46,6 @@ export default function WeeklyTimelines({
     });
     return order.map((k) => ({ key: k, ...map[k] }));
   }, [weekKeys, weeksMap]);
-
-  // const getWeekWorkdays = (week: number) => {
-  //   const days = weeksMap[week] || [];
-  //   return countWorkdaysForDays(days, columns);
-  // };
-
-  // const getWeekTotalAggregated = (week: number, allRows: RowStructure[]) => {
-  //   const days = weeksMap[week] || [];
-  //   let total = 0;
-  //   for (const row of allRows) {
-  //     if (row.level !== 0) continue; // only top-level parents
-  //     total += sumAggregatedForDays(days, row, allRows);
-  //   }
-  //   return total;
-  // };
-
-  // const getMonthTotalAggregated = (
-  //   monthNum: number,
-  //   year: number,
-  //   allRows: RowStructure[],
-  // ) => {
-  //   const daysInMonth = columns
-  //     .filter((c) => {
-  //       const [, m, y] = c.day.split("/").map((n) => parseInt(n));
-  //       return m === monthNum && y === year;
-  //     })
-  //     .map((c) => c.day);
-  //   let total = 0;
-  //   for (const row of allRows) {
-  //     if (row.level !== 0) continue; // only top-level parents
-  //     total += sumAggregatedForDays(daysInMonth, row, allRows);
-  //   }
-  //   return total;
-  // };
 
   return (
     <>

@@ -8,7 +8,6 @@ import type {
 } from "./interfaces";
 import {
   buildRows,
-  getDayNumberFrom,
   buildColumns,
   getSubcolumnsStructure,
   groupDaysByWeek,
@@ -22,6 +21,7 @@ import TableDailyCells from "./components/daily/TableDailyCells";
 import TableFirstCol from "./components/TableFirstCol";
 import Button from "../common/button/Button";
 import TableTotalRows from "./components/daily/TableTotalRows";
+import TableTimelines from "./components/daily/TableTimelines";
 
 export default function Table({ data, periods }: TableProps) {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -136,20 +136,25 @@ export default function Table({ data, periods }: TableProps) {
         <table>
           <thead>
             {currentPeriod === "daily" ? (
-              <DailyTimelines
-                data={data}
-                columns={columns}
-                rows={rows}
-                subcolumnsStructure={subColumnsStructure}
-                getDayNumberFrom={getDayNumberFrom}
-              />
+              <>
+                <TableTimelines
+                  data={data}
+                  subcolumnsStructure={subColumnsStructure}
+                  rows={rows}
+                  columns={columns}
+                />
+                <DailyTimelines
+                  data={data}
+                  columns={columns}
+                  rows={rows}
+                  subcolumnsStructure={subColumnsStructure}
+                />
+              </>
             ) : (
               <WeeklyTimelines
                 weeksMap={weeksMap}
                 weekKeys={weekKeys}
                 subcolumnsStructure={subColumnsStructure}
-                rows={rows}
-                columns={columns}
               />
             )}
           </thead>
