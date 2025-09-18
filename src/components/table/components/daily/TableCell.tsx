@@ -59,14 +59,10 @@ export default function TableCell({
   }, [row.modifiedCells, row.verifiedCells, column, subColumn]);
 
   const updateCellValue = (
-    rowIndex: number,
     column: string,
     value: string,
     subColumn?: string,
   ) => {
-    const row = rows[rowIndex];
-    const key = column;
-
     if (!row.rowData) return;
 
     if (!row.rowData[column]) row.rowData[column] = {};
@@ -83,22 +79,22 @@ export default function TableCell({
 
     if (row.type === "parent") {
       if (subColumn) {
-        if (!row.customValues[key]) row.customValues[key] = {};
-        if (typeof row.customValues[key] === "object") {
-          row.customValues[key][subColumn] = parseFloat(value) || 0;
+        if (!row.customValues[column]) row.customValues[column] = {};
+        if (typeof row.customValues[column] === "object") {
+          row.customValues[column][subColumn] = parseFloat(value) || 0;
         }
       } else {
-        row.customValues[key] = parseFloat(value) || 0;
+        row.customValues[column] = parseFloat(value) || 0;
       }
     }
 
     if (subColumn) {
-      if (!row.modifiedCells[key]) row.modifiedCells[key] = {};
-      if (typeof row.modifiedCells[key] === "object") {
-        row.modifiedCells[key][subColumn] = true;
+      if (!row.modifiedCells[column]) row.modifiedCells[column] = {};
+      if (typeof row.modifiedCells[column] === "object") {
+        row.modifiedCells[column][subColumn] = true;
       }
     } else {
-      row.modifiedCells[key] = true;
+      row.modifiedCells[column] = true;
     }
     row.status = calculateRowStatus(row);
     setEditingCell(null);
@@ -108,11 +104,9 @@ export default function TableCell({
     row.modifiedCells = { ...row.modifiedCells };
   };
 
-  const verifyCell = (rowIndex: number, column: string) => {
-    const row = rows[rowIndex];
-
+  const verifyCell = (column: string) => {
     // TODO -> Ver qué quieren en back para validar la celda
-    console.log("Validate cell: ", rowIndex, column);
+    console.log("Validate cell: ", row.name, column);
 
     setTimeout(() => {
       // Delete the modified cell mark
@@ -170,7 +164,7 @@ export default function TableCell({
     <td
       key={column.key}
       onClick={() =>
-        isVerifying ? verifyCell(index, column.key) : setEditingCell(cellKey)
+        isVerifying ? verifyCell(column.key) : setEditingCell(cellKey)
       }
       style={{
         cursor: "pointer",
@@ -187,17 +181,10 @@ export default function TableCell({
         <input
           type="text"
           defaultValue={currentValue}
-          onBlur={(e) =>
-            updateCellValue(index, column.key, e.target.value, subColumn)
-          }
+          onBlur={(e) => updateCellValue(column.key, e.target.value, subColumn)}
           onKeyDown={(e) => {
             if (e.key === "Enter")
-              updateCellValue(
-                index,
-                column.key,
-                e.currentTarget.value,
-                subColumn,
-              );
+              updateCellValue(column.key, e.currentTarget.value, subColumn);
             if (e.key === "Escape") setEditingCell(null);
           }}
           autoFocus
