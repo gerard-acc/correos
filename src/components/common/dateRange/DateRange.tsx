@@ -36,6 +36,7 @@ export default function DateRange({ onDateChange }: DateRangeProps) {
       <div className="dateRange__field">
         <label className="dateRange__label">Hasta</label>
         <input
+        lang="es-ES"
           type="date"
           value={endDate}
           onChange={handleEndDateChange}

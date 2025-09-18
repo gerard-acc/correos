@@ -10,6 +10,8 @@ import DateRange from "../components/common/dateRange/DateRange";
 import Button from "../components/common/button/Button";
 import Breadcrumb from "../components/common/breadcrumb/Breadcrumb";
 
+import dataFromBackend from "../../src/dataFromBackend.json"
+
 export const Route = createFileRoute("/comercial")({
   component: Index,
 });
@@ -22,7 +24,7 @@ function Index() {
       alignItems: "center",
       borderBottom: "1px solid var(--accent-color)",
       padding: "2rem 0",
-      overflowY: "scroll",
+      // overflowY: "scroll",
       gap: "24px",
     },
     filters__block: {
@@ -41,10 +43,7 @@ function Index() {
           <div style={styles.filters__block}>
             <Selector
               placeholder="Cliente"
-              options={[
-                { id: "op1", label: "Op 1" },
-                { id: "op2", label: "Opcion largaaaa" },
-              ]}
+              options={dataFromBackend.clientsFromBackend}
               type="rounded"
             ></Selector>
             <Selector
