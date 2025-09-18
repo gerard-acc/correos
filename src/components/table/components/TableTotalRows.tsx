@@ -11,6 +11,7 @@ import {
   getCalculatedSubcolumnNumber,
   sumAggregatedForDays,
   sumSubcolumnForDays,
+  getMonthDayKeysForTotalColumn,
 } from "../utils";
 import { getISOWeek, parse } from "date-fns";
 
@@ -41,8 +42,38 @@ export default function TableTotalRows({
     const computedTotals: LocalSums = {};
 
     if (currentPeriod === "daily") {
-      // Totales por día (vista diaria actual)
-      for (const col of columns) {
+      // Totales por día y columna "Total del mes" (vista diaria)
+      for (let colIndex = 0; colIndex < columns.length; colIndex++) {
+        const col = columns[colIndex];
+
+        // Cuando la columna es el "Total del mes", sumamos sobre los días del mes
+        if (col.isMonthlyTotal) {
+          const monthDays = getMonthDayKeysForTotalColumn(columns, colIndex);
+          if (
+            subcolumnsStructure &&
+            Object.keys(subcolumnsStructure).length > 0
+          ) {
+            const monthTotals: SubColumn = {};
+            for (const key of Object.keys(subcolumnsStructure)) {
+              const totalForKey = topParents.reduce(
+                (acc, row) =>
+                  acc + sumSubcolumnForDays(monthDays, row, rows, key),
+                0,
+              );
+              monthTotals[key] = totalForKey;
+            }
+            computedTotals[col.key] = monthTotals;
+          } else {
+            const total = topParents.reduce(
+              (acc, row) => acc + sumAggregatedForDays(monthDays, row, rows),
+              0,
+            );
+            computedTotals[col.key] = total;
+          }
+          continue;
+        }
+
+        // Columnas de días normales
         if (
           subcolumnsStructure &&
           Object.keys(subcolumnsStructure).length > 0
