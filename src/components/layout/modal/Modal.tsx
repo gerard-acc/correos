@@ -12,6 +12,17 @@ interface ModalProps {
   closeOnOverlay?: boolean;
 }
 
+  const styles: { [key: string]: React.CSSProperties } = {
+    modal: {
+      gap: "32px"
+    },
+    title: {
+      font: "Helvetica Neue",
+      fontSize: "24px",
+      fontWeight: "700",
+    },
+  };
+
 export function Modal({
   id,
   title,
@@ -40,9 +51,9 @@ export function Modal({
       className="modalBackdrop"
       onClick={closeOnOverlay ? modal.close : undefined}
     >
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal" style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
-          <p>{title}</p>
+          <p style={styles.title}>{title}</p>
           <button className="modal__header__close" onClick={modal.close}>
             <img src="/cross.svg" width="12px"></img>
           </button>

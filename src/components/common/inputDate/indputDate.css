@@ -1,0 +1,60 @@
+.dateRange__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateRange__label {
+  color: var(--gray-text);
+}
+
+.dateRange__input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* 
+.dateInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #cfd4dc;
+  background-color: #ffffff;
+  cursor: pointer;
+  width: 120px;
+  height: 48px;
+  line-height: 48px;
+}
+
+.dateInput:hover {
+  border: 1px solid #0f2b63;
+}
+
+.dateInput input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dateInputValue {
+  font-size: 0.9375rem;
+  color: rgb(44, 44, 44);
+  transition: color 0.2s ease;
+}
+
+.dateInputValue--filled {
+  color: #2b3648;
+}
+
+.dateInputIcon {
+  width: 18px;
+  height: 18px;
+  background-color: #2b3648;
+  mask: url("data:image/svg+xml,%3Csvg width='21' height='20' viewBox='0 0 21 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.16667 4.16667V1.66667M14.5 4.16667V1.66667M5.33333 7.5H15.3333M4.5 18.3333H16.1667C17.1066 18.3333 17.8333 17.6067 17.8333 16.6667V5.83333C17.8333 4.89333 17.1066 4.16667 16.1667 4.16667H4.5C3.56 4.16667 2.83333 4.89333 2.83333 5.83333V16.6667C2.83333 17.6067 3.56 18.3333 4.5 18.3333Z' stroke='%238C99AB' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / cover no-repeat;
+} */

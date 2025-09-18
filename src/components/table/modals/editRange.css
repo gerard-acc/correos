@@ -1,12 +1,144 @@
-.form {
+.editRangeContent {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-}
-.formRow {
-  display: flex;
   gap: 1.5rem;
 }
-.textTitle {
-  margin-bottom: 10px;
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fieldGroup--inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 2rem;
+  justify-content: flex-start;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fieldLabel {
+  font-weight: 600;
+  color: #2b3648;
+  font-size: 0.875rem;
+}
+
+
+
+.adjustmentOptions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 12px;
+}
+
+.adjustmentOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 16px;
+  color: #2b3648;
+  cursor: pointer;
+}
+
+.adjustmentOption input {
+  accent-color: #002e6d;
+  width: 18px;
+  height: 18px;
+}
+
+.percentageInput {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.percentageInput input {
+  width: 60px;
+  height: 20px;
+  border-radius: 8px;
+  border: 1px solid #cfd4dc;
+  background-color: #ffffff;
+  font-size: 16px;
+  color: #2b3648;
+}
+
+.percentageInput input:focus {
+  outline: 2px solid rgba(15, 43, 99, 0.16);
+  border-color: #0f2b63;
+}
+
+.percentageSuffix {
+  font-size: 18px;
+  color: rgb(69, 69, 69);
+  font-weight: 600;
+
+}
+
+.periodInputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dateInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0 16px;
+  /* height: 44px; */
+  border-radius: 999px;
+  border: 1px solid #cfd4dc;
+  background-color: #ffffff;
+  cursor: pointer;
+  width: 120px;
+  height: 48px;
+  line-height: 48px;
+}
+
+.dateInput:hover {
+  border: 1px solid #0f2b63;
+}
+
+.dateInput input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dateInputValue {
+  font-size: 0.9375rem;
+  color: rgb(44, 44, 44);
+  transition: color 0.2s ease;
+}
+
+.dateInputValue--filled {
+  color: #2b3648;
+}
+
+.dateInputIcon {
+  width: 18px;
+  height: 18px;
+  background-color: #2b3648;
+  mask: url("data:image/svg+xml,%3Csvg width='21' height='20' viewBox='0 0 21 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.16667 4.16667V1.66667M14.5 4.16667V1.66667M5.33333 7.5H15.3333M4.5 18.3333H16.1667C17.1066 18.3333 17.8333 17.6067 17.8333 16.6667V5.83333C17.8333 4.89333 17.1066 4.16667 16.1667 4.16667H4.5C3.56 4.16667 2.83333 4.89333 2.83333 5.83333V16.6667C2.83333 17.6067 3.56 18.3333 4.5 18.3333Z' stroke='%238C99AB' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / cover no-repeat;
+}
+
+.formError {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: rgba(214, 96, 70, 0.12);
+  color: #a23b2a;
+  font-size: 0.875rem;
 }
