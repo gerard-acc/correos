@@ -464,3 +464,17 @@ export const sumSubcolumnForDays = (
     0,
   );
 };
+
+// Cogemos los keys de los dias que pertenecen a un mes, ordenados de la columna Total hacia atrás
+export const getMonthDayKeysForTotalColumn = (
+  columns: ColumnStructure[],
+  totalColumnIndex: number,
+): string[] => {
+  const days: string[] = [];
+  for (let i = totalColumnIndex - 1; i >= 0; i--) {
+    const c = columns[i];
+    if (c.isMonthlyTotal) break;
+    days.unshift(c.key);
+  }
+  return days;
+};

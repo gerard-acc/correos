@@ -19,6 +19,8 @@ import TableCell from "./components/daily/TableCell";
 import TableTotalCell from "./components/daily/TableTotalCell";
 import WeeklySubcolumnsGroup from "./components/weekly/WeeklySubcolumnsGroup";
 import WeeklyTotalCell from "./components/weekly/WeeklyTotalCell";
+import MonthlySubcolumnsGroup from "./components/daily/MonthlySubcolumnsGroup";
+import MonthlyTotalCell from "./components/daily/MonthlyTotalCell";
 
 export default function Table({ data, periods }: TableProps) {
   /**
@@ -201,57 +203,80 @@ export default function Table({ data, periods }: TableProps) {
                 {/* A partir de aquí se pintan todas las celdas de la fila
                 La complejidad está en las filas con subcolumnas, que deben pintar una columna para cada subcolumna de cada dia + la columna de Total */}
                 {currentPeriod === "daily"
-                  ? columns.map((column) =>
+                  ? columns.map((column, colIndex) =>
                       subColumnsStructure ? (
                         // En caso de tener subcolumnas, pintamos una cell para cada una, y la TableTotalCell es la que pinta el total de las subcolumnas
                         <Fragment key={column.key}>
-                          {Object.keys(subColumnsStructure).map((key) => (
-                            <TableCell
-                              key={`${column.key}-${key}-${index}`}
-                              index={index}
-                              column={column}
+                          {column.isMonthlyTotal ? (
+                            <MonthlySubcolumnsGroup
+                              columns={columns}
+                              totalColumnIndex={colIndex}
                               row={row}
-                              isVerifying={isVerifying}
-                              rows={rows}
-                              subColumn={key}
-                              updateRows={() => setRows([...rows])}
+                              allRows={rows}
+                              subKeys={Object.keys(subColumnsStructure)}
+                              groupKey={`month-${column.key}`}
                             />
-                          ))}
-                          {/* A la TableTotalCell le pasamos lo que necesita para hacer los calculos, es decir los customValues y sus filas hijas */}
-                          <TableTotalCell
-                            day={column.key}
-                            overrideForDay={
-                              row.customValues?.[column.key] as SubColumn
-                            }
-                            baseSubcolumnsForDay={
-                              row.rowData?.[column.key] as SubColumn
-                            }
-                            childrenRows={
-                              row.type === "parent" && row.key
-                                ? rows.filter(
-                                    (r) =>
-                                      r.type === "child" &&
-                                      r.parentKey &&
-                                      r.parentKey.startsWith(row.key!),
-                                  )
-                                : undefined
-                            }
-                            allRows={rows}
-                            row={row}
-                            subKeys={Object.keys(subColumnsStructure)}
-                          />
+                          ) : (
+                            <>
+                              {Object.keys(subColumnsStructure).map((key) => (
+                                <TableCell
+                                  key={`${column.key}-${key}-${index}`}
+                                  index={index}
+                                  column={column}
+                                  row={row}
+                                  isVerifying={isVerifying}
+                                  rows={rows}
+                                  subColumn={key}
+                                  updateRows={() => setRows([...rows])}
+                                />
+                              ))}
+                              {/* A la TableTotalCell le pasamos lo que necesita para hacer los calculos, es decir los customValues y sus filas hijas */}
+                              <TableTotalCell
+                                day={column.key}
+                                overrideForDay={
+                                  row.customValues?.[column.key] as SubColumn
+                                }
+                                baseSubcolumnsForDay={
+                                  row.rowData?.[column.key] as SubColumn
+                                }
+                                childrenRows={
+                                  row.type === "parent" && row.key
+                                    ? rows.filter(
+                                        (r) =>
+                                          r.type === "child" &&
+                                          r.parentKey &&
+                                          r.parentKey.startsWith(row.key!),
+                                      )
+                                    : undefined
+                                }
+                                allRows={rows}
+                                row={row}
+                                subKeys={Object.keys(subColumnsStructure)}
+                              />
+                            </>
+                          )}
                         </Fragment>
                       ) : (
                         // Si no hay subcolumnas es así de simple
-                        <TableCell
-                          key={`${column.key}-${index}`}
-                          index={index}
-                          column={column}
-                          row={row}
-                          isVerifying={isVerifying}
-                          rows={rows}
-                          updateRows={() => setRows([...rows])}
-                        />
+                        column.isMonthlyTotal ? (
+                          <MonthlyTotalCell
+                            cellKey={`month-${column.key}`}
+                            columns={columns}
+                            totalColumnIndex={colIndex}
+                            row={row}
+                            allRows={rows}
+                          />
+                        ) : (
+                          <TableCell
+                            key={`${column.key}-${index}`}
+                            index={index}
+                            column={column}
+                            row={row}
+                            isVerifying={isVerifying}
+                            rows={rows}
+                            updateRows={() => setRows([...rows])}
+                          />
+                        )
                       ),
                     )
                   : weekKeys.map((week) => {
@@ -278,7 +303,7 @@ export default function Table({ data, periods }: TableProps) {
               </tr>
             ))}
             {/* Finalmente esto son las cuatro filas de totales que hay debajo de la tabla, no está del todo definido así que por ahora
-            solo rellena la fila de Total bàsico. Si el total modificadas necesita un total de lo que el usuario ha estado tocando, se puede
+            solo rellena la fila de Total básico. Si el total modificadas necesita un total de lo que el usuario ha estado tocando, se puede
             usar tranquilamente el customValue del objeto rows por ejemplo.
             Se dice que habrá info del total de todos los datos, incluso los que no estan en la tabla, cuando haya back habrá que ver como se obtiene 
 
