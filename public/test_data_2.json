@@ -1004,6 +1004,18 @@
   "complex": {
     "25/07/2025": {
       "isFestivity": false,
+      "comments": [
+        {
+        "selectedClient": "amazon",
+        "selectedWeek": "Semana 32",
+        "comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna."
+        },
+        {
+        "selectedClient": "shein",
+        "selectedWeek": "Semana 33",
+        "comment": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna."
+        }
+      ],
       "rows": {
         "Santiago": {
           "rowParents": ["Noroeste"],

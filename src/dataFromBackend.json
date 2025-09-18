@@ -1,0 +1,7 @@
+{ 
+  "clientsFromBackend": [
+    { "id": "amazon", "label": "Amazon" },
+    { "id": "shein", "label": "Shein" }
+  ],
+  "weeks": ["Semana 31", "Semana 32", "Semana 33", "Semana 34", "Semana 35", "Semana 36","Semana 37", "Semana 38"]
+}

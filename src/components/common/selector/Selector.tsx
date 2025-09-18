@@ -29,6 +29,10 @@ export default function Selector({
   const selectorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setSelected(selectedOption);
+  }, [selectedOption]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         selectorRef.current &&
@@ -71,6 +75,8 @@ export default function Selector({
     onChange?.(option.id);
   };
 
+  const selectedLabel = options.find((o) => o.id === selected)?.label;
+
   return (
     <div className="selector" ref={selectorRef}>
       <button
@@ -80,9 +86,7 @@ export default function Selector({
         aria-expanded={isOpen}
         type="button"
       >
-        <span>
-          {options.find((o) => o.id === selected)?.label || placeholder}
-        </span>
+        <span>{selectedLabel || placeholder}</span>
         <img src={arrow_down} alt="Toggle dropdown" />
       </button>
       {isOpen && (

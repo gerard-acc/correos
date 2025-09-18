@@ -1,0 +1,81 @@
+.writeCommentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.weekSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.weekSelectorTitle {
+  font-weight: 600;
+}
+.weekSelectorGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.weekSelectorButton {
+  width: 129px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #cfd4dc;
+  background-color: #ffffff;
+  color: #2b3648;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.weekSelectorButton:hover {
+  border-color: #8c99ab;
+}
+.weekSelectorButtonSelected {
+  background-color: #102549;
+  border-color: #102549;
+  color: #ffffff;
+}
+.commentSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.commentLabel {
+  font-weight: 600;
+}
+.commentTextarea {
+  min-height: 140px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #cfd4dc;
+  background-color: #ffffff;
+  color: inherit;
+  resize: vertical;
+  font: "Helvetica Neue";
+  font-size: 18px;
+  font-weight: 400;
+}
+.commentTextarea:focus {
+  outline: 2px solid #10254933;
+  border-color: #102549;
+}
+
+.commentTextarea::placeholder {
+  color: #5F5F5F;
+  font: "Helvetica Neue";
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.formError {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background-color: rgba(214, 96, 70, 0.12);
+  color: #a23b2a;
+  font-size: 0.875rem;
+}
