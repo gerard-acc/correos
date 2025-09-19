@@ -162,7 +162,10 @@ export default function Table({ data, periods }: TableProps) {
             se pone la fila de los dias y en caso de que haya subcolumnas se ponen también aquí */}
             {currentPeriod === "daily" ? (
               <>
-                <TableTimelines columns={columns} />
+                <TableTimelines
+                  columns={columns}
+                  subcolumnsStructure={subColumnsStructure}
+                />
                 <DailyTimelines
                   data={data}
                   columns={columns}

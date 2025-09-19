@@ -5,11 +5,14 @@ import { es } from "date-fns/locale";
 
 interface TableTimelines {
   columns: ColumnStructure[];
+  subcolumnsStructure?: { [key: string]: number };
 }
 
 const MonthPill = ({ dayKey }: { dayKey: string }) => {
-  // Get the month name from the key
-  const [monthNum, year] = dayKey.split("/").map((v) => parseInt(v));
+  // dayKey is dd/MM/yyyy; extract MM and yyyy
+  const [, monthStr, yearStr] = dayKey.split("/");
+  const monthNum = parseInt(monthStr, 10);
+  const year = parseInt(yearStr, 10);
   const monthName = format(new Date(year, monthNum - 1), "MMMM", {
     locale: es,
   });
@@ -31,7 +34,7 @@ const WeekPill = ({
   );
 };
 
-export default function TableTimelines({ columns }: TableTimelines) {
+export default function TableTimelines({ columns, subcolumnsStructure }: TableTimelines) {
   const weeksFestivitiesCount = useMemo(() => {
     const weeksFestivities: { [key: number]: number } = {};
     columns.forEach((column) => {
@@ -48,11 +51,14 @@ export default function TableTimelines({ columns }: TableTimelines) {
       <tr className="timelineRow">
         <td></td>
         {columns.map((column, index) => {
+          const colSpan = subcolumnsStructure
+            ? Object.keys(subcolumnsStructure).length + 1
+            : 1;
           // Si es el inicio de la tabla, o si coincide que es primero de mes y primero de semana,
           // mostramos todo lo que quieran
           return column.week &&
             (index === 0 || (column.isFirstOfMonth && column.isFirstOfWeek)) ? (
-            <td key={`column-${column.week}`}>
+            <td key={`column-${column.key}`} colSpan={colSpan}>
               <MonthPill dayKey={column.key}></MonthPill>
               <WeekPill
                 week={column.week}
@@ -61,12 +67,12 @@ export default function TableTimelines({ columns }: TableTimelines) {
             </td>
           ) : // Si es primero de mes mostramos solo la info del mes
           column.isFirstOfMonth ? (
-            <td key={`column-${column.week}`}>
+            <td key={`column-${column.key}`} colSpan={colSpan}>
               <MonthPill dayKey={column.key}></MonthPill>
             </td>
           ) : column.week && column.isFirstOfWeek ? (
             // Si es primero de semana pues la info de la semana
-            <td key={`column-${column.week}`}>
+            <td key={`column-${column.key}`} colSpan={colSpan}>
               <WeekPill
                 week={column.week}
                 festivities={weeksFestivitiesCount[column.week]}
@@ -74,7 +80,7 @@ export default function TableTimelines({ columns }: TableTimelines) {
             </td>
           ) : (
             // Y si no es nada, todo vacio
-            <td></td>
+            <td colSpan={colSpan}></td>
           );
         })}
       </tr>

@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { getWeekKeys } from "../../utils";
 
 interface WeeklyTimelinesProps {
   weeksMap: { [week: number]: string[] };
@@ -24,22 +25,33 @@ export default function WeeklyTimelines({
   weeksMap,
   subcolumnsStructure,
 }: WeeklyTimelinesProps) {
-  const weekKeys = Object.keys(weeksMap).map((w) => parseInt(w, 10));
+  const weekKeys = getWeekKeys(weeksMap);
 
   return (
     <tr className="timelineRow">
       <td></td>
       {weekKeys.map((week, index) => {
         const days = weeksMap[week] || [];
-        const firstOfMonthDay = days.find((d) => d.startsWith("01/"));
-        const showMonth = index === 0 || !!firstOfMonthDay;
+        const currentFirstDay = days[0];
+        // Show month when the month changes compared to previous week's first day
+        let showMonth = index === 0;
+        if (!showMonth && index > 0) {
+          const prevWeek = weekKeys[index - 1];
+          const prevFirstDay = weeksMap[prevWeek]?.[0];
+          if (prevFirstDay && currentFirstDay) {
+            const [, currMonth, currYear] = currentFirstDay.split("/");
+            const [, prevMonth, prevYear] = prevFirstDay.split("/");
+            showMonth = currMonth !== prevMonth || currYear !== prevYear;
+          }
+        }
+
         const colSpan = subcolumnsStructure
           ? Object.keys(subcolumnsStructure).length + 1
           : 1;
         return (
           <td key={`week-${week}`} colSpan={colSpan}>
-            {showMonth && (
-              <MonthPill dayKey={firstOfMonthDay || days[0]}></MonthPill>
+            {showMonth && currentFirstDay && (
+              <MonthPill dayKey={currentFirstDay}></MonthPill>
             )}
             <WeekPill week={week}></WeekPill>
           </td>
