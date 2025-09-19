@@ -6,7 +6,7 @@ import type {
   SubColumn,
   TableProps,
 } from "./interfaces";
-import { buildRows, buildColumns, groupDaysByWeek } from "./utils";
+import { buildRows, buildColumns, groupColumnsByWeek } from "./utils";
 import MultiRadius from "../common/multiRadius/MultiRadius";
 import MultiButton from "../common/multiButton/MultiButton";
 import WeeklyTimelines from "./components/weekly/WeeklyTimelines";
@@ -65,9 +65,10 @@ export default function Table({ data, periods }: TableProps) {
   }, [columns]);
 
   // weeksMap guarda los grupos de semanas, es decir el número de semana y los dias que tiene
+  // Ahora lo derivamos directamente de las columnas para evitar reparsear fechas
   const weeksMap = useMemo<{ [week: number]: string[] }>(
-    () => groupDaysByWeek(data),
-    [data],
+    () => groupColumnsByWeek(columns),
+    [columns],
   );
 
   // visibleRows se usa solamente para tener las rows visibles. Parece mas complejo de lo que deberia, pero creo que es necesario

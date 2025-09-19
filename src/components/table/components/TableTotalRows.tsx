@@ -13,7 +13,7 @@ import {
   sumSubcolumnForDays,
   getMonthDayKeysForTotalColumn,
 } from "../utils";
-import { getISOWeek, parse } from "date-fns";
+import { groupColumnsByWeek, getWeekKeys } from "../utils";
 
 interface TableTotalRows {
   currentPeriod: TableProps["periods"];
@@ -98,28 +98,9 @@ export default function TableTotalRows({
         }
       }
     } else {
-      // Totales por semana (vista semanal)
-      // Construimos el mapa semana -> lista de días a partir de las columnas
-      const weeksMap: { [week: number]: string[] } = {};
-      for (const col of columns) {
-        if (col.isMonthlyTotal) continue; // skip monthly total pseudo-columns
-        const date = parse(col.key, "dd/MM/yyyy", new Date());
-        const week = getISOWeek(date);
-        if (!weeksMap[week]) weeksMap[week] = [];
-        weeksMap[week].push(col.key);
-      }
-      // Ordenamos los días dentro de cada semana para consistencia
-      Object.values(weeksMap).forEach((arr) =>
-        arr.sort((a, b) => {
-          const da = parse(a, "dd/MM/yyyy", new Date()).getTime();
-          const db = parse(b, "dd/MM/yyyy", new Date()).getTime();
-          return da - db;
-        }),
-      );
-
-      const weekKeys = Object.keys(weeksMap)
-        .map((w) => parseInt(w, 10))
-        .sort((a, b) => a - b);
+      // Totales por semana (vista semanal), agrupado desde las columnas
+      const weeksMap = groupColumnsByWeek(columns);
+      const weekKeys = getWeekKeys(weeksMap);
 
       for (const week of weekKeys) {
         const days = weeksMap[week];
@@ -176,18 +157,8 @@ export default function TableTotalRows({
             )
           : // Weekly rendering
             (() => {
-              // Reuse the same weeks calculation used above (derive from columns)
-              const weeksMap: { [week: number]: string[] } = {};
-              for (const col of columns) {
-                if (col.isMonthlyTotal) continue;
-                const date = parse(col.key, "dd/MM/yyyy", new Date());
-                const week = getISOWeek(date);
-                if (!weeksMap[week]) weeksMap[week] = [];
-                weeksMap[week].push(col.key);
-              }
-              const weekKeys = Object.keys(weeksMap)
-                .map((w) => parseInt(w, 10))
-                .sort((a, b) => a - b);
+              const weeksMap = groupColumnsByWeek(columns);
+              const weekKeys = getWeekKeys(weeksMap);
               return weekKeys.map((week) =>
                 subcolumnsStructure ? (
                   <Fragment key={`week-${week}`}>

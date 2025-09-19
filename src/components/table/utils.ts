@@ -109,32 +109,23 @@ export const buildRows = (data: DataStructure): RowStructure[] => {
   return rowStructure;
 };
 
-// Retorna un objeto con grupos de dias en cada semana
-export const groupDaysByWeek = (
-  data: DataStructure,
-): { [week: number]: string[] } => {
-  const weeks: { [week: number]: string[] } = {};
-  for (const day in data) {
-    const date = parse(day, "dd/MM/yyyy", new Date());
-    const weekNumber = getISOWeek(date);
-    if (!weeks[weekNumber]) weeks[weekNumber] = [];
-    weeks[weekNumber].push(day);
-  }
-
-  Object.values(weeks).forEach((arr) =>
-    arr.sort((a, b) => {
-      const da = parse(a, "dd/MM/yyyy", new Date()).getTime();
-      const db = parse(b, "dd/MM/yyyy", new Date()).getTime();
-      return da - db;
-    }),
-  );
-  return weeks;
-};
-
 export const getWeekKeys = (weeksMap: { [week: number]: string[] }) => {
   return Object.keys(weeksMap)
     .map((w) => parseInt(w, 10))
     .sort((a, b) => a - b);
+};
+
+// Agrupa columnas por semana aprovechando la propiedad `week` calculada en buildColumns
+export const groupColumnsByWeek = (
+  columns: ColumnStructure[],
+): { [week: number]: string[] } => {
+  const weeks: { [week: number]: string[] } = {};
+  for (const c of columns) {
+    if (c.isMonthlyTotal || !c.week) continue;
+    if (!weeks[c.week]) weeks[c.week] = [];
+    weeks[c.week].push(c.key);
+  }
+  return weeks;
 };
 
 // Obtiene le valor base de una celda HIJA (las que tienen la data real del backend) simplemente cogiendo la data que hay en la row para la columna de la celda

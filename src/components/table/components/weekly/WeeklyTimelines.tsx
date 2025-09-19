@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import { parse, format } from "date-fns";
+import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 interface WeeklyTimelinesProps {
@@ -7,92 +6,45 @@ interface WeeklyTimelinesProps {
   subcolumnsStructure?: { [key: string]: number };
 }
 
+const MonthPill = ({ dayKey }: { dayKey: string }) => {
+  const [, monthStr, yearStr] = dayKey.split("/");
+  const monthNum = parseInt(monthStr, 10);
+  const year = parseInt(yearStr, 10);
+  const monthName = format(new Date(year, monthNum - 1), "MMMM", {
+    locale: es,
+  });
+  return <span className="headerPill headerPill--noFill">{monthName}</span>;
+};
+
+const WeekPill = ({ week }: { week: number | string }) => {
+  return <span className="headerPill headerPill--noFill">S{week}</span>;
+};
+
 export default function WeeklyTimelines({
   weeksMap,
   subcolumnsStructure,
 }: WeeklyTimelinesProps) {
-  const monthGroups = useMemo(() => {
-    const order: string[] = [];
-    const map: {
-      [key: string]: {
-        monthNum: number;
-        monthName: string;
-        year: number;
-        weeks: number;
-      };
-    } = {};
-    Object.keys(weeksMap).forEach((week) => {
-      const days = weeksMap[parseInt(week)] || [];
-      if (days.length === 0) return;
-      const first = days[0];
-      const date = parse(first, "dd/MM/yyyy", new Date());
-      const monthNum = date.getMonth() + 1;
-      const year = date.getFullYear();
-      const key = `${monthNum}/${year}`;
-      if (!map[key]) {
-        map[key] = {
-          monthNum,
-          monthName: format(new Date(year, monthNum - 1), "MMMM", {
-            locale: es,
-          }),
-          year,
-          weeks: 0,
-        };
-        order.push(key);
-      }
-      map[key].weeks += 1;
-    });
-    return order.map((k) => ({ key: k, ...map[k] }));
-  }, [weeksMap]);
+  const weekKeys = Object.keys(weeksMap).map((w) => parseInt(w, 10));
 
   return (
-    <>
-      <tr className="monthRow">
-        <td></td>
-        {monthGroups.map((m) => (
-          <td
-            key={`month-${m.key}`}
-            colSpan={
-              m.weeks *
-              (subcolumnsStructure
-                ? Object.keys(subcolumnsStructure).length + 1
-                : 1)
-            }
-          >
-            {m.monthName}
+    <tr className="timelineRow">
+      <td></td>
+      {weekKeys.map((week, index) => {
+        const days = weeksMap[week] || [];
+        const firstOfMonthDay = days.find((d) => d.startsWith("01/"));
+        const showMonth = index === 0 || !!firstOfMonthDay;
+        const colSpan = subcolumnsStructure
+          ? Object.keys(subcolumnsStructure).length + 1
+          : 1;
+        return (
+          <td key={`week-${week}`} colSpan={colSpan}>
+            {showMonth && (
+              <MonthPill dayKey={firstOfMonthDay || days[0]}></MonthPill>
+            )}
+            <WeekPill week={week}></WeekPill>
           </td>
-        ))}
-      </tr>
-      <tr className="weekRow">
-        <td></td>
-        {Object.keys(weeksMap).map((week) => (
-          <td
-            key={`week-${week}`}
-            colSpan={
-              subcolumnsStructure
-                ? Object.keys(subcolumnsStructure).length + 1
-                : 1
-            }
-          >
-            S{week}
-          </td>
-        ))}
-      </tr>
-      {subcolumnsStructure && (
-        <tr className="subcolumnsRow">
-          <td></td>
-          {Object.keys(weeksMap).map((week) => (
-            <>
-              {Object.keys(subcolumnsStructure).map((key) => (
-                <td key={`week-${week}-${key}`}>{key}</td>
-              ))}
-              <td key={`week-${week}-total`}>
-                <strong>Total</strong>
-              </td>
-            </>
-          ))}
-        </tr>
-      )}
-    </>
+        );
+      })}
+    </tr>
   );
 }
