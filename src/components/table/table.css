@@ -37,6 +37,7 @@ thead {
         margin-right: 1rem;
         padding: 8px 12px;
         border-radius: 30px;
+        text-transform: capitalize;
         &.headerPill--noFill {
           background: none;
         }

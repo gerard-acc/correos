@@ -7,9 +7,9 @@ interface TableTimelines {
   columns: ColumnStructure[];
 }
 
-const MonthPill = ({ key }: { key: string }) => {
+const MonthPill = ({ dayKey }: { dayKey: string }) => {
   // Get the month name from the key
-  const [monthNum, year] = key.split("/").map((v) => parseInt(v));
+  const [monthNum, year] = dayKey.split("/").map((v) => parseInt(v));
   const monthName = format(new Date(year, monthNum - 1), "MMMM", {
     locale: es,
   });
@@ -53,7 +53,7 @@ export default function TableTimelines({ columns }: TableTimelines) {
           return column.week &&
             (index === 0 || (column.isFirstOfMonth && column.isFirstOfWeek)) ? (
             <td key={`column-${column.week}`}>
-              <MonthPill key={column.key}></MonthPill>
+              <MonthPill dayKey={column.key}></MonthPill>
               <WeekPill
                 week={column.week}
                 festivities={weeksFestivitiesCount[column.week]}
@@ -61,13 +61,17 @@ export default function TableTimelines({ columns }: TableTimelines) {
             </td>
           ) : // Si es primero de mes mostramos solo la info del mes
           column.isFirstOfMonth ? (
-            <MonthPill key={column.key}></MonthPill>
+            <td key={`column-${column.week}`}>
+              <MonthPill dayKey={column.key}></MonthPill>
+            </td>
           ) : column.week && column.isFirstOfWeek ? (
             // Si es primero de semana pues la info de la semana
-            <WeekPill
-              week={column.week}
-              festivities={weeksFestivitiesCount[column.week]}
-            ></WeekPill>
+            <td key={`column-${column.week}`}>
+              <WeekPill
+                week={column.week}
+                festivities={weeksFestivitiesCount[column.week]}
+              ></WeekPill>
+            </td>
           ) : (
             // Y si no es nada, todo vacio
             <td></td>
