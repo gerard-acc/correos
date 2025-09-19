@@ -4,13 +4,11 @@ import { es } from "date-fns/locale";
 
 interface WeeklyTimelinesProps {
   weeksMap: { [week: number]: string[] };
-  weekKeys: number[];
   subcolumnsStructure?: { [key: string]: number };
 }
 
 export default function WeeklyTimelines({
   weeksMap,
-  weekKeys,
   subcolumnsStructure,
 }: WeeklyTimelinesProps) {
   const monthGroups = useMemo(() => {
@@ -23,8 +21,8 @@ export default function WeeklyTimelines({
         weeks: number;
       };
     } = {};
-    weekKeys.forEach((week) => {
-      const days = weeksMap[week] || [];
+    Object.keys(weeksMap).forEach((week) => {
+      const days = weeksMap[parseInt(week)] || [];
       if (days.length === 0) return;
       const first = days[0];
       const date = parse(first, "dd/MM/yyyy", new Date());
@@ -45,7 +43,7 @@ export default function WeeklyTimelines({
       map[key].weeks += 1;
     });
     return order.map((k) => ({ key: k, ...map[k] }));
-  }, [weekKeys, weeksMap]);
+  }, [weeksMap]);
 
   return (
     <>
@@ -67,7 +65,7 @@ export default function WeeklyTimelines({
       </tr>
       <tr className="weekRow">
         <td></td>
-        {weekKeys.map((week) => (
+        {Object.keys(weeksMap).map((week) => (
           <td
             key={`week-${week}`}
             colSpan={
@@ -83,7 +81,7 @@ export default function WeeklyTimelines({
       {subcolumnsStructure && (
         <tr className="subcolumnsRow">
           <td></td>
-          {weekKeys.map((week) => (
+          {Object.keys(weeksMap).map((week) => (
             <>
               {Object.keys(subcolumnsStructure).map((key) => (
                 <td key={`week-${week}-${key}`}>{key}</td>

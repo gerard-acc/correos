@@ -6,7 +6,7 @@ import type {
   SubColumn,
   TableProps,
 } from "./interfaces";
-import { buildRows, buildColumns, groupDaysByWeek, getWeekKeys } from "./utils";
+import { buildRows, buildColumns, groupDaysByWeek } from "./utils";
 import MultiRadius from "../common/multiRadius/MultiRadius";
 import MultiButton from "../common/multiButton/MultiButton";
 import WeeklyTimelines from "./components/weekly/WeeklyTimelines";
@@ -47,6 +47,7 @@ export default function Table({ data, periods }: TableProps) {
 
   // Se construyen las columnas, aquí ningún problema, hay complejidad en buildColumns pero no es terrible
   const columns = useMemo<ColumnStructure[]>(() => buildColumns(data), [data]);
+
   // Se construyen las rows en un useEffect mas abajo, no es un useMemo igual que columns porque necesitamos
   // el setRows para cuando cambian valores de alguna row, que refresque todo para los calculos de las celdas que suman cosas
   const [rows, setRows] = useState<RowStructure[]>([]);
@@ -63,14 +64,11 @@ export default function Table({ data, periods }: TableProps) {
     return columns[0]?.subColumns;
   }, [columns]);
 
-  // weeksMap guarda los grupos de semanas, es decir los dias que tiene cada semana (consolelog y se entiende perfecto)
+  // weeksMap guarda los grupos de semanas, es decir el número de semana y los dias que tiene
   const weeksMap = useMemo<{ [week: number]: string[] }>(
     () => groupDaysByWeek(data),
     [data],
   );
-
-  // weekKeys tiene un array con los números de semanas actuales
-  const weekKeys = useMemo(() => getWeekKeys(weeksMap), [weeksMap]);
 
   // visibleRows se usa solamente para tener las rows visibles. Parece mas complejo de lo que deberia, pero creo que es necesario
   // que sea asi para casos de filas que son padres e hijas a la vez por ejemplo. Usa expandedParents para saber qué filtrar y qué no.
@@ -163,12 +161,7 @@ export default function Table({ data, periods }: TableProps) {
             se pone la fila de los dias y en caso de que haya subcolumnas se ponen también aquí */}
             {currentPeriod === "daily" ? (
               <>
-                <TableTimelines
-                  data={data}
-                  subcolumnsStructure={subColumnsStructure}
-                  rows={rows}
-                  columns={columns}
-                />
+                <TableTimelines columns={columns} />
                 <DailyTimelines
                   data={data}
                   columns={columns}
@@ -179,7 +172,6 @@ export default function Table({ data, periods }: TableProps) {
             ) : (
               <WeeklyTimelines
                 weeksMap={weeksMap}
-                weekKeys={weekKeys}
                 subcolumnsStructure={subColumnsStructure}
               />
             )}
@@ -256,35 +248,34 @@ export default function Table({ data, periods }: TableProps) {
                             </>
                           )}
                         </Fragment>
+                      ) : // Si no hay subcolumnas es así de simple
+                      column.isMonthlyTotal ? (
+                        <MonthlyTotalCell
+                          cellKey={`month-${column.key}`}
+                          columns={columns}
+                          totalColumnIndex={colIndex}
+                          row={row}
+                          allRows={rows}
+                        />
                       ) : (
-                        // Si no hay subcolumnas es así de simple
-                        column.isMonthlyTotal ? (
-                          <MonthlyTotalCell
-                            cellKey={`month-${column.key}`}
-                            columns={columns}
-                            totalColumnIndex={colIndex}
-                            row={row}
-                            allRows={rows}
-                          />
-                        ) : (
-                          <TableCell
-                            key={`${column.key}-${index}`}
-                            index={index}
-                            column={column}
-                            row={row}
-                            isVerifying={isVerifying}
-                            rows={rows}
-                            updateRows={() => setRows([...rows])}
-                          />
-                        )
+                        <TableCell
+                          key={`${column.key}-${index}`}
+                          index={index}
+                          column={column}
+                          row={row}
+                          isVerifying={isVerifying}
+                          rows={rows}
+                          updateRows={() => setRows([...rows])}
+                        />
                       ),
                     )
-                  : weekKeys.map((week) => {
-                      const days = weeksMap[week] || [];
+                  : Object.keys(weeksMap).map((week) => {
+                      const numericWeek = parseInt(week);
+                      const days = weeksMap[numericWeek] || [];
                       return subColumnsStructure ? (
                         <WeeklySubcolumnsGroup
                           key={`group-${week}`}
-                          week={week}
+                          week={numericWeek}
                           days={days}
                           row={row}
                           allRows={rows}
@@ -293,7 +284,7 @@ export default function Table({ data, periods }: TableProps) {
                       ) : (
                         <WeeklyTotalCell
                           key={`total-${week}`}
-                          week={week}
+                          week={numericWeek}
                           days={days}
                           row={row}
                           allRows={rows}

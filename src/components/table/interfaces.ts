@@ -31,6 +31,9 @@ export interface ColumnStructure {
   key: string;
   isFestivity?: boolean;
   subColumns?: SubColumn;
+  isFirstOfMonth?: boolean;
+  isFirstOfWeek?: boolean;
+  week?: number;
   isMonthlyTotal?: boolean;
 }
 

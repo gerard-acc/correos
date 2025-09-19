@@ -48,18 +48,7 @@ thead {
     }
   }
 
-  & .monthRow {
-    color: black;
-    text-transform: capitalize;
-    & td {
-      padding: 8px;
-    }
-    & td:first-child {
-      background-color: white;
-    }
-  }
-
-  & .weekRow {
+  & .timelineRow {
     color: black;
     & td {
       padding: 8px;

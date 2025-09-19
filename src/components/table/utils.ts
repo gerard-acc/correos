@@ -16,6 +16,9 @@ export const buildColumns = (data: DataStructure): ColumnStructure[] => {
     const column: ColumnStructure = {
       key: day,
       isFestivity: data[day].isFestivity,
+      week: getISOWeek(parse(day, "dd/MM/yyyy", new Date())),
+      isFirstOfMonth: parse(day, "dd/MM/yyyy", new Date()).getDate() === 1,
+      isFirstOfWeek: parse(day, "dd/MM/yyyy", new Date()).getDay() === 1,
     };
 
     const subColumns = Object.values(data[day].rows)[0].volumen;
