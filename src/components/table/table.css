@@ -32,12 +32,21 @@ thead {
     & td {
       padding: 15px 8px;
       min-width: 100px;
+      position: relative;
+      height: 30px;
+      & .timelineInfo {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: flex;
+      }
       & .headerPill {
         background-color: var(--gray);
         margin-right: 1rem;
         padding: 8px 12px;
         border-radius: 30px;
         text-transform: capitalize;
+        white-space: nowrap;
         &.headerPill--noFill {
           background: none;
         }

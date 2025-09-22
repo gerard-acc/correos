@@ -34,7 +34,10 @@ const WeekPill = ({
   );
 };
 
-export default function TableTimelines({ columns, subcolumnsStructure }: TableTimelines) {
+export default function TableTimelines({
+  columns,
+  subcolumnsStructure,
+}: TableTimelines) {
   const weeksFestivitiesCount = useMemo(() => {
     const weeksFestivities: { [key: number]: number } = {};
     columns.forEach((column) => {
@@ -59,24 +62,30 @@ export default function TableTimelines({ columns, subcolumnsStructure }: TableTi
           return column.week &&
             (index === 0 || (column.isFirstOfMonth && column.isFirstOfWeek)) ? (
             <td key={`column-${column.key}`} colSpan={colSpan}>
-              <MonthPill dayKey={column.key}></MonthPill>
-              <WeekPill
-                week={column.week}
-                festivities={weeksFestivitiesCount[column.week]}
-              ></WeekPill>
+              <div className="timelineInfo">
+                <MonthPill dayKey={column.key}></MonthPill>
+                <WeekPill
+                  week={column.week}
+                  festivities={weeksFestivitiesCount[column.week]}
+                ></WeekPill>
+              </div>
             </td>
           ) : // Si es primero de mes mostramos solo la info del mes
           column.isFirstOfMonth ? (
             <td key={`column-${column.key}`} colSpan={colSpan}>
-              <MonthPill dayKey={column.key}></MonthPill>
+              <div className="timelineInfo">
+                <MonthPill dayKey={column.key}></MonthPill>
+              </div>
             </td>
           ) : column.week && column.isFirstOfWeek ? (
             // Si es primero de semana pues la info de la semana
             <td key={`column-${column.key}`} colSpan={colSpan}>
-              <WeekPill
-                week={column.week}
-                festivities={weeksFestivitiesCount[column.week]}
-              ></WeekPill>
+              <div className="timelineInfo">
+                <WeekPill
+                  week={column.week}
+                  festivities={weeksFestivitiesCount[column.week]}
+                ></WeekPill>
+              </div>
             </td>
           ) : (
             // Y si no es nada, todo vacio
