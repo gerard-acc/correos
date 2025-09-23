@@ -128,7 +128,7 @@ function Index() {
 
         <Section>
           <h1>Forecast</h1>
-          <Table periods="daily" data={test_data.regular} />
+          <Table periods="daily" data={test_data.complex} />
           <TableFooter></TableFooter>
         </Section>
       </CenteredContent>

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type ModalData = Record<string, unknown>;
+type ModalData = Record<string, unknown> | unknown[] ;
 
 interface ModalStore {
   modals: Record<string, ModalData | true>;
@@ -33,13 +33,14 @@ export const useModalStore = create<ModalStore>((set, get) => ({
   getModalData: (id) => get().modals[id],
 }));
 
-export const useSpecificModal = (modalId: string) => {
+
+export const useSpecificModal = <TData extends ModalData = ModalData>(modalId: string) => {
   const { openModal, closeModal, isOpen, getModalData } = useModalStore();
 
   return {
-    open: (data?: ModalData) => openModal(modalId, data),
+    open: (data?: TData) => openModal(modalId, data),
     close: () => closeModal(modalId),
     isOpen: isOpen(modalId),
-    data: getModalData(modalId),
+    data: getModalData(modalId) as TData | undefined,
   };
 };

@@ -6,6 +6,7 @@ import { useSpecificModal } from "../../../store/modalStore";
 import Selector from "../../common/selector/Selector";
 
 import dataFromBackend from "../../../dataFromBackend.json";
+import { useGlobalStore } from "../../../store/global.store";
 const { weeks } = dataFromBackend
 
 
@@ -17,7 +18,9 @@ export default function WriteCommentModal() {
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
   const [comment, setComment] = useState<string>("");
-    const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const increaseComments = useGlobalStore((state) => state.increaseComments)
 
 
   const resetForm = () => {
@@ -60,6 +63,7 @@ export default function WriteCommentModal() {
       setError("Completa todos los campos antes de guardar.");
       return;
     }
+    increaseComments({ selectedClient, selectedWeek, comment })
     console.log("handleSave", { selectedClient, selectedWeek, comment });
     console.log({data})
     close();
