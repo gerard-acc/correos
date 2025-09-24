@@ -3,7 +3,7 @@ import Banner from "../components/layout/Banner";
 import BoxLink from "../components/common/boxLink/BoxLink";
 import business_center from "/business_center.svg";
 import calculate from "/calculate.svg";
-import graph_2 from "/graph_2.svg";
+// import graph_2 from "/graph_2.svg";
 import chart_data from "/chart_data.svg";
 import browse_activity from "/browse_activity.svg";
 import { Link } from "@tanstack/react-router";

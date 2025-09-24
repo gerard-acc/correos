@@ -1,6 +1,12 @@
 import { create } from "zustand";
+interface Comment  {
+    selectedClient: string,
+    comment: string,
+    selectedWeek: string
+}
 
-type ModalData = Record<string, unknown> | unknown[] ;
+type ModalData = Record<string, unknown> | unknown[] | Comment ;
+
 
 interface ModalStore {
   modals: Record<string, ModalData | true>;

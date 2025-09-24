@@ -7,12 +7,14 @@ export default function Button({
   filled = false,
   border = true,
   icon,
+  style = {}
 }: {
   text: string;
   onClick: MouseEventHandler;
   filled?: boolean;
   border?: boolean;
   icon?: string;
+  style?: object
 }) {
   const classNames = ["button"];
   if (filled) classNames.push("button__filled");
@@ -20,7 +22,7 @@ export default function Button({
   const className = classNames.join(" ");
 
   return (
-    <button className={className} onClick={onClick}>
+    <button className={className} onClick={onClick} style={style}>
       {icon ? <img src={icon}></img> : null}
       {text}
     </button>

@@ -1,0 +1,11 @@
+.buttonShowMoreFilters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #002e6d;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}

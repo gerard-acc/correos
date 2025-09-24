@@ -59,28 +59,22 @@ export default function WeeklyTimelines({
   const comments = useGlobalStore(state => state.comments)
   const detailsCommentModal = useSpecificModal("details-comment");
 
-
-  // console.log({comments})
-  console.log({weekKeys})
-
-  console.log("Renderizado")
-
 const hasCommentInThisWeek = (comments : Comment[], weekNumber: number) =>
   comments.some((comment) => comment.selectedWeek.includes(String(weekNumber)))
 
 const handleSeeDetailsComment = (comments : Comment[], weekNumber: number) => {
   const commentToSee = comments.filter(comment => comment.selectedWeek.includes(String(weekNumber)))[0]
-  
   detailsCommentModal.open(commentToSee)
-
-
 }
+
+console.log("monthGroups")
+console.log(monthGroups)
 
   return (
     <>
       <tr className="monthRow">
         <td></td>
-        {monthGroups.map((m) => (
+        {/* {monthGroups.map((m) => (
           <td
             key={`month-${m.key}`}
             colSpan={
@@ -92,12 +86,13 @@ const handleSeeDetailsComment = (comments : Comment[], weekNumber: number) => {
           >
             {m.monthName}
           </td>
-        ))}
+        ))} */}
       </tr>
-      <tr className="weekRow">
+      <tr className="onTopTableRow">
         <td></td>
         {weekKeys.map((week) => (
           <td
+            style={{padding: "8px"}}
             key={`week-${week}`}
             colSpan={
               subcolumnsStructure
@@ -105,6 +100,14 @@ const handleSeeDetailsComment = (comments : Comment[], weekNumber: number) => {
                 : 1
             }
           >
+             <span
+               style={{color: "black", fontSize: "12px", fontWeight: "400", backgroundColor: "#F0F3F6", padding: "4px 12px 4px 12px", borderRadius: "12px", marginRight: "12px"}}
+            >
+              {`Del ${weeksMap[week][0].slice(0, 2)} al ${weeksMap[week][weeksMap[week].length -1].slice(0, 2) } | x días lab.`} 
+            </span>
+
+           {/* 
+           Opcion para diaria
            <span
               style={{color: "black", fontSize: "16px", lineHeight: "20px" ,fontWeight: "bold", paddingRight: "12px"}}
            > 
@@ -120,19 +123,27 @@ const handleSeeDetailsComment = (comments : Comment[], weekNumber: number) => {
             <span
                style={{color: "black", fontSize: "12px", backgroundColor: "#F0F3F6", padding: "4px 12px 4px 12px", borderRadius: "12px" }}
             >
-              {"Días laborables XX "}
-            </span>
+              {"Días laborables: TODO "}
+            </span> */}
 
           </td>
           
         ))}
       </tr>
       {/*  Probando otra fila */}
-      <tr className="weekNumberRow">
-        <td></td>
+      <tr className="tableHeaderRow">
+        <td
+          style={{backgroundColor: "#002e6d", minWidth: "170px"}}
+        >
+          <span
+            style={{color: "white"}}
+          >
+            Cliente (X)
+          </span>
+        </td>
         {weekKeys.map((week) => (
           <td
-           style={{backgroundColor: "#002e6d"}}
+           style={{backgroundColor: "#002e6d", minWidth: "170px"}}
             key={`week-${week}`}
             colSpan={
               subcolumnsStructure

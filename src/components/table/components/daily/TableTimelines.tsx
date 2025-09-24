@@ -8,6 +8,7 @@ interface TableTimelines {
   subcolumnsStructure?: { [key: string]: number };
   rows: RowStructure[];
   columns: ColumnStructure[];
+  weeksMap: Record<string, string[]>;
 }
 // ---------- Types ----------
 type MonthHeaderSpan = { key: string; title: string; columnCount: number };
@@ -94,6 +95,7 @@ function buildWeekHeaderSpans(columns: ColumnStructure[]): WeekHeaderSpan[] {
 export default function TableTimelines({
   subcolumnsStructure,
   columns,
+  weeksMap
 }: TableTimelines) {
   const monthSpans = useMemo(() => buildMonthHeaderSpans(columns), [columns]);
   const weekSpans = useMemo(() => buildWeekHeaderSpans(columns), [columns]);
@@ -102,24 +104,44 @@ export default function TableTimelines({
     [subcolumnsStructure],
   );
 
+
   return (
     <>
       <tr className="monthRow">
         <td></td>
-        {monthSpans.map((m) => (
+        {/* {monthSpans.map((m) => (
           <td key={m.key} colSpan={m.columnCount * spanMultiplier}>
             {m.title}
           </td>
-        ))}
+        ))} */}
       </tr>
       <tr className="weekRow">
         <td></td>
         {weekSpans.map((w) => (
           <td key={`week-${w.week}`} colSpan={w.columnCount * spanMultiplier}>
-            <span className="headerPill headerPill--noFill">S{w.week}</span>
-            <span className="headerPill">
+                       
+           <span
+              style={{color: "black", fontSize: "16px", lineHeight: "20px" ,fontWeight: "bold", paddingRight: "12px"}}
+           > 
+              S{w.week}
+           </span> 
+
+            <span
+               style={{color: "black", fontSize: "12px", backgroundColor: "#F0F3F6", padding: "4px 12px 4px 12px", borderRadius: "12px", marginRight: "12px"}}
+            >
+              {weeksMap[w.week][0]} - {weeksMap[w.week][weeksMap[w.week].length -1] }
+            </span>
+
+            <span
+               style={{color: "black", fontSize: "12px", backgroundColor: "#F0F3F6", padding: "4px 12px 4px 12px", borderRadius: "12px" }}
+            >
               Días laborables: {w.workdayCount}
             </span>
+
+            {/* <span className="headerPill headerPill--noFill">S{w.week}</span>
+            <span className="headerPill">
+              Días laborables: {w.workdayCount}
+            </span> */}
           </td>
         ))}
       </tr>

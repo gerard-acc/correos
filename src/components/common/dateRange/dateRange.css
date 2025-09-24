@@ -5,12 +5,19 @@
 
 .dateRange__field {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: start;
   gap: 8px;
 }
 
 .dateRange__label {
   color: var(--gray-text);
+  font-size: 14px;
+}
+
+.dateRange__input{
+  padding: 8px;
+  font-size: 14px;
 }
 
 .dateRange__input:focus {

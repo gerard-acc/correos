@@ -20,13 +20,22 @@ export default function DailyTimelines({
   return (
     <>
       <tr>
-        <td></td>
+           <td
+          style={{backgroundColor: "#002e6d", minWidth: "170px"}}
+        >
+          <span
+            style={{color: "white"}}
+          >
+            Cliente (X)
+          </span>
+        </td>
         {columns.map((column) => (
           <td
             style={{
               backgroundColor: column.isFestivity
                 ? "var(--festivity-color)"
-                : "var(--header-color)",
+                : "rgb(0, 46, 109)",
+                minWidth: "120px"
             }}
             key={column.key}
             colSpan={

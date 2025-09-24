@@ -18,7 +18,7 @@ export default function MultiRadius({
 
   useEffect(() => {
     setChecked(defaultLabel);
-  }, []);
+  }, [defaultLabel]);
 
   return (
     <div className="multiradius">
@@ -26,7 +26,7 @@ export default function MultiRadius({
       <div className="options">
         {labels.map((label) => (
           <label key={label.id}>
-            <p>{label.name}</p>
+            <p className="checkboxText">{label.name}</p>
             <input
               type="radio"
               name={title}

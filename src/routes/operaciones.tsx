@@ -11,6 +11,7 @@ import Selector from "../components/common/selector/Selector";
 import Checks from "../components/common/checks/Checks";
 import MultiButton from "../components/common/multiButton/MultiButton";
 import DateRange from "../components/common/dateRange/DateRange";
+import type { TableProps } from "../components/table/interfaces";
 
 export const Route = createFileRoute("/operaciones")({
   component: Index,
@@ -118,6 +119,10 @@ function Index() {
     },
   ];
 
+    const [currentPeriod, setCurrentPeriod] =
+      useState<TableProps["currentPeriod"]>("daily");
+  
+
   return (
     <>
       <CenteredContent>
@@ -128,7 +133,12 @@ function Index() {
 
         <Section>
           <h1>Forecast</h1>
-          <Table periods="daily" data={test_data.complex} />
+          <Table 
+            route="operaciones"
+            data={test_data.complex} 
+            currentPeriod={currentPeriod}
+            setCurrentPeriod={setCurrentPeriod} 
+          />
           <TableFooter></TableFooter>
         </Section>
       </CenteredContent>

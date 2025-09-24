@@ -15,7 +15,7 @@ import {
 import { getISOWeek, parse } from "date-fns";
 
 interface TableTotalRows {
-  currentPeriod: TableProps["periods"];
+  currentPeriod: TableProps["currentPeriod"];
   columns: ColumnStructure[];
   subcolumnsStructure?: SubColumn;
   rows: RowStructure[];

@@ -86,7 +86,7 @@ export default function Selector({
         aria-expanded={isOpen}
         type="button"
       >
-        <span>{selectedLabel || placeholder}</span>
+        <span className="selector_span">{selectedLabel || placeholder}</span>
         <img src={arrow_down} alt="Toggle dropdown" />
       </button>
       {isOpen && (

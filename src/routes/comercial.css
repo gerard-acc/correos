@@ -1,0 +1,40 @@
+   .section_wrapper {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+      border-bottom: 1px solid rgb(210, 210, 210);
+      padding-bottom: 12px
+    }
+
+    .all_filters {
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: center
+    }
+
+    .default_filters {
+     display: flex;
+      width: 100%;
+      align-items: center;
+      padding: 1rem 0;
+      gap: 20px;
+    }
+
+    .more_filters {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: start;
+      padding: 2rem 0;
+      gap: 20px;
+    }
+
+    .filter_wrapper_button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      border-left: 1px solid var(--accent-color);
+    }

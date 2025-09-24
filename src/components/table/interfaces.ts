@@ -24,7 +24,10 @@ export interface DataStructure {
 
 export interface TableProps {
   data: DataStructure;
-  periods: "weekly" | "daily";
+  // periods: "weekly" | "daily";
+  currentPeriod: "weekly" | "daily";
+  setCurrentPeriod: React.Dispatch<React.SetStateAction<"weekly" | "daily">>;
+  route: string
 }
 
 export interface ColumnStructure {

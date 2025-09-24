@@ -8,7 +8,6 @@ import type {
 } from "./interfaces";
 import { buildRows, buildColumns, groupDaysByWeek, getWeekKeys } from "./utils";
 import MultiRadius from "../common/multiRadius/MultiRadius";
-import MultiButton from "../common/multiButton/MultiButton";
 import WeeklyTimelines from "./components/weekly/WeeklyTimelines";
 import DailyTimelines from "./components/daily/DailyTimelines";
 import TableFirstCol from "./components/TableFirstCol";
@@ -22,7 +21,8 @@ import WeeklyTotalCell from "./components/weekly/WeeklyTotalCell";
 import MonthlySubcolumnsGroup from "./components/daily/MonthlySubcolumnsGroup";
 import MonthlyTotalCell from "./components/daily/MonthlyTotalCell";
 
-export default function Table({ data, periods }: TableProps) {
+export default function Table({ data, currentPeriod, setCurrentPeriod, route }: TableProps) {
+
   /**
    * La tabla recibe los datos (que seguramente tendremos que adaptar porque el back no nos los va a mandar
    * exactamente como es optimo para la tabla), y si mostramos vista semanal o diaria
@@ -42,8 +42,8 @@ export default function Table({ data, periods }: TableProps) {
   // en la weekly no permite editar los valores de las celdas porque si editamos en weekly y pasamos a daily no sé como deberia repartirlo o qué hacer.
   // Me preocupa que al final el back sea quien lo mande por semanas directamente, porque significaria cambiar bastantes cosas, pero puede que solo sea
   // borrar todos los componentes semanales y adaptar un poco como leemos la data para construir rows y cols en caso de recibir los datos semanales.
-  const [currentPeriod, setCurrentPeriod] =
-    useState<TableProps["periods"]>(periods);
+  // const [currentPeriod, setCurrentPeriod] =
+  //   useState<TableProps["periods"]>(periods);
 
   // Se construyen las columnas, aquí ningún problema, hay complejidad en buildColumns pero no es terrible
   const columns = useMemo<ColumnStructure[]>(() => buildColumns(data), [data]);
@@ -125,12 +125,13 @@ export default function Table({ data, periods }: TableProps) {
   }, [data]);
 
   useEffect(() => {
-    setCurrentPeriod(periods);
-  }, [periods]);
+    setCurrentPeriod(currentPeriod);
+  }, [currentPeriod, setCurrentPeriod]);
 
   return (
     <>
       <div className="tableOptions">
+{/* //////////// Modo : Editar/Verificar ////////////*/}
         <MultiRadius
           onChange={(id) => setIsVerifying(id === "verificar")}
           title="Modo"
@@ -139,20 +140,16 @@ export default function Table({ data, periods }: TableProps) {
             { id: "verificar", name: "Verificar" },
             { id: "editar", name: "Editar" },
           ]}
-        ></MultiRadius>
-        <MultiButton
-          buttons={[
-            { id: "daily", label: "Diario" },
-            { id: "weekly", label: "Semanal" },
-          ]}
-          onChange={(id) => setCurrentPeriod(id as TableProps["periods"])}
-        ></MultiButton>
+        />
+
+{/* //////////// Boton Descargar  ////////////*/}
         <Button
+          style={{fontSize: "16px", padding: "0px 20px"}}
           text="Descargar"
           onClick={() => console.log("Descargar")}
           icon="download.svg"
           border={false}
-        ></Button>
+        />
       </div>
       <div className="tableContainer">
         <table>
@@ -161,28 +158,49 @@ export default function Table({ data, periods }: TableProps) {
             almenos sigue siendo un timeline).
             Dentro de las timelines se calcula el span de las td para que se extienda todo lo que dura el mes o la semana,
             se pone la fila de los dias y en caso de que haya subcolumnas se ponen también aquí */}
-            {currentPeriod === "daily" ? (
-              <>
-                <TableTimelines
-                  data={data}
-                  subcolumnsStructure={subColumnsStructure}
-                  rows={rows}
-                  columns={columns}
-                />
-                <DailyTimelines
-                  data={data}
-                  columns={columns}
-                  rows={rows}
-                  subcolumnsStructure={subColumnsStructure}
-                />
-              </>
-            ) : (
-              <WeeklyTimelines
-                weeksMap={weeksMap}
-                weekKeys={weekKeys}
-                subcolumnsStructure={subColumnsStructure}
-              />
-            )}
+            {(() => {
+                switch (route) {
+                  case "comercial":
+                    return currentPeriod === "daily" ? (
+                      <>
+                        <TableTimelines
+                          data={data}
+                          subcolumnsStructure={subColumnsStructure}
+                          rows={rows}
+                          columns={columns}
+                          weeksMap={weeksMap}
+                        />
+                        <DailyTimelines
+                          data={data}
+                          columns={columns}
+                          rows={rows}
+                          subcolumnsStructure={subColumnsStructure}
+                        />
+                      </>
+                    ) : (
+                      <WeeklyTimelines
+                        weeksMap={weeksMap}
+                        weekKeys={weekKeys}
+                        subcolumnsStructure={subColumnsStructure}
+                      />
+                    );
+
+                  case "operaciones":
+                    return "Timeline de Operaciones"
+                    // TODO: => crear el timeline para Operaciones
+                    // (
+                    //   <OperacionesTimelines
+                    //     data={data}
+                    //     rows={rows}
+                    //     columns={columns}
+                    //   />
+                    // );
+
+                  default:
+                    return null; // para otros routes no renderiza nada
+                }
+  })()}
+
           </thead>
           <tbody>
             {/* En el tbody pintamos las celdas por supuesto. Lo pintamos a partir de las visibleRows, se pinta como padre o hijo gracias a que las rows
